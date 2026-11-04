@@ -1,3 +1,130 @@
 <resources>
     <string name="app_name">Gamora</string>
+    <string name="politica_privacidad"><![CDATA[
+POLÍTICA DE PRIVACIDAD DE GAMORA
+
+Última actualización: 26 de octubre de 2026
+
+1. IDENTIDAD DEL RESPONSABLE
+
+Gamora es una aplicación de finanzas personales diseñada para ayudar a las personas usuarias a registrar ingresos y gastos, organizar presupuestos y planificar sus ahorros.
+
+Responsable: [Nombre completo o razón social].
+Domicilio: [Domicilio del responsable].
+Correo de privacidad: [Correo electrónico].
+
+2. DATOS PERSONALES
+
+Dependiendo de las funciones utilizadas, Gamora podrá tratar datos de perfil, ingresos, gastos, presupuestos, metas de ahorro y preferencias de configuración.
+
+La aplicación también podrá procesar archivos CSV, Excel y estados de cuenta compatibles que la persona usuaria decida importar.
+
+3. FINALIDADES
+
+Los datos se utilizarán para registrar movimientos, calcular balances, generar estadísticas, elaborar presupuestos, detectar posibles duplicados y proporcionar las funciones solicitadas.
+
+4. ALMACENAMIENTO
+
+La información podrá guardarse localmente en el dispositivo y sincronizarse con la nube cuando dicha función esté disponible y haya sido autorizada.
+
+5. INTELIGENCIA ARTIFICIAL
+
+El asistente utilizará únicamente los datos necesarios y autorizados. Si una función requiere enviar información a un proveedor externo, se deberá informar qué datos se compartirán y con qué finalidad.
+
+Las acciones que modifiquen o guarden información requerirán confirmación previa.
+
+6. SEGURIDAD
+
+Gamora implementará medidas razonables de seguridad para proteger la información y limitar el acceso no autorizado.
+
+7. DERECHOS DE LAS PERSONAS USUARIAS
+
+Las personas usuarias podrán solicitar acceso, rectificación, cancelación y oposición al tratamiento de sus datos, conforme a la legislación aplicable. También podrán solicitar la exportación o eliminación de información cuando corresponda.
+
+8. CONSERVACIÓN Y ELIMINACIÓN
+
+Los datos se conservarán durante el tiempo necesario para prestar el servicio y cumplir las obligaciones legales aplicables.
+
+9. CONSENTIMIENTO
+
+Los consentimientos opcionales para analítica e inteligencia artificial serán independientes y podrán revocarse cuando corresponda.
+
+10. CONTACTO
+
+Responsable: [Nombre completo o razón social].
+Correo: [Correo de privacidad].
+Domicilio: [Domicilio del responsable].
+
+Esta política deberá completarse con los datos reales del responsable y los proveedores utilizados por Gamora.
+    ]]></string>
+
+    <string name="terminos_condiciones"><![CDATA[
+TÉRMINOS Y CONDICIONES DE GAMORA
+
+Última actualización: 26 de octubre de 2026
+
+1. ACEPTACIÓN
+
+Estos términos regulan el uso de Gamora, una aplicación de finanzas personales. La persona usuaria deberá poder consultar las condiciones antes de aceptarlas.
+
+2. OBJETO
+
+Gamora permite organizar ingresos y gastos, crear presupuestos, establecer metas de ahorro, visualizar estadísticas e importar movimientos desde archivos compatibles, según las funciones disponibles.
+
+3. RESPONSABILIDAD SOBRE LOS DATOS
+
+La persona usuaria deberá revisar los montos, fechas, categorías y movimientos registrados o importados.
+
+La detección de duplicados y errores es preventiva y no garantiza que todas las inconsistencias sean identificadas.
+
+4. ASISTENTE DE INTELIGENCIA ARTIFICIAL
+
+El asistente puede generar análisis y recomendaciones, pero sus respuestas pueden contener errores.
+
+Las recomendaciones deberán revisarse antes de aplicarse. Las acciones que modifiquen o guarden datos requerirán confirmación.
+
+Gamora no garantiza resultados financieros, rendimientos ni ahorros específicos.
+
+5. NATURALEZA DEL SERVICIO
+
+Gamora es una herramienta de organización financiera personal. No actúa como institución bancaria ni ejecuta pagos o transferencias por el simple hecho de contar con un asistente de IA.
+
+6. ALMACENAMIENTO Y SINCRONIZACIÓN
+
+El almacenamiento local y la sincronización en la nube dependerán de las funciones disponibles y de las opciones elegidas por la persona usuaria.
+
+7. SEGURIDAD Y USO ADECUADO
+
+La persona usuaria no deberá utilizar la aplicación para actividades ilícitas, acceder sin autorización a datos ajenos ni interferir con los sistemas de seguridad.
+
+8. PROPIEDAD INTELECTUAL
+
+Los elementos originales de Gamora estarán protegidos conforme a las leyes aplicables. La información personal introducida por el usuario conservará el tratamiento y los derechos que legalmente correspondan.
+
+9. DISPONIBILIDAD
+
+Gamora procurará mantener el servicio operativo, pero pueden producirse interrupciones por mantenimiento, actualizaciones o problemas técnicos.
+
+10. PRIVACIDAD
+
+El tratamiento de datos personales se regirá por la Política de Privacidad de Gamora. Estos términos no sustituyen los consentimientos específicos que sean necesarios.
+
+11. CANCELACIÓN Y ELIMINACIÓN
+
+La persona usuaria podrá dejar de utilizar Gamora y, cuando corresponda, solicitar el cierre de su cuenta y la eliminación de sus datos conforme a la legislación aplicable.
+
+12. LEGISLACIÓN
+
+Estos términos se interpretarán conforme a la legislación aplicable en México, respetando los derechos irrenunciables de las personas consumidoras.
+
+13. CONTACTO
+
+Responsable: [Nombre completo o razón social].
+Correo: [Correo de soporte].
+Domicilio: [Domicilio del responsable].
+
+Estos términos deberán revisarse y completarse antes de publicar la aplicación.
+    ]]></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

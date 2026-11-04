@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="26dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Asistente Gamora"
+        android:textColor="@color/gamora_text_primary"
+        android:textSize="26sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="Tu asistente personal de finanzas"
+        android:textColor="@color/gamora_text_secondary"
+        android:textSize="14sp"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/layoutChatMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_dashboard_card"
+                android:padding="16dp"
+                android:text="¡Hola! Soy el asistente de Gamora. Pronto podré ayudarte a organizar tus finanzas, analizar gastos y planificar tus ahorros."
+                android:textColor="@color/gamora_text_secondary"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:id="@+id/txtChatMessage"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:hint="Escribe un mensaje..."
+            android:padding="12dp"
+            android:singleLine="true"
+            android:textColor="@color/gamora_text_primary"
+            android:background="@drawable/bg_dashboard_card"/>
+
+        <Button
+            android:id="@+id/btnSendMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/gamora_accent"
+            android:text="Enviar"
+            android:textAllCaps="false"
+            android:textColor="@color/gamora_surface"/>
+
+    </LinearLayout>
+
+</LinearLayout>

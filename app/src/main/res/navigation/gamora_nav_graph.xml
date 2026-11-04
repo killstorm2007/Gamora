@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/gamora_nav_graph"
+    app:startDestination="@id/dashboardFragment">
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.gamora.feature.dashboard.DashboardFragment"
+        android:label="Inicio" />
+
+    <fragment
+        android:id="@+id/transactionsFragment"
+        android:name="com.gamora.feature.transactions.TransactionsFragment"
+        android:label="Movimientos" />
+
+    <fragment
+        android:id="@+id/analyticsFragment"
+        android:name="com.gamora.feature.analytics.AnalyticsFragment"
+        android:label="Análisis" />
+
+    <fragment
+        android:id="@+id/goalsFragment"
+        android:name="com.gamora.feature.goals.GoalsFragment"
+        android:label="Metas" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.gamora.feature.profile.ProfileFragment"
+        android:label="Perfil" />
+
+    <fragment
+        android:id="@+id/chatbotFragment"
+        android:name="com.gamora.feature.chatbot.ChatbotFragment"
+        android:label="Asistente Gamora" />
+
+</navigation>

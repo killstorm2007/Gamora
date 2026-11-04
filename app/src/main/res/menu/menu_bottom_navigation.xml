@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@drawable/ic_home"
+        android:title="Inicio" />
+
+    <item
+        android:id="@+id/transactionsFragment"
+        android:icon="@drawable/ic_movements"
+        android:title="Movimientos" />
+
+    <item
+        android:id="@+id/analyticsFragment"
+        android:icon="@drawable/ic_analytics"
+        android:title="Análisis" />
+
+    <item
+        android:id="@+id/goalsFragment"
+        android:icon="@drawable/ic_goals"
+        android:title="Metas" />
+
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_profile"
+        android:title="Perfil" />
+
+</menu>

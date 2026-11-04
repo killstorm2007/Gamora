@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gamora_background"
+    android:clipToPadding="false"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:paddingBottom="24dp">
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Transacciones"
+            android:textColor="@color/gamora_accent"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Administra y consulta tus movimientos."
+            android:textColor="@color/gamora_text_secondary"
+            android:textSize="14sp" />
+
+        <!-- Agregar movimiento -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddIncome"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="20dp"
+            android:text="+ Agregar movimiento"
+            android:textAllCaps="false"
+            android:textColor="@color/gamora_income"
+            app:backgroundTint="@color/gamora_income_container"
+            app:cornerRadius="14dp"
+            app:iconTint="@color/gamora_income" />
+
+        <!-- Buscador -->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/svBusqueda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_dashboard_card"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@android:color/transparent"
+            app:queryHint="Buscar movimiento..." />
+
+        <!-- Filtros -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTodos"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:minWidth="0dp"
+                android:text="Todos"
+                android:textAllCaps="false"
+                android:textColor="@color/gamora_filter_selected_text"
+                android:textSize="12sp"
+                app:cornerRadius="12dp"
+                app:backgroundTint="@color/gamora_accent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGastos"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="4dp"
+                android:minWidth="0dp"
+                android:text="Gastos"
+                android:textAllCaps="false"
+                android:textColor="@color/gamora_text_primary"
+                android:textSize="12sp"
+                app:cornerRadius="12dp"
+                app:backgroundTint="@color/gamora_accent_light" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnIngresos"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:minWidth="0dp"
+                android:text="Ingresos"
+                android:textAllCaps="false"
+                android:textColor="@color/gamora_text_primary"
+                android:textSize="12sp"
+                app:cornerRadius="12dp"
+                app:backgroundTint="@color/gamora_accent_light" />
+
+        </LinearLayout>
+
+        <!-- Categoría -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="Categoría"
+            android:textColor="@color/gamora_text_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spinnerCategoria"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/gamora_accent"
+            android:padding="8dp" />
+
+        <!-- Lista de movimientos -->
+        <LinearLayout
+            android:id="@+id/transactionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical" />
+
+    </LinearLayout>
+</ScrollView>
