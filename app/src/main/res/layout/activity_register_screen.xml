@@ -10,144 +10,134 @@
     android:orientation="vertical"
     android:padding="20dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardBackgroundColor="@color/cardview_dark_background"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="8dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="20dp">
 
-        <LinearLayout
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registrarse"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05"
+            android:textColor="@color/gamora_text_primary"
+            />
+
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:layout_marginTop="20sp"
+            android:id="@+id/edtNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="20dp">
+            android:hint="Nombre"
+            android:textSize="15sp"
+            android:inputType="textPersonName"
+            />
 
-            <TextView
-                android:layout_marginTop="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Registrarse"
-                android:textSize="25sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.05"
-                android:textColor="@color/white"
-                />
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:layout_marginTop="20sp"
+            android:id="@+id/edtApPat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Apellido Paterno"
+            android:textSize="15sp"
+            android:inputType="textPersonName"
+            />
 
-            <EditText
-                android:textColorHint="@color/gamora_text_secondary"
-                android:layout_marginTop="20sp"
-                android:id="@+id/edtNombre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Nombre"
-                android:textSize="15sp"
-                android:inputType="textPersonName"
-                />
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:layout_marginTop="20sp"
+            android:id="@+id/edtApMat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Apellido Materno"
+            android:textSize="15sp"
+            android:inputType="textPersonName"
+            />
 
-            <EditText
-                android:textColorHint="@color/gamora_text_secondary"
-                android:layout_marginTop="20sp"
-                android:id="@+id/edtApPat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Apellido Paterno"
-                android:textSize="15sp"
-                android:inputType="textPersonName"
-                />
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:layout_marginTop="20sp"
+            android:id="@+id/edtCorreo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="ejemplo@gmail.com"
+            android:textSize="15sp"
+            android:inputType="textEmailAddress"
+            />
 
-            <EditText
-                android:textColorHint="@color/gamora_text_secondary"
-                android:layout_marginTop="20sp"
-                android:id="@+id/edtApMat"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Apellido Materno"
-                android:textSize="15sp"
-                android:inputType="textPersonName"
-                />
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:layout_marginTop="20sp"
+            android:id="@+id/edtTelefono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:hint="656-123-4567"
+            android:inputType="phone"
+            />
 
-            <EditText
-                android:textColorHint="@color/gamora_text_secondary"
-                android:layout_marginTop="20sp"
-                android:id="@+id/edtCorreo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="ejemplo@gmail.com"
-                android:textSize="15sp"
-                android:inputType="textEmailAddress"
-                />
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:layout_marginTop="20sp"
+            android:id="@+id/edtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:hint="Contraseña"
+            android:inputType="textPassword"
+            />
 
-            <EditText
-                android:textColorHint="@color/gamora_text_secondary"
-                android:layout_marginTop="20sp"
-                android:id="@+id/edtTelefono"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:hint="656-123-4567"
-                android:inputType="phone"
-                />
+        <EditText
+            android:textColorHint="@color/gamora_text_secondary"
+            android:layout_marginTop="20sp"
+            android:id="@+id/edtConfPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:hint="Confirmar Contraseña"
+            android:inputType="textPassword"
+            />
 
-            <EditText
-                android:textColorHint="@color/gamora_text_secondary"
-                android:layout_marginTop="20sp"
-                android:id="@+id/edtPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:hint="Contraseña"
-                android:inputType="textPassword"
-                />
-
-            <EditText
-                android:textColorHint="@color/gamora_text_secondary"
-                android:layout_marginTop="20sp"
-                android:id="@+id/edtConfPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:hint="Confirmar Contraseña"
-                android:inputType="textPassword"
+        <CheckBox
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Aceptar Terminos y Condiciones"
+            android:id="@+id/cbTerminos"
+            android:textSize="15sp"
+            android:textColor="@color/gamora_text_secondary"
+            android:clickable="true"
+            />
 
 
-                />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Registrarse"
+            android:layout_marginTop="10dp"
+            android:id="@+id/btnRegistrarse"
+            android:textSize="20sp"
+            />
 
-            <CheckBox
-                android:layout_marginTop="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Aceptar Terminos y Condiciones"
-                android:id="@+id/cbTerminos"
-                android:textSize="15sp"
-                android:textColor="@color/white"
-                android:clickable="true"
-                />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:id="@+id/txtRegistrarse"
+            android:text="Ya tienes una cuenta? Inicia Sesion Aqui"
+            android:layout_marginTop="20sp"
+            android:clickable="true"
+            android:textColor="@color/gamora_text_secondary"
+            />
 
+    </LinearLayout>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Registrarse"
-                android:layout_marginTop="30dp"
-                android:id="@+id/btnRegistrarse"
-                android:textSize="20sp"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"
-                android:id="@+id/txtRegistrarse"
-                android:text="Ya tienes una cuenta? Inicia Sesion Aqui"
-                android:layout_marginTop="20sp"
-                android:clickable="true"
-                android:textColor="#A7B4C2"
-                />
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

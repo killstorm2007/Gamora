@@ -4,30 +4,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="26dp">
+    android:background="@color/gamora_background"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="12dp">
 
-    <TextView
+    <!-- Cabecera -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Asistente Gamora"
-        android:textColor="@color/gamora_text_primary"
-        android:textSize="26sp"
-        android:textStyle="bold"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="16dp">
 
-    <TextView
+        <TextView
+            android:id="@+id/btnBackChat"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="‹"
+            android:textColor="@color/gamora_text_primary"
+            android:textSize="38sp"
+            android:contentDescription="Regresar"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gamora AI"
+                android:textColor="@color/gamora_text_primary"
+                android:textSize="21sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Tu asistente personal de finanzas"
+                android:textColor="@color/gamora_text_secondary"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Tu asistente personal de finanzas"
-        android:textColor="@color/gamora_text_secondary"
-        android:textSize="14sp"/>
+        android:layout_height="1dp"
+        android:background="@color/gamora_border"/>
 
+    <!-- Conversación -->
     <ScrollView
+        android:id="@+id/scrollChat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="16dp"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="12dp">
 
         <LinearLayout
             android:id="@+id/layoutChatMessages"
@@ -38,34 +82,41 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_dashboard_card"
+                android:maxWidth="300dp"
+                android:background="@drawable/bg_chat_message"
                 android:padding="16dp"
-                android:text="¡Hola! Soy el asistente de Gamora. Pronto podré ayudarte a organizar tus finanzas, analizar gastos y planificar tus ahorros."
-                android:textColor="@color/gamora_text_secondary"
-                android:textSize="14sp"/>
+                android:text="¡Hola! Soy Gamora AI. Puedo ayudarte a organizar tus finanzas, analizar tus gastos y planificar tus metas de ahorro."
+                android:textColor="@color/gamora_text_primary"
+                android:textSize="14sp"
+                android:lineSpacingExtra="4dp"/>
 
         </LinearLayout>
 
     </ScrollView>
 
+    <!-- Área para escribir -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginBottom="20dp">
+        android:gravity="center_vertical"
+        android:paddingTop="12dp">
 
         <EditText
-            android:textColorHint="@color/gamora_text_secondary"
             android:id="@+id/txtChatMessage"
             android:layout_width="0dp"
             android:layout_height="52dp"
             android:layout_weight="1"
+            android:background="@drawable/bg_chat_user_message"
             android:hint="Escribe un mensaje..."
-            android:padding="12dp"
-            android:singleLine="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:textColor="@color/gamora_text_primary"
-            android:background="@drawable/bg_dashboard_card"/>
+            android:textColorHint="@color/gamora_text_secondary"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:inputType="textCapSentences"
+            android:imeOptions="actionSend"/>
 
         <Button
             android:id="@+id/btnSendMessage"
