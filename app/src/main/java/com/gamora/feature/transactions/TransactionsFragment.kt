@@ -15,12 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.gamora.R
-import com.gamora.data.repository.MovementRepository
-import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -61,8 +56,6 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-
-        observarMovimientos(view)
 
         val searchView =
             view.findViewById<SearchView>(R.id.svBusqueda)
@@ -184,7 +177,7 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
     }
 
     private fun aplicarFiltros(view: View) {
-        val filteredMovements = MovementRepository.movements.value
+        val filteredMovements = GamoraTransactionStore.movements
             .filter { movement ->
                 val matchesSearch =
                     movement.description.contains(
@@ -331,27 +324,8 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         }
     }
 
-    /**
-     * Vuelve a cargar los movimientos de Supabase cada vez que la pantalla
-     * vuelve a estar visible y se redibuja cuando cambian los datos.
-     */
-    private fun observarMovimientos(view: View) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    MovementRepository.movements.collect {
-                        aplicarFiltros(view)
-                    }
-                }
-
-                MovementRepository.refresh().onFailure { error ->
-                    Toast.makeText(
-                        requireContext(),
-                        error.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
+    override fun onResume() {
+        super.onResume()
+        view?.let { aplicarFiltros(it) }
     }
 }

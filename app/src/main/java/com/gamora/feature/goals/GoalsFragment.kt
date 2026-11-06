@@ -14,13 +14,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.gamora.R
-import com.gamora.data.model.SavingsGoal
-import com.gamora.data.repository.GoalsRepository
-import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -29,12 +25,23 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+private data class SavingsGoal(
+    val id: String,
+    val name: String,
+    val targetCents: Long,
+    var savedCents: Long = 0L,
+    val deadlineMillis: Long? = null
+)
+
 class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
     private val currencyFormat =
         NumberFormat.getCurrencyInstance(Locale("es", "MX"))
 
     private val goals = mutableListOf<SavingsGoal>()
+
+    private val preferencesName = "gamora_savings_goals"
+    private val preferencesKey = "goals_json"
 
     private val primaryColor: Int
         get() = ContextCompat.getColor(
@@ -66,38 +73,14 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        loadGoals()
+
         view.findViewById<Button>(R.id.btnCreateGoal)
             .setOnClickListener {
                 showCreateGoalDialog()
             }
 
-        observarMetas(view)
-    }
-
-    /**
-     * Observa las metas guardadas en Supabase y las vuelve a cargar cada
-     * vez que la pantalla queda visible.
-     */
-    private fun observarMetas(view: View) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    GoalsRepository.goals.collect { metas ->
-                        goals.clear()
-                        goals.addAll(metas)
-                        renderGoals(view)
-                    }
-                }
-
-                GoalsRepository.refresh().onFailure { error ->
-                    Toast.makeText(
-                        requireContext(),
-                        error.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
+        renderGoals(view)
     }
 
     private fun showCreateGoalDialog() {
@@ -187,27 +170,24 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
                         }
 
                         else -> {
-                            dialog.dismiss()
-
-                            lifecycleScope.launch {
-                                GoalsRepository.create(
+                            goals.add(
+                                SavingsGoal(
+                                    id = java.util.UUID.randomUUID().toString(),
                                     name = name,
                                     targetCents = target,
                                     deadlineMillis = selectedDeadline
-                                ).onSuccess {
-                                    Toast.makeText(
-                                        context,
-                                        "Meta creada correctamente",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }.onFailure { error ->
-                                    Toast.makeText(
-                                        context,
-                                        error.message,
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            }
+                                )
+                            )
+
+                            saveGoals()
+                            viewOrRender()
+                            dialog.dismiss()
+
+                            Toast.makeText(
+                                context,
+                                "Meta creada correctamente",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
@@ -252,25 +232,17 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
                         return@setOnClickListener
                     }
 
+                    goal.savedCents += amount
+
+                    saveGoals()
+                    viewOrRender()
                     dialog.dismiss()
 
-                    lifecycleScope.launch {
-                        GoalsRepository.contribute(goal.id, amount)
-                            .onSuccess {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Aportación registrada",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            .onFailure { error ->
-                                Toast.makeText(
-                                    requireContext(),
-                                    error.message,
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                    }
+                    Toast.makeText(
+                        requireContext(),
+                        "Aportación registrada",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
 
@@ -286,15 +258,9 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             )
             .setNegativeButton("Cancelar", null)
             .setPositiveButton("Eliminar") { _, _ ->
-                lifecycleScope.launch {
-                    GoalsRepository.delete(goal.id).onFailure { error ->
-                        Toast.makeText(
-                            requireContext(),
-                            error.message,
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
+                goals.removeAll { it.id == goal.id }
+                saveGoals()
+                viewOrRender()
             }
             .show()
     }
@@ -465,6 +431,89 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
         card.layoutParams = cardParams
         return card
+    }
+
+    private fun viewOrRender() {
+        view?.let { renderGoals(it) }
+    }
+
+    private fun saveGoals() {
+        val array = JSONArray()
+
+        goals.forEach { goal ->
+            array.put(
+                JSONObject().apply {
+                    put("id", goal.id)
+                    put("name", goal.name)
+                    put("targetCents", goal.targetCents)
+                    put("savedCents", goal.savedCents)
+
+                    if (goal.deadlineMillis == null) {
+                        put("deadlineMillis", JSONObject.NULL)
+                    } else {
+                        put("deadlineMillis", goal.deadlineMillis)
+                    }
+                }
+            )
+        }
+
+        requireContext()
+            .getSharedPreferences(
+                preferencesName,
+                android.content.Context.MODE_PRIVATE
+            )
+            .edit()
+            .putString(preferencesKey, array.toString())
+            .apply()
+    }
+
+    private fun loadGoals() {
+        goals.clear()
+
+        val json = requireContext()
+            .getSharedPreferences(
+                preferencesName,
+                android.content.Context.MODE_PRIVATE
+            )
+            .getString(preferencesKey, null)
+            ?: return
+
+        try {
+            val array = JSONArray(json)
+
+            for (i in 0 until array.length()) {
+                val item = array.getJSONObject(i)
+
+                val target = item.getLong("targetCents")
+                val saved = item.optLong("savedCents", 0L)
+
+                if (target <= 0L || saved < 0L) continue
+
+                val deadline = if (
+                    item.isNull("deadlineMillis")
+                ) {
+                    null
+                } else {
+                    item.optLong("deadlineMillis")
+                }
+
+                goals.add(
+                    SavingsGoal(
+                        id = item.getString("id"),
+                        name = item.getString("name"),
+                        targetCents = target,
+                        savedCents = saved,
+                        deadlineMillis = deadline
+                    )
+                )
+            }
+        } catch (_: Exception) {
+            Toast.makeText(
+                requireContext(),
+                "No se pudieron leer las metas guardadas.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private fun parseMoney(value: String): Long? {

@@ -11,19 +11,11 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.gamora.R
-import com.gamora.data.SupabaseConfig
-import com.gamora.data.repository.AuthRepository
-import com.gamora.data.repository.SignUpOutcome
 import com.gamora.feature.auth.login.LoginScreen
 import com.gamora.feature.home.HomeActivity
-import kotlinx.coroutines.launch
 
 class RegisterScreen : AppCompatActivity() {
-
-    private var registrando = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,132 +41,39 @@ class RegisterScreen : AppCompatActivity() {
             val apMat = edtApMat.text.toString().trim()
             val correo = edtCorreo.text.toString().trim()
             val telefono = edtTelefono.text.toString().trim()
-            val password = edtPassword.text.toString()
-            val confPassword = edtConfPassword.text.toString()
+            val password = edtPassword.text.toString().trim()
+            val confPassword = edtConfPassword.text.toString().trim()
 
             // 1. Validar que ningún campo esté vacío
             if (nombre.isEmpty() || apPat.isEmpty() || apMat.isEmpty() ||
-                correo.isEmpty() || telefono.isEmpty() || password.isEmpty() ||
-                confPassword.isEmpty()
-            ) {
+                correo.isEmpty() || telefono.isEmpty() || password.isEmpty() || confPassword.isEmpty()) {
 
-                Toast.makeText(
-                    this,
-                    "Por favor, rellena todos los campos",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show()
             }
             // 2. Validar que las contraseñas coincidan
             else if (password != confPassword) {
-                Toast.makeText(
-                    this,
-                    "Las contraseñas no coinciden",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
             }
             // 3. Validar que acepte los términos y condiciones
             else if (!cbTerminos.isChecked) {
-                Toast.makeText(
-                    this,
-                    "Debes aceptar los términos y condiciones",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "Debes aceptar los términos y condiciones", Toast.LENGTH_SHORT).show()
             }
-            // 4. Si todo está correcto, registrar en Supabase
+            // 4. Si todo está correcto, registrar
             else {
-                registrar(
-                    nombre = nombre,
-                    apellidoPaterno = apPat,
-                    apellidoMaterno = apMat,
-                    correo = correo,
-                    telefono = telefono,
-                    password = password,
-                    boton = btnRegistrarse
-                )
+                Toast.makeText(this, "Registrado Correctamente, redirigiendo...", Toast.LENGTH_SHORT).show()
+                val cambio = Intent(this, HomeActivity::class.java)
+                startActivity(cambio)
+                finish() // Cierra esta pantalla para que no puedan regresar con el botón atrás
             }
         }
 
         txtRegistrarse.setOnClickListener {
-            startActivity(Intent(this, LoginScreen::class.java))
+            val cambio = Intent(this, LoginScreen::class.java)
+            startActivity(cambio)
         }
 
         cbTerminos.setOnClickListener {
             mostrarPoliticas()
-        }
-    }
-
-    private fun registrar(
-        nombre: String,
-        apellidoPaterno: String,
-        apellidoMaterno: String,
-        correo: String,
-        telefono: String,
-        password: String,
-        boton: Button
-    ) {
-        if (registrando) return
-
-        if (!SupabaseConfig.isConfigured) {
-            Toast.makeText(
-                this,
-                "Falta configurar SUPABASE_URL y SUPABASE_ANON_KEY en local.properties.",
-                Toast.LENGTH_LONG
-            ).show()
-            return
-        }
-
-        registrando = true
-        boton.isEnabled = false
-        boton.text = "Registrando..."
-
-        lifecycleScope.launch {
-            AuthRepository.signUp(
-                fullName = nombre,
-                paternalSurname = apellidoPaterno,
-                maternalSurname = apellidoMaterno,
-                phone = telefono,
-                email = correo,
-                password = password
-            ).onSuccess { resultado ->
-                when (resultado) {
-                    SignUpOutcome.SignedIn -> {
-                        Toast.makeText(
-                            this@RegisterScreen,
-                            "Registrado correctamente, redirigiendo...",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        startActivity(
-                            Intent(this@RegisterScreen, HomeActivity::class.java)
-                        )
-                        finish()
-                    }
-
-                    SignUpOutcome.EmailConfirmationRequired -> {
-                        Toast.makeText(
-                            this@RegisterScreen,
-                            "Te enviamos un correo para confirmar tu cuenta. " +
-                                    "Confírmalo y después inicia sesión.",
-                            Toast.LENGTH_LONG
-                        ).show()
-
-                        startActivity(
-                            Intent(this@RegisterScreen, LoginScreen::class.java)
-                        )
-                        finish()
-                    }
-                }
-            }.onFailure { error ->
-                Toast.makeText(
-                    this@RegisterScreen,
-                    error.message,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-            registrando = false
-            boton.isEnabled = true
-            boton.text = "Registrarse"
         }
     }
 
@@ -190,7 +89,7 @@ class RegisterScreen : AppCompatActivity() {
         recursoTexto: Int
     ) {
         val vista = LayoutInflater.from(this)
-            .inflate(R.layout.dialog_documento_legal, null)
+            .inflate(R.layout.dialog_documento_legal,null)
 
         val tvDocumento = vista.findViewById<TextView>(R.id.tvDocumento)
 
@@ -199,7 +98,9 @@ class RegisterScreen : AppCompatActivity() {
         val dialogo = AlertDialog.Builder(this)
             .setTitle(titulo)
             .setView(vista)
-            .setPositiveButton("Cerrar") { dialog, _ -> dialog.dismiss() }
+            .setPositiveButton("Cerrar") {
+                    dialog, _ -> dialog.dismiss()
+            }
             .create()
 
         dialogo.setCancelable(true)

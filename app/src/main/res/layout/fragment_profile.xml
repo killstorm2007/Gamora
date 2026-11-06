@@ -283,22 +283,6 @@
                     android:textColor="@color/gamora_text_primary"
                     android:textSize="15sp"/>
 
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"/>
-
-                <TextView
-                    android:id="@+id/btnCerrarSesion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
-                    android:paddingVertical="13dp"
-                    android:text="Cerrar sesión"
-                    android:textColor="@color/gamora_accent"
-                    android:textSize="15sp"
-                    android:textStyle="bold"/>
-
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>

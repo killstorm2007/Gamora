@@ -13,21 +13,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.gamora.R
-import com.gamora.data.repository.MovementRepository
 import com.gamora.feature.transactions.GamoraMovement
-import kotlinx.coroutines.launch
+import com.gamora.feature.transactions.GamoraTransactionStore
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
 
 class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
-    private val movements: List<GamoraMovement>
-        get() = MovementRepository.movements.value
+    private val movements = GamoraTransactionStore.movements
 
     private val currencyFormat =
         NumberFormat.getCurrencyInstance(Locale("es", "MX"))
@@ -78,8 +73,6 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-
-        observarMovimientos(view)
 
         view.findViewById<View>(R.id.btnAddIncome)
             .setOnClickListener {
@@ -233,57 +226,29 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                         return@setOnClickListener
                     }
 
-                    dialog.dismiss()
-
-                    lifecycleScope.launch {
-                        MovementRepository.add(
+                    movements.add(
+                        GamoraMovement(
                             description = description,
                             category = categorySpinner.selectedItem.toString(),
                             amountCents = cents,
                             isIncome = isIncome
-                        ).onSuccess {
-                            Toast.makeText(
-                                context,
-                                if (isIncome) "Ingreso registrado"
-                                else "Gasto registrado",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }.onFailure { error ->
-                            Toast.makeText(
-                                context,
-                                error.message,
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
+                        )
+                    )
+
+                    view?.let { updateDashboard(it) }
+
+                    Toast.makeText(
+                        context,
+                        if (isIncome) "Ingreso registrado"
+                        else "Gasto registrado",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    dialog.dismiss()
                 }
         }
 
         dialog.show()
-    }
-
-    /**
-     * Observa los movimientos guardados en Supabase y los recarga al
-     * volver a la pantalla.
-     */
-    private fun observarMovimientos(view: View) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    MovementRepository.movements.collect {
-                        updateDashboard(view)
-                    }
-                }
-
-                MovementRepository.refresh().onFailure { error ->
-                    Toast.makeText(
-                        requireContext(),
-                        error.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
     }
 
     private fun updateDashboard(view: View) {

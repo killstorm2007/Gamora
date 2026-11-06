@@ -8,15 +8,10 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.gamora.R
-import com.gamora.data.repository.MovementRepository
 import com.gamora.feature.transactions.GamoraMovement
-import kotlinx.coroutines.launch
+import com.gamora.feature.transactions.GamoraTransactionStore
 import java.text.NumberFormat
 import java.util.Calendar
 import java.util.Locale
@@ -33,30 +28,12 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observarMovimientos(view)
+        actualizarAnaliticas(view)
     }
 
-    /**
-     * Recalcula las analíticas cuando cambian los movimientos en Supabase.
-     */
-    private fun observarMovimientos(view: View) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    MovementRepository.movements.collect {
-                        actualizarAnaliticas(view)
-                    }
-                }
-
-                MovementRepository.refresh().onFailure { error ->
-                    Toast.makeText(
-                        requireContext(),
-                        error.message,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-        }
+    override fun onResume() {
+        super.onResume()
+        view?.let { actualizarAnaliticas(it) }
     }
 
     private fun actualizarAnaliticas(view: View) {
@@ -64,7 +41,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
         val currentMonth = now.get(Calendar.MONTH)
         val currentYear = now.get(Calendar.YEAR)
 
-        val movementsThisMonth = MovementRepository.movements.value.filter { movement ->
+        val movementsThisMonth = GamoraTransactionStore.movements.filter { movement ->
             val date = Calendar.getInstance().apply {
                 timeInMillis = movement.timestamp
             }

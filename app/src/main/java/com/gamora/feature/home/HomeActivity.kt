@@ -1,23 +1,17 @@
 
 package com.gamora.feature.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.gamora.R
-import com.gamora.data.SupabaseConfig
-import com.gamora.data.repository.AuthRepository
-import com.gamora.feature.auth.login.LoginScreen
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
 
@@ -26,8 +20,6 @@ class HomeActivity : AppCompatActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_home)
-
-        verificarSesion()
 
         val root = findViewById<View>(R.id.root_container)
 
@@ -76,7 +68,6 @@ class HomeActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
 
-
             val isChatbot = destination.id == R.id.chatbotFragment
 
             if (isChatbot) {
@@ -85,28 +76,6 @@ class HomeActivity : AppCompatActivity() {
             } else {
                 bottomNavigation.visibility = View.VISIBLE
                 fabChatbot.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    /**
-     * Si no hay una sesión válida de Supabase, regresa al inicio de sesión.
-     */
-    private fun verificarSesion() {
-        if (!SupabaseConfig.isConfigured) return
-
-        lifecycleScope.launch {
-            AuthRepository.awaitSession()
-
-            if (AuthRepository.currentUserId() == null) {
-                startActivity(
-                    Intent(this@HomeActivity, LoginScreen::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or
-                                Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    }
-                )
-
-                finish()
             }
         }
     }

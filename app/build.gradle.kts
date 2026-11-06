@@ -1,25 +1,9 @@
-import java.util.Properties
-
+kotlin
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
 }
-
-// Las credenciales de Supabase se leen de local.properties (ignorado por git)
-// o de variables de entorno. Nunca se escriben en el código ni en el repo.
-val localProperties = Properties().apply {
-    val file = rootProject.file("local.properties")
-
-    if (file.exists()) {
-        file.inputStream().use { load(it) }
-    }
-}
-
-fun supabaseValue(key: String): String =
-    localProperties.getProperty(key)
-        ?: System.getenv(key)
-        ?: ""
 
 android {
     namespace = "com.gamora"
@@ -36,18 +20,6 @@ android {
 
         testInstrumentationRunner =
             "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField(
-            "String",
-            "SUPABASE_URL",
-            "\"${supabaseValue("SUPABASE_URL")}\""
-        )
-
-        buildConfigField(
-            "String",
-            "SUPABASE_ANON_KEY",
-            "\"${supabaseValue("SUPABASE_ANON_KEY")}\""
-        )
     }
 
     buildTypes {
@@ -59,20 +31,24 @@ android {
     }
 
     compileOptions {
-        // supabase-kt requiere SDK 26+ o core library desugaring.
-        isCoreLibraryDesugaringEnabled = true
-
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
     buildFeatures {
         compose = true
-        buildConfig = true
     }
 }
 
 dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    // Firebase Authentication
+    implementation("com.google.firebase:firebase-auth")
+
+    // Cloud Firestore
+    implementation("com.google.firebase:firebase-firestore")
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.activity.ktx)
@@ -116,18 +92,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.datastore.preferences)
 
-    // Supabase: autenticación y base de datos
-    implementation(platform(libs.supabase.bom))
-    implementation(libs.supabase.auth)
-    implementation(libs.supabase.postgrest)
-    implementation(libs.ktor.client.android)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.coroutines.android)
-
     // Pruebas
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
