@@ -1,6 +1,8 @@
 package com.gamora.core.preferences
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -11,10 +13,15 @@ private val Context.gamoraDataStore by preferencesDataStore(
     name = "gamora_settings"
 )
 
-enum class GamoraTheme(val value: String) {
-    LIGHT("light"),
-    DARK("dark"),
-    SYSTEM("system")
+enum class GamoraTheme(val value: String, val nightMode: Int) {
+    LIGHT("light", AppCompatDelegate.MODE_NIGHT_NO),
+    DARK("dark", AppCompatDelegate.MODE_NIGHT_YES),
+    SYSTEM("system", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+    companion object {
+        fun from(value: String?): GamoraTheme =
+            entries.firstOrNull { it.value == value } ?: LIGHT
+    }
 }
 
 object AppearancePreferences {
@@ -23,11 +30,7 @@ object AppearancePreferences {
 
     fun themeFlow(context: Context): Flow<GamoraTheme> {
         return context.gamoraDataStore.data.map { preferences ->
-            when (preferences[THEME_KEY]) {
-                "dark" -> GamoraTheme.DARK
-                "system" -> GamoraTheme.SYSTEM
-                else -> GamoraTheme.LIGHT
-            }
+            GamoraTheme.from(preferences[THEME_KEY])
         }
     }
 
@@ -38,5 +41,18 @@ object AppearancePreferences {
         context.gamoraDataStore.edit { preferences ->
             preferences[THEME_KEY] = theme.value
         }
+    }
+}
+
+/** Preferencias de seguridad que se guardan solo en este dispositivo. */
+object SeguridadPreferences {
+
+    private val BLOQUEO_KEY = booleanPreferencesKey("bloqueo_biometrico")
+
+    fun bloqueoFlow(context: Context): Flow<Boolean> =
+        context.gamoraDataStore.data.map { it[BLOQUEO_KEY] ?: false }
+
+    suspend fun setBloqueo(context: Context, activo: Boolean) {
+        context.gamoraDataStore.edit { it[BLOQUEO_KEY] = activo }
     }
 }

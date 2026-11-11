@@ -1,6 +1,9 @@
-
 package com.gamora.feature.analytics
 
+import com.gamora.core.ui.LOCALE_MX
+import com.gamora.core.ui.dp
+import com.gamora.core.ui.dinero
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -8,90 +11,96 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.gamora.R
-import com.gamora.feature.transactions.GamoraMovement
 import com.gamora.feature.transactions.GamoraTransactionStore
+import com.gamora.feature.transactions.observarMovimientos
+import com.gamora.feature.transactions.observar
+import com.gamora.feature.goals.GamoraGoalStore
+import com.gamora.core.auth.AuthRepository
+import com.gamora.feature.transactions.totalesPorMes
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
-    private val currencyFormat =
-        NumberFormat.getCurrencyInstance(Locale("es", "MX"))
+    private fun color(id: Int) = ContextCompat.getColor(requireContext(), id)
+    private val graphite get() = color(R.color.gamora_text_primary)
+    private val muted get() = color(R.color.gamora_text_secondary)
+    private val track get() = color(R.color.gamora_surface_variant)
 
-    private val graphite = Color.parseColor("#A7B4C2")
-    private val muted = Color.parseColor("#68716B")
-    private val sage = Color.parseColor("#527A65")
-    private val red = Color.parseColor("#B54747")
+    private var presupuestoCentavos = 0L
+
+    // Un color por categoría, en orden de mayor a menor gasto.
+    private val paleta = listOf(
+        "#527A65", "#C65D57", "#D4A24C", "#4F7CAC",
+        "#8E6C9E", "#3E9A94", "#E07B39", "#8A948E"
+    ).map(Color::parseColor)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        actualizarAnaliticas(view)
-    }
+        observarMovimientos(::actualizarAnaliticas)
+        observar(GamoraGoalStore.goalsFlow, ::actualizarAnaliticas)
 
-    override fun onResume() {
-        super.onResume()
-        view?.let { actualizarAnaliticas(it) }
+        AuthRepository.obtenerPreferenciasFinancieras(
+            onSuccess = { preferencias ->
+                presupuestoCentavos = preferencias.presupuestoMensualCentavos
+                if (isAdded) this.view?.let(::actualizarAnaliticas)
+            },
+            onError = {}
+        )
     }
 
     private fun actualizarAnaliticas(view: View) {
-        val now = Calendar.getInstance()
-        val currentMonth = now.get(Calendar.MONTH)
-        val currentYear = now.get(Calendar.YEAR)
+        val movimientos = GamoraTransactionStore.movements
 
-        val movementsThisMonth = GamoraTransactionStore.movements.filter { movement ->
-            val date = Calendar.getInstance().apply {
-                timeInMillis = movement.timestamp
-            }
-
-            date.get(Calendar.MONTH) == currentMonth &&
-                    date.get(Calendar.YEAR) == currentYear
-        }
-
-        val income = movementsThisMonth
+        val income = movimientos
             .filter { it.isIncome }
             .sumOf { it.amountCents }
 
-        val expenses = movementsThisMonth
+        val expenses = movimientos
             .filterNot { it.isIncome }
             .sumOf { it.amountCents }
 
         val balance = income - expenses
 
         view.findViewById<TextView>(R.id.txtAnalyticsIncome).text =
-            formatMoney(income)
+            dinero(income)
 
         view.findViewById<TextView>(R.id.txtAnalyticsExpenses).text =
-            formatMoney(expenses)
+            dinero(expenses)
 
         view.findViewById<TextView>(R.id.txtAnalyticsBalance).apply {
-            text = formatMoney(balance)
-            setTextColor(if (balance < 0L) red else sage)
+            text = dinero(balance)
         }
 
-        val expenseMovements = movementsThisMonth.filterNot { it.isIncome }
+        val totalesCategoria = movimientos
+            .filterNot { it.isIncome }
+            .groupBy { it.category }
+            .mapValues { (_, delaCategoria) -> delaCategoria.sumOf { it.amountCents } }
+            .toList()
+            .sortedByDescending { it.second }
 
-        val categoryContainer =
-            view.findViewById<LinearLayout>(R.id.layoutExpenseCategories)
+        renderCategories(view, totalesCategoria, expenses)
+        renderMeses(view)
 
-        val emptyMessage =
-            view.findViewById<TextView>(R.id.txtEmptyAnalytics)
-
-        renderCategories(
-            container = categoryContainer,
-            emptyMessage = emptyMessage,
-            expenses = expenseMovements
-        )
+        view.findViewById<TextView>(R.id.txtConsejos).text =
+            generarConsejos(movimientos, GamoraGoalStore.goals, presupuestoCentavos)
+                .joinToString("\n\n") { "• $it" }
     }
 
-
     private fun renderCategories(
-        container: LinearLayout,
-        emptyMessage: TextView,
-        expenses: List<GamoraMovement>
+        view: View,
+        totals: List<Pair<String, Long>>,
+        totalExpenses: Long
     ) {
+        val container = view.findViewById<LinearLayout>(R.id.layoutExpenseCategories)
+        val emptyMessage = view.findViewById<TextView>(R.id.txtEmptyAnalytics)
+        val dona = view.findViewById<DonaView>(R.id.graficaGastos)
+
         // El mensaje vacío permanece dentro del contenedor.
         for (i in container.childCount - 1 downTo 0) {
             val child = container.getChildAt(i)
@@ -100,29 +109,31 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             }
         }
 
-        if (expenses.isEmpty()) {
+        if (totals.isEmpty()) {
             emptyMessage.visibility = View.VISIBLE
+            dona.visibility = View.GONE
             return
         }
 
         emptyMessage.visibility = View.GONE
+        dona.visibility = View.VISIBLE
 
-        val totals = expenses
-            .groupBy { it.category }
-            .mapValues { (_, movements) ->
-                movements.sumOf { it.amountCents }
-            }
-            .toList()
-            .sortedByDescending { it.second }
+        val colores = totals.indices.map { paleta[it % paleta.size] }
 
-        totals.forEach { (category, amount) ->
-            val totalExpenses = expenses.sumOf { it.amountCents }
+        dona.mostrar(
+            totals.map { it.second }.zip(colores),
+            titulo = "Gastos totales",
+            valor = dinero(totalExpenses)
+        )
 
-            val percentage = if (totalExpenses > 0L) {
-                (amount.toDouble() / totalExpenses * 100).toInt()
-            } else {
-                0
-            }
+        dona.contentDescription = "Gastos por categoría: " +
+                totals.joinToString { (categoria, monto) ->
+                    "$categoria ${porcentaje(monto, totalExpenses)}%"
+                }
+
+        totals.forEachIndexed { indice, (category, amount) ->
+            val percentage = porcentaje(amount, totalExpenses)
+            val color = colores[indice]
 
             val item = LinearLayout(requireContext()).apply {
                 orientation = LinearLayout.VERTICAL
@@ -135,7 +146,12 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             }
 
             val categoryName = TextView(requireContext()).apply {
-                text = category
+                text = android.text.SpannableString("●  $category").apply {
+                    setSpan(
+                        android.text.style.ForegroundColorSpan(color),
+                        0, 1, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
                 textSize = 14f
                 setTextColor(graphite)
                 layoutParams = LinearLayout.LayoutParams(
@@ -146,7 +162,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             }
 
             val categoryAmount = TextView(requireContext()).apply {
-                text = formatMoney(amount)
+                text = dinero(amount)
                 textSize = 14f
                 setTextColor(graphite)
             }
@@ -156,7 +172,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             item.addView(header)
 
             val details = TextView(requireContext()).apply {
-                text = "$percentage% de tus gastos del mes"
+                text = "$percentage% de tus gastos"
                 textSize = 12f
                 setTextColor(muted)
                 setPadding(0, dp(3), 0, dp(6))
@@ -171,12 +187,8 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             ).apply {
                 max = 100
                 this.progress = percentage
-                progressTintList =
-                    android.content.res.ColorStateList.valueOf(sage)
-                progressBackgroundTintList =
-                    android.content.res.ColorStateList.valueOf(
-                        Color.parseColor("#A7B4C2")
-                    )
+                progressTintList = ColorStateList.valueOf(color)
+                progressBackgroundTintList = ColorStateList.valueOf(track)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     dp(6)
@@ -188,12 +200,37 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
         }
     }
 
+    /** Ingresos y gastos de los últimos 6 meses, incluido el actual (meses sin movimientos en cero). */
+    private fun renderMeses(view: View) {
+        val porMes = GamoraTransactionStore.movements.totalesPorMes()
+        val formatoMes = SimpleDateFormat("MMM", LOCALE_MX)
 
-    private fun formatMoney(amountCents: Long): String {
-        return currencyFormat.format(amountCents / 100.0)
+        val meses = (5 downTo 0).map { atras ->
+            val calendario = Calendar.getInstance().apply {
+                set(Calendar.DAY_OF_MONTH, 1)
+                add(Calendar.MONTH, -atras)
+            }
+
+            val clave = calendario.get(Calendar.YEAR) * 12 + calendario.get(Calendar.MONTH)
+            val totales = porMes[clave]
+
+            BarrasMensualesView.Mes(
+                etiqueta = formatoMes.format(calendario.time).trimEnd('.'),
+                ingresos = totales?.ingresos ?: 0L,
+                gastos = totales?.gastos ?: 0L
+            )
+        }
+
+        view.findViewById<BarrasMensualesView>(R.id.graficaMeses).apply {
+            mostrar(meses)
+            contentDescription = "Ingresos y gastos de los últimos 6 meses: " +
+                    meses.joinToString { mes ->
+                        "${mes.etiqueta}, ingresos ${dinero(mes.ingresos)}, gastos ${dinero(mes.gastos)}"
+                    }
+        }
     }
 
-    private fun dp(value: Int): Int {
-        return (value * resources.displayMetrics.density).toInt()
-    }
+    private fun porcentaje(parte: Long, total: Long): Int =
+        if (total > 0L) (parte.toDouble() / total * 100).toInt() else 0
+
 }

@@ -26,9 +26,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:contentDescription="Abrir asistente Gamora"
-        android:src="@drawable/ic_chat"
+        android:src="@drawable/ic_sparkle"
         app:backgroundTint="@color/gamora_accent"
-        app:tint="@color/gamora_background"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Gamora.Medium"
+        app:tint="@color/gamora_on_accent"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -37,6 +38,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/gamora_surface"
+        android:elevation="12dp"
+        app:itemActiveIndicatorStyle="@style/Widget.Gamora.NavIndicator"
+        app:itemTextAppearanceActive="@style/TextAppearance.Gamora.NavLabel"
+        app:itemTextAppearanceInactive="@style/TextAppearance.Gamora.NavLabel"
         app:itemIconTint="@color/gamora_navigation_tint"
         app:itemTextColor="@color/gamora_navigation_tint"
         app:labelVisibilityMode="labeled"

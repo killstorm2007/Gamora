@@ -4,210 +4,177 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gamora_background"
-    android:fillViewport="true"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
-        android:paddingBottom="24dp">
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="96dp">
 
         <!-- Encabezado -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GAMORA"
-            android:textColor="@color/gamora_accent"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.18" />
+            android:text="Gamora"
+            android:textAppearance="@style/TextAppearance.Gamora.Overline" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Tu dinero, bajo control."
-            android:textColor="@color/gamora_text_primary"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Aquí tienes el resumen de tus finanzas."
-            android:textColor="@color/gamora_text_secondary"
-            android:textSize="14sp" />
+            android:layout_marginTop="6dp"
+            android:text="Tu dinero, bajo control"
+            android:textAppearance="@style/TextAppearance.Gamora.Headline" />
 
         <!-- Saldo disponible -->
         <LinearLayout
+            style="@style/Gamora.Hero"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_dashboard_card"
-            android:orientation="vertical"
-            android:padding="22dp">
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SALDO DISPONIBLE"
-                android:textColor="@color/gamora_balance_label"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.08" />
+                android:text="Saldo disponible"
+                android:textColor="@color/gamora_on_hero_secondary"
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tvBalance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="6dp"
                 android:text="$0.00"
-                android:textColor="@color/gamora_balance_value"
-                android:textSize="34sp"
-                android:textStyle="bold" />
+                android:textAppearance="@style/TextAppearance.Gamora.Amount" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Resumen de tu dinero registrado"
-                android:textColor="@color/gamora_balance_label"
-                android:textSize="12sp" />
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_dashboard_expense"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="↑  Ingresos"
+                        android:textColor="@color/gamora_on_hero_secondary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvIncome"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:text="$0.00"
+                        android:textAppearance="@style/TextAppearance.Gamora.AmountSmall"
+                        android:textColor="@color/gamora_on_hero"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_dashboard_expense"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="↓  Gastos"
+                        android:textColor="@color/gamora_on_hero_secondary"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvExpenses"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:text="$0.00"
+                        android:textAppearance="@style/TextAppearance.Gamora.AmountSmall"
+                        android:textColor="@color/gamora_on_hero"
+                        android:textSize="17sp" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- Ingresos y gastos -->
+        <!-- Acciones rápidas -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal">
 
-            <!-- Ingresos -->
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddIncome"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:background="@drawable/bg_dashboard_balance"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ingresos"
-                    android:textColor="@color/gamora_text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvIncome"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="$0.00"
-                    android:textColor="@color/gamora_income"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Gastos -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_dashboard_balance"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Gastos"
-                    android:textColor="@color/gamora_text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tvExpenses"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="$0.00"
-                    android:textColor="@color/gamora_expense"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Acciones rápidas -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="Acciones rápidas"
-            android:textColor="@color/gamora_text_primary"
-            android:textSize="19sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:orientation="horizontal">
+                android:text="+  Ingreso"
+                android:textColor="@color/gamora_income"
+                app:backgroundTint="@color/gamora_income_container" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddExpense"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                android:minHeight="56dp"
-                android:text="−  Gasto"
-                android:textAllCaps="false"
-                android:textColor="@color/gamora_expense"
-                app:backgroundTint="@color/gamora_expense_container"
-                app:cornerRadius="14dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddIncome"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:layout_weight="1"
-                android:minHeight="56dp"
-                android:text="+  Ingreso"
-                android:textAllCaps="false"
-                android:textColor="@color/gamora_income"
-                app:backgroundTint="@color/gamora_income_container"
-                app:cornerRadius="14dp" />
+                android:text="−  Gasto"
+                android:textColor="@color/gamora_expense"
+                app:backgroundTint="@color/gamora_expense_container" />
         </LinearLayout>
 
         <!-- Movimientos recientes -->
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Movimientos recientes"
-            android:textColor="@color/gamora_text_primary"
-            android:textSize="19sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <Spinner
-            android:id="@+id/spinnerCategoria"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:padding="8dp"
-            android:backgroundTint="@color/gamora_accent" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Movimientos recientes"
+                android:textAppearance="@style/TextAppearance.Gamora.Title" />
+
+            <Spinner
+                android:id="@+id/spinnerCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_dashboard_action"
+                android:contentDescription="Filtrar por categoría"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/transactionsContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="14dp"
             android:orientation="vertical" />
 
     </LinearLayout>

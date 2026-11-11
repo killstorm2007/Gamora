@@ -126,5 +126,6 @@ Domicilio: [Domicilio del responsable].
 Estos términos deberán revisarse y completarse antes de publicar la aplicación.
     ]]></string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Cambiar por el correo real de soporte. -->
+    <string name="correo_soporte">soporte@example.com</string>
 </resources>

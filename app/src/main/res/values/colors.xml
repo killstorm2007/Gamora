@@ -2,36 +2,44 @@
 <resources>
 
     <!-- Fondo y superficies -->
-    <color name="gamora_background">#F5F5F2</color>
+    <color name="gamora_background">#F3F6F3</color>
     <color name="gamora_surface">#FFFFFF</color>
+    <color name="gamora_surface_variant">#EAF0EB</color>
 
     <!-- Textos -->
-    <color name="gamora_text_primary">#26352E</color>
-    <color name="gamora_text_secondary">#718078</color>
+    <color name="gamora_text_primary">#15231C</color>
+    <color name="gamora_text_secondary">#5F6F66</color>
 
     <!-- Marca -->
-    <color name="gamora_accent">#527A65</color>
-    <color name="gamora_accent_light">#E4EBE5</color>
-    <color name="gamora_border">#E8ECE8</color>
+    <color name="gamora_accent">#2F7A59</color>
+    <color name="gamora_accent_light">#DDEFE5</color>
+    <color name="gamora_on_accent">#FFFFFF</color>
+    <color name="gamora_border">#E1E8E3</color>
+
+    <!-- Tarjeta principal (degradado) -->
+    <color name="gamora_hero_start">#1F5C43</color>
+    <color name="gamora_hero_center">#2F7A59</color>
+    <color name="gamora_hero_end">#4E9A74</color>
+    <color name="gamora_on_hero">#FFFFFF</color>
+    <color name="gamora_on_hero_secondary">#CFE7DA</color>
+    <color name="gamora_hero_chip">#33FFFFFF</color>
 
     <!-- Estados financieros -->
-    <color name="gamora_expense">#C65D57</color>
+    <color name="gamora_income">#23875B</color>
+    <color name="gamora_income_container">#DDF1E6</color>
+    <color name="gamora_expense">#C9493F</color>
+    <color name="gamora_expense_container">#FBE6E3</color>
 
-    <!-- Tarjeta de resumen -->
-    <color name="gamora_summary_background">#527A65</color>
-    <color name="gamora_summary_text">#FFFFFF</color>
-    <color name="gamora_summary_text_secondary">#E4EBE5</color>
+    <!-- Compatibilidad con nombres anteriores -->
+    <color name="gamora_summary_background">@color/gamora_hero_center</color>
+    <color name="gamora_summary_text">@color/gamora_on_hero</color>
+    <color name="gamora_summary_text_secondary">@color/gamora_on_hero_secondary</color>
+    <color name="gamora_balance_label">@color/gamora_on_hero_secondary</color>
+    <color name="gamora_balance_value">@color/gamora_on_hero</color>
+    <color name="gamora_filter_selected_text">@color/gamora_on_accent</color>
+    <color name="gamora_filter_unselected">@color/gamora_text_secondary</color>
 
-    <!-- Compatibilidad -->
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-
-    <color name="gamora_balance_label">#C1D7D0</color>
-    <color name="gamora_balance_value">#FFFFFF</color>
-    <color name="gamora_income">#527A65</color>
-    <color name="gamora_income_container">#E4EBE5</color>
-    <color name="gamora_expense_container">#F6E7E5</color>
-    <color name="gamora_filter_selected_text">#FFFFFF</color>
-    <color name="gamora_filter_unselected">#718078</color>
 
 </resources>

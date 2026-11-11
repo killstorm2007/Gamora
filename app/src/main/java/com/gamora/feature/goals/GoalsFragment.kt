@@ -1,12 +1,23 @@
 
 package com.gamora.feature.goals
 
-import android.app.AlertDialog
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.gamora.core.ui.centavosDe
+import com.gamora.core.ui.LOCALE_MX
+import com.gamora.core.ui.dp
+import com.gamora.core.ui.dinero
+import com.google.android.material.textfield.TextInputEditText
+import com.gamora.core.ui.enDialogo
+import com.gamora.core.ui.enCampo
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.appcompat.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -15,8 +26,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.gamora.R
-import org.json.JSONArray
-import org.json.JSONObject
+import com.gamora.feature.transactions.observar
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -25,23 +35,14 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-private data class SavingsGoal(
-    val id: String,
-    val name: String,
-    val targetCents: Long,
-    var savedCents: Long = 0L,
-    val deadlineMillis: Long? = null
-)
-
 class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
-    private val currencyFormat =
-        NumberFormat.getCurrencyInstance(Locale("es", "MX"))
+    private val goals
+        get() = GamoraGoalStore.goals
 
-    private val goals = mutableListOf<SavingsGoal>()
-
-    private val preferencesName = "gamora_savings_goals"
-    private val preferencesKey = "goals_json"
+    private val mostrarError: (String) -> Unit = { mensaje ->
+        context?.let { Toast.makeText(it, mensaje, Toast.LENGTH_LONG).show() }
+    }
 
     private val primaryColor: Int
         get() = ContextCompat.getColor(
@@ -73,14 +74,12 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadGoals()
-
         view.findViewById<Button>(R.id.btnCreateGoal)
             .setOnClickListener {
                 showCreateGoalDialog()
             }
 
-        renderGoals(view)
+        observar(GamoraGoalStore.goalsFlow, ::renderGoals)
     }
 
     private fun showCreateGoalDialog() {
@@ -91,19 +90,20 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             setPadding(dp(24), dp(8), dp(24), 0)
         }
 
-        val nameInput = EditText(context).apply {
-            hint = "Ej. Comprar una computadora"
+        val nameInput = TextInputEditText(context).apply {
+            hint = "Nombre de la meta"
             isSingleLine = true
+            filters = arrayOf(android.text.InputFilter.LengthFilter(100))
         }
 
-        val targetInput = EditText(context).apply {
-            hint = "Cantidad objetivo en MXN"
+        val targetInput = TextInputEditText(context).apply {
+            hint = "¿Cuánto quieres ahorrar? (MXN)"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or
                     android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
             isSingleLine = true
         }
 
-        val deadlineInput = EditText(context).apply {
+        val deadlineInput = TextInputEditText(context).apply {
             hint = "Fecha límite (opcional)"
             isFocusable = false
             isClickable = true
@@ -135,16 +135,11 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             ).show()
         }
 
-        form.addView(label("Nombre de la meta"))
-        form.addView(nameInput, fieldParams())
+        form.addView(nameInput.enCampo())
+        form.addView(targetInput.enCampo())
+        form.addView(deadlineInput.enCampo())
 
-        form.addView(label("¿Cuánto quieres ahorrar?"))
-        form.addView(targetInput, fieldParams())
-
-        form.addView(label("Fecha límite"))
-        form.addView(deadlineInput, fieldParams())
-
-        val dialog = AlertDialog.Builder(context)
+        val dialog = MaterialAlertDialogBuilder(context)
             .setTitle("Crear meta de ahorro")
             .setView(form)
             .setNegativeButton("Cancelar", null)
@@ -164,23 +159,20 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
                             nameInput.error = "Escribe un nombre"
                         }
 
-                        target == null || target <= 0L -> {
+                        // Mismo límite que las reglas de Firestore.
+                        target == null || target <= 0L || target > 100_000_000_000L -> {
                             targetInput.error =
                                 "Introduce una cantidad válida"
                         }
 
                         else -> {
-                            goals.add(
-                                SavingsGoal(
-                                    id = java.util.UUID.randomUUID().toString(),
-                                    name = name,
-                                    targetCents = target,
-                                    deadlineMillis = selectedDeadline
-                                )
+                            GamoraGoalStore.crear(
+                                nombre = name,
+                                objetivoCentavos = target,
+                                fechaLimite = selectedDeadline,
+                                onError = mostrarError
                             )
 
-                            saveGoals()
-                            viewOrRender()
                             dialog.dismiss()
 
                             Toast.makeText(
@@ -197,20 +189,29 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
     }
 
     private fun showContributionDialog(goal: SavingsGoal) {
-        val input = EditText(requireContext()).apply {
-            hint = "Cantidad que vas a aportar en MXN"
+        val input = TextInputEditText(requireContext()).apply {
+            hint = "Cantidad a aportar (MXN)"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or
                     android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-            setPadding(dp(20), dp(12), dp(20), dp(12))
         }
 
-        val dialog = AlertDialog.Builder(requireContext())
+        val descontar = MaterialCheckBox(requireContext()).apply {
+            text = "Descontar de mi saldo (se registra como gasto en Ahorro)"
+            isChecked = true
+        }
+
+        val contenido = input.enDialogo().apply {
+            orientation = LinearLayout.VERTICAL
+            addView(descontar)
+        }
+
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Aportar a ${goal.name}")
             .setMessage(
-                "Objetivo: ${formatMoney(goal.targetCents)}\n" +
-                        "Ahorrado: ${formatMoney(goal.savedCents)}"
+                "Objetivo: ${dinero(goal.targetCents)}\n" +
+                        "Ahorrado: ${dinero(goal.savedCents)}"
             )
-            .setView(input)
+            .setView(contenido)
             .setNegativeButton("Cancelar", null)
             .setPositiveButton("Registrar", null)
             .create()
@@ -227,15 +228,13 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
                         return@setOnClickListener
                     }
 
-                    if (Long.MAX_VALUE - goal.savedCents < amount) {
+                    // Mismo límite que las reglas de Firestore para movimientos.
+                    if (amount > 100_000_000_000L || Long.MAX_VALUE - goal.savedCents < amount) {
                         input.error = "La cantidad es demasiado grande"
                         return@setOnClickListener
                     }
 
-                    goal.savedCents += amount
-
-                    saveGoals()
-                    viewOrRender()
+                    GamoraGoalStore.aportar(goal, amount, descontar.isChecked, mostrarError)
                     dialog.dismiss()
 
                     Toast.makeText(
@@ -250,7 +249,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
     }
 
     private fun confirmDeleteGoal(goal: SavingsGoal) {
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle("Eliminar meta")
             .setMessage(
                 "¿Quieres eliminar \"${goal.name}\"? " +
@@ -258,21 +257,17 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             )
             .setNegativeButton("Cancelar", null)
             .setPositiveButton("Eliminar") { _, _ ->
-                goals.removeAll { it.id == goal.id }
-                saveGoals()
-                viewOrRender()
+                GamoraGoalStore.eliminar(goal.id, mostrarError)
             }
             .show()
     }
 
     private fun renderGoals(view: View) {
         val totalSaved = goals.sumOf { it.savedCents }
-        val activeGoals = goals.count {
-            it.savedCents < it.targetCents
-        }
+        val activeGoals = goals.count { it.activa }
 
         view.findViewById<TextView>(R.id.txtTotalSaved).text =
-            formatMoney(totalSaved)
+            dinero(totalSaved)
 
         view.findViewById<TextView>(R.id.txtGoalsCount).text =
             "$activeGoals metas activas"
@@ -320,16 +315,14 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
         }
 
         val title = TextView(context).apply {
-            text = goal.name
-            textSize = 18f
-            setTextColor(primaryColor)
-            setTypeface(null, android.graphics.Typeface.BOLD)
+            text = "${if (goal.activa) "🎯" else "🏆"}  ${goal.name}"
+            setTextAppearance(R.style.TextAppearance_Gamora_Title)
         }
 
         card.addView(title)
 
         val target = TextView(context).apply {
-            text = "Objetivo: ${formatMoney(goal.targetCents)}"
+            text = "Objetivo: ${dinero(goal.targetCents)}"
             textSize = 13f
             setTextColor(secondaryColor)
             setPadding(0, dp(6), 0, dp(12))
@@ -342,29 +335,27 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
                         goal.targetCents.toDouble() * 100
                 ).toInt().coerceIn(0, 100)
 
-        val progress = ProgressBar(
-            context,
-            null,
-            android.R.attr.progressBarStyleHorizontal
-        ).apply {
+        val progress = LinearProgressIndicator(context).apply {
             max = 100
             this.progress = progressPercent
-            progressTintList =
-                android.content.res.ColorStateList.valueOf(accentColor)
-            progressBackgroundTintList =
-                android.content.res.ColorStateList.valueOf(borderColor)
+            trackThickness = dp(10)
+            trackCornerRadius = dp(5)
+            trackStopIndicatorSize = 0
+            indicatorTrackGapSize = 0
+            setIndicatorColor(accentColor)
+            trackColor = ContextCompat.getColor(context, R.color.gamora_surface_variant)
         }
 
         card.addView(
             progress,
             LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                dp(8)
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
         )
 
         val savedText = TextView(context).apply {
-            text = "${formatMoney(goal.savedCents)} ahorrados · " +
+            text = "${dinero(goal.savedCents)} ahorrados · " +
                     "$progressPercent%"
             textSize = 14f
             setTextColor(primaryColor)
@@ -380,7 +371,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             text = if (remaining == 0L) {
                 "¡Meta completada!"
             } else {
-                "Te faltan ${formatMoney(remaining)}"
+                "Te faltan ${dinero(remaining)}"
             }
 
             textSize = 13f
@@ -408,158 +399,56 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             setPadding(0, dp(12), 0, 0)
         }
 
-        val contributeButton = Button(context).apply {
-            text = "Aportar"
+        fun boton(texto: String, fondo: Int, colorTexto: Int) = MaterialButton(context).apply {
+            text = texto
             isAllCaps = false
-            setOnClickListener {
-                showContributionDialog(goal)
-            }
+            minHeight = dp(44)
+            minimumHeight = dp(44)
+            insetTop = 0
+            insetBottom = 0
+            cornerRadius = dp(14)
+            backgroundTintList = android.content.res.ColorStateList.valueOf(ContextCompat.getColor(context, fondo))
+            setTextColor(ContextCompat.getColor(context, colorTexto))
+            elevation = 0f
+            stateListAnimator = null
         }
 
-        actions.addView(contributeButton)
-
-        val deleteButton = Button(context).apply {
-            text = "Eliminar"
-            isAllCaps = false
+        val deleteButton = boton("Eliminar", android.R.color.transparent, R.color.gamora_expense).apply {
             setOnClickListener {
                 confirmDeleteGoal(goal)
             }
         }
 
         actions.addView(deleteButton)
+
+        if (goal.activa) {
+            val contributeButton = boton("+ Aportar", R.color.gamora_accent_light, R.color.gamora_accent).apply {
+                setOnClickListener {
+                    showContributionDialog(goal)
+                }
+            }
+
+            actions.addView(
+                contributeButton,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { marginStart = dp(8) }
+            )
+        }
         card.addView(actions)
 
         card.layoutParams = cardParams
         return card
     }
 
-    private fun viewOrRender() {
-        view?.let { renderGoals(it) }
-    }
-
-    private fun saveGoals() {
-        val array = JSONArray()
-
-        goals.forEach { goal ->
-            array.put(
-                JSONObject().apply {
-                    put("id", goal.id)
-                    put("name", goal.name)
-                    put("targetCents", goal.targetCents)
-                    put("savedCents", goal.savedCents)
-
-                    if (goal.deadlineMillis == null) {
-                        put("deadlineMillis", JSONObject.NULL)
-                    } else {
-                        put("deadlineMillis", goal.deadlineMillis)
-                    }
-                }
-            )
-        }
-
-        requireContext()
-            .getSharedPreferences(
-                preferencesName,
-                android.content.Context.MODE_PRIVATE
-            )
-            .edit()
-            .putString(preferencesKey, array.toString())
-            .apply()
-    }
-
-    private fun loadGoals() {
-        goals.clear()
-
-        val json = requireContext()
-            .getSharedPreferences(
-                preferencesName,
-                android.content.Context.MODE_PRIVATE
-            )
-            .getString(preferencesKey, null)
-            ?: return
-
-        try {
-            val array = JSONArray(json)
-
-            for (i in 0 until array.length()) {
-                val item = array.getJSONObject(i)
-
-                val target = item.getLong("targetCents")
-                val saved = item.optLong("savedCents", 0L)
-
-                if (target <= 0L || saved < 0L) continue
-
-                val deadline = if (
-                    item.isNull("deadlineMillis")
-                ) {
-                    null
-                } else {
-                    item.optLong("deadlineMillis")
-                }
-
-                goals.add(
-                    SavingsGoal(
-                        id = item.getString("id"),
-                        name = item.getString("name"),
-                        targetCents = target,
-                        savedCents = saved,
-                        deadlineMillis = deadline
-                    )
-                )
-            }
-        } catch (_: Exception) {
-            Toast.makeText(
-                requireContext(),
-                "No se pudieron leer las metas guardadas.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    private fun parseMoney(value: String): Long? {
-        return try {
-            val normalized = value.trim().replace(",", ".")
-
-            if (normalized.isBlank()) return null
-
-            BigDecimal(normalized)
-                .multiply(BigDecimal(100))
-                .setScale(0, RoundingMode.HALF_UP)
-                .longValueExact()
-                .takeIf { it > 0L }
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    private fun formatMoney(cents: Long): String {
-        return currencyFormat.format(cents / 100.0)
-    }
+    private fun parseMoney(value: String): Long? = centavosDe(value)?.takeIf { it > 0L }
 
     private fun formatDate(timestamp: Long): String {
         return SimpleDateFormat(
             "dd/MM/yyyy",
-            Locale("es", "MX")
+            LOCALE_MX
         ).format(Date(timestamp))
     }
 
-    private fun label(text: String): TextView {
-        return TextView(requireContext()).apply {
-            this.text = text
-            textSize = 14f
-            setTextColor(primaryColor)
-            setPadding(0, dp(12), 0, dp(4))
-        }
-    }
-
-    private fun fieldParams(): LinearLayout.LayoutParams {
-        return LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-    }
-
-    private fun dp(value: Int): Int {
-        return (value * resources.displayMetrics.density).toInt()
-    }
 }

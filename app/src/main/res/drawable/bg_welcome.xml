@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fondo de la pantalla de bienvenida. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <gradient
+                android:angle="300"
+                android:startColor="@color/gamora_hero_start"
+                android:centerColor="@color/gamora_hero_center"
+                android:endColor="@color/gamora_hero_end" />
+        </shape>
+    </item>
+    <item
+        android:width="420dp"
+        android:height="420dp"
+        android:gravity="top|end"
+        android:right="-160dp"
+        android:top="-140dp">
+        <shape android:shape="oval">
+            <solid android:color="#12FFFFFF" />
+        </shape>
+    </item>
+    <item
+        android:width="300dp"
+        android:height="300dp"
+        android:gravity="bottom|start"
+        android:left="-120dp"
+        android:bottom="-80dp">
+        <shape android:shape="oval">
+            <solid android:color="#0DFFFFFF" />
+        </shape>
+    </item>
+</layer-list>

@@ -1,0 +1,278 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function esPropietario(userId) {
+      return request.auth != null
+        && request.auth.uid == userId;
+    }
+
+    function fechaServidor(campo) {
+      return request.resource.data[campo] == request.time;
+    }
+
+    match /users/{userId} {
+
+      // Consultar únicamente el perfil propio.
+      allow get: if esPropietario(userId);
+
+      // Crear perfil durante el registro.
+      allow create: if esPropietario(userId)
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'nombre',
+          'apellidoPaterno',
+          'apellidoMaterno',
+          'correo',
+          'telefono',
+          'proveedor',
+          'fechaCreacion'
+        ])
+        && request.resource.data.uid == userId
+        && request.resource.data.correo == request.auth.token.email
+        && request.resource.data.proveedor in ['password', 'google']
+        && fechaServidor('fechaCreacion');
+
+      // Actualizar exclusivamente información personal permitida.
+      allow update: if esPropietario(userId)
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'nombre',
+            'apellidoPaterno',
+            'apellidoMaterno',
+            'telefono',
+            'fechaActualizacion'
+          ])
+        && request.resource.data.nombre is string
+        && request.resource.data.nombre.size() > 0
+        && request.resource.data.nombre.size() <= 60
+        && request.resource.data.apellidoPaterno is string
+        && request.resource.data.apellidoPaterno.size() > 0
+        && request.resource.data.apellidoPaterno.size() <= 60
+        && request.resource.data.apellidoMaterno is string
+        && request.resource.data.apellidoMaterno.size() <= 60
+        && request.resource.data.telefono is string
+        && request.resource.data.telefono.size() <= 25
+        && fechaServidor('fechaActualizacion')
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.correo == resource.data.correo
+        && request.resource.data.proveedor == resource.data.proveedor
+        && request.resource.data.fechaCreacion == resource.data.fechaCreacion;
+
+      // "Eliminar mis datos": solo la persona dueña de la cuenta.
+      allow delete: if esPropietario(userId);
+
+      match /preferencias/{preferenciaId} {
+
+        // list es necesario para borrar la cuenta.
+        allow get, list: if esPropietario(userId);
+
+        allow create, update: if esPropietario(userId)
+          && preferenciaId == 'financieras'
+          && request.resource.data.keys().hasOnly([
+            'moneda',
+            'ingresoMensualCentavos',
+            'presupuestoMensualCentavos',
+            'diaInicioPeriodo',
+            'objetivoAhorroMensualCentavos',
+            'fechaActualizacion'
+          ])
+          && request.resource.data.keys().hasAll([
+            'moneda',
+            'ingresoMensualCentavos',
+            'presupuestoMensualCentavos',
+            'diaInicioPeriodo',
+            'objetivoAhorroMensualCentavos',
+            'fechaActualizacion'
+          ])
+          && request.resource.data.moneda in ['MXN', 'USD', 'EUR']
+          && request.resource.data.ingresoMensualCentavos is int
+          && request.resource.data.ingresoMensualCentavos >= 0
+          && request.resource.data.ingresoMensualCentavos <= 100000000000
+          && request.resource.data.presupuestoMensualCentavos is int
+          && request.resource.data.presupuestoMensualCentavos >= 0
+          && request.resource.data.presupuestoMensualCentavos <= 100000000000
+          && request.resource.data.objetivoAhorroMensualCentavos is int
+          && request.resource.data.objetivoAhorroMensualCentavos >= 0
+          && request.resource.data.objetivoAhorroMensualCentavos <= 100000000000
+          && request.resource.data.diaInicioPeriodo is int
+          && request.resource.data.diaInicioPeriodo >= 1
+          && request.resource.data.diaInicioPeriodo <= 28
+          && fechaServidor('fechaActualizacion');
+
+        // Tema de la app.
+        allow create, update: if esPropietario(userId)
+          && preferenciaId == 'apariencia'
+          && request.resource.data.keys().hasOnly(['tema', 'fechaActualizacion'])
+          && request.resource.data.tema in ['light', 'dark', 'system']
+          && fechaServidor('fechaActualizacion');
+
+        // Avisos que la persona quiere recibir.
+        allow create, update: if esPropietario(userId)
+          && preferenciaId == 'notificaciones'
+          && request.resource.data.keys().hasOnly([
+            'alertasPresupuesto',
+            'recordatoriosMetas',
+            'resumenSemanal',
+            'fechaActualizacion'
+          ])
+          && request.resource.data.alertasPresupuesto is bool
+          && request.resource.data.recordatoriosMetas is bool
+          && request.resource.data.resumenSemanal is bool
+          && fechaServidor('fechaActualizacion');
+
+        allow delete: if esPropietario(userId);
+      }
+
+      match /consentimientos/{consentId} {
+
+        allow get, list: if esPropietario(userId);
+
+        allow create: if esPropietario(userId)
+          && request.resource.data.keys().hasOnly([
+            'terminosAceptados',
+            'privacidadRevisada',
+            'analiticaAutorizada',
+            'iaAutorizada',
+            'versionPoliticas',
+            'fechaRegistro',
+            'fechaRevocacion'
+          ])
+          && request.resource.data.terminosAceptados == true
+          && request.resource.data.privacidadRevisada == true
+          && request.resource.data.analiticaAutorizada is bool
+          && request.resource.data.iaAutorizada is bool
+          && request.resource.data.versionPoliticas == '1.0'
+          && fechaServidor('fechaRegistro')
+          && request.resource.data.fechaRevocacion == null;
+
+        // El historial no se edita; solo se borra al eliminar la cuenta.
+        allow update: if false;
+        allow delete: if esPropietario(userId);
+      }
+
+      // Campos comunes de movimientos y recurrentes.
+      function camposMovimiento(datos) {
+        return datos.descripcion is string
+            && datos.descripcion.size() > 0
+            && datos.descripcion.size() <= 200
+            && datos.categoria is string
+            && datos.categoria.size() > 0
+            && datos.categoria.size() <= 40
+            && datos.montoCentavos is int
+            && datos.montoCentavos > 0
+            && datos.montoCentavos <= 100000000000
+            && datos.esIngreso is bool;
+      }
+
+      match /movimientos/{movimientoId} {
+
+        function movimientoValido(datos) {
+          return datos.keys().hasOnly([
+              'descripcion', 'categoria', 'montoCentavos', 'esIngreso', 'fecha'
+            ])
+            && datos.keys().hasAll([
+              'descripcion', 'categoria', 'montoCentavos', 'esIngreso', 'fecha'
+            ])
+            && camposMovimiento(datos)
+            && datos.fecha is int;
+        }
+
+        allow get, list: if esPropietario(userId);
+
+        // Crear y editar comparten las mismas validaciones.
+        allow create, update: if esPropietario(userId)
+          && movimientoValido(request.resource.data);
+
+        allow delete: if esPropietario(userId);
+      }
+
+      // Movimientos que se registran solos cada mes.
+      match /recurrentes/{recurrenteId} {
+
+        allow get, list: if esPropietario(userId);
+
+        allow create: if esPropietario(userId)
+          && request.resource.data.keys().hasOnly([
+            'descripcion', 'categoria', 'montoCentavos', 'esIngreso', 'dia', 'proximaFecha'
+          ])
+          && request.resource.data.keys().hasAll([
+            'descripcion', 'categoria', 'montoCentavos', 'esIngreso', 'dia', 'proximaFecha'
+          ])
+          && camposMovimiento(request.resource.data)
+          && request.resource.data.dia is int
+          && request.resource.data.dia >= 1
+          && request.resource.data.dia <= 28
+          && request.resource.data.proximaFecha is int;
+
+        // Al registrar un mes solo avanza la próxima fecha.
+        allow update: if esPropietario(userId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['proximaFecha'])
+          && request.resource.data.proximaFecha is int
+          && request.resource.data.proximaFecha > resource.data.proximaFecha;
+
+        allow delete: if esPropietario(userId);
+      }
+
+      match /metas/{metaId} {
+
+        allow get, list: if esPropietario(userId);
+
+        allow create: if esPropietario(userId)
+          && request.resource.data.keys().hasOnly([
+            'nombre',
+            'objetivoCentavos',
+            'ahorradoCentavos',
+            'fechaLimite',
+            'fechaCreacion'
+          ])
+          && request.resource.data.nombre is string
+          && request.resource.data.nombre.size() > 0
+          && request.resource.data.nombre.size() <= 100
+          && request.resource.data.objetivoCentavos is int
+          && request.resource.data.objetivoCentavos > 0
+          && request.resource.data.objetivoCentavos <= 100000000000
+          && request.resource.data.ahorradoCentavos == 0
+          && (request.resource.data.fechaLimite == null
+              || request.resource.data.fechaLimite is int)
+          && request.resource.data.fechaCreacion is int;
+
+        // Solo se permite aportar: el monto ahorrado únicamente aumenta.
+        allow update: if esPropietario(userId)
+          && request.resource.data.diff(resource.data)
+            .affectedKeys()
+            .hasOnly(['ahorradoCentavos'])
+          && request.resource.data.ahorradoCentavos is int
+          && request.resource.data.ahorradoCentavos > resource.data.ahorradoCentavos;
+
+        allow delete: if esPropietario(userId);
+      }
+
+      // Conversación con Gamora AI (también es su memoria).
+      match /chat/{mensajeId} {
+
+        allow get, list: if esPropietario(userId);
+
+        allow create: if esPropietario(userId)
+          && request.resource.data.keys().hasOnly(['rol', 'texto', 'fecha'])
+          && request.resource.data.keys().hasAll(['rol', 'texto', 'fecha'])
+          && request.resource.data.rol in ['usuario', 'modelo']
+          && request.resource.data.texto is string
+          && request.resource.data.texto.size() > 0
+          && request.resource.data.texto.size() <= 8000
+          && request.resource.data.fecha is int;
+
+        // Los mensajes no se editan; se borran con "Borrar conversación" o al eliminar la cuenta.
+        allow update: if false;
+        allow delete: if esPropietario(userId);
+      }
+    }
+
+    // Bloquear cualquier otra ruta no autorizada.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

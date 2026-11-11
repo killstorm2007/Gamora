@@ -2,36 +2,32 @@
 <resources>
 
     <!-- Fondo y superficies -->
-    <color name="gamora_background">#101820</color>
-    <color name="gamora_surface">#182633</color>
+    <color name="gamora_background">#0D1411</color>
+    <color name="gamora_surface">#16201B</color>
+    <color name="gamora_surface_variant">#1E2B25</color>
 
     <!-- Textos -->
-    <color name="gamora_text_primary">#FFFFFF</color>
-    <color name="gamora_text_secondary">#A7B4C2</color>
+    <color name="gamora_text_primary">#ECF3EE</color>
+    <color name="gamora_text_secondary">#98AA9F</color>
 
     <!-- Marca -->
-    <color name="gamora_accent">#7AE0B0</color>
-    <color name="gamora_accent_light">#243F38</color>
-    <color name="gamora_border">#34434D</color>
+    <color name="gamora_accent">#6CD3A0</color>
+    <color name="gamora_accent_light">#1C3A2C</color>
+    <color name="gamora_on_accent">#0D1411</color>
+    <color name="gamora_border">#25322C</color>
+
+    <!-- Tarjeta principal (degradado) -->
+    <color name="gamora_hero_start">#164A36</color>
+    <color name="gamora_hero_center">#1F6247</color>
+    <color name="gamora_hero_end">#2F7E5C</color>
+    <color name="gamora_on_hero">#FFFFFF</color>
+    <color name="gamora_on_hero_secondary">#BCDCCB</color>
+    <color name="gamora_hero_chip">#26FFFFFF</color>
 
     <!-- Estados financieros -->
-    <color name="gamora_expense">#E17B73</color>
-
-    <!-- Tarjeta de resumen -->
-    <color name="gamora_summary_background">#243F38</color>
-    <color name="gamora_summary_text">#FFFFFF</color>
-    <color name="gamora_summary_text_secondary">#A7B4C2</color>
-
-    <!-- Compatibilidad -->
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-
-    <color name="gamora_balance_label">#C1D7D0</color>
-    <color name="gamora_balance_value">#FFFFFF</color>
-    <color name="gamora_income">#7AE0B0</color>
-    <color name="gamora_income_container">#243D3A</color>
-    <color name="gamora_expense_container">#40262D</color>
-    <color name="gamora_filter_selected_text">#101820</color>
-    <color name="gamora_filter_unselected">#A7B4C2</color>
+    <color name="gamora_income">#6CD3A0</color>
+    <color name="gamora_income_container">#1A3A2B</color>
+    <color name="gamora_expense">#F2877D</color>
+    <color name="gamora_expense_container">#3E2421</color>
 
 </resources>

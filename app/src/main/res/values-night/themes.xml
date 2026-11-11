@@ -1,32 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Gamora"
-        parent="Theme.Material3.DayNight.NoActionBar">
-
-        <item name="colorPrimary">@color/gamora_accent</item>
-        <item name="colorOnPrimary">@color/gamora_background</item>
-
-        <item name="colorSecondary">@color/gamora_accent</item>
-        <item name="colorOnSecondary">@color/gamora_background</item>
-
-        <item name="colorSurface">@color/gamora_surface</item>
-        <item name="colorOnSurface">@color/gamora_text_primary</item>
-
-        <item name="colorSurfaceVariant">@color/gamora_accent_light</item>
-        <item name="colorOnSurfaceVariant">@color/gamora_text_secondary</item>
-
-        <item name="colorOutline">@color/gamora_border</item>
-        <item name="colorError">@color/gamora_expense</item>
-
-        <item name="android:colorBackground">@color/gamora_background</item>
-        <item name="android:windowBackground">@color/gamora_background</item>
-
-        <item name="android:statusBarColor">@color/gamora_background</item>
-        <item name="android:navigationBarColor">@color/gamora_background</item>
-
+    <!-- Igual que en modo claro; solo cambian los íconos de la barra de estado. -->
+    <style name="Theme.Gamora" parent="Base.Theme.Gamora">
         <item name="android:windowLightStatusBar">false</item>
-
     </style>
 
 </resources>

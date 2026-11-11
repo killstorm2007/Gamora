@@ -5,66 +5,100 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    android:background="@drawable/bg_welcome"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="28dp"
-    >
-    <TextView
-        android:layout_width="wrap_content"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp"
+    android:paddingBottom="24dp"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/bg_icon_circle"
+            android:backgroundTint="@color/gamora_hero_chip"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:importantForAccessibility="no"
+            android:text="G"
+            android:textColor="@color/gamora_on_hero"
+            android:textSize="34sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Bienvenido a"
+            android:textColor="@color/gamora_on_hero_secondary"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textStyle="bold"
+            android:letterSpacing="0.04"
+            android:text="Gamora"
+            android:textColor="@color/gamora_on_hero"
+            android:textSize="48sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="4dp"
+            android:text="Controla tu dinero, cumple tus metas y recibe consejos de un asistente que te conoce."
+            android:textColor="@color/gamora_on_hero_secondary"
+            android:textSize="16sp" />
+
+        <!-- Beneficios -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:lineSpacingExtra="10dp"
+            android:text="📊   Analiza a dónde va tu dinero\n🎯   Ahorra para tus metas\n✨   Pregúntale a Gamora AI"
+            android:textColor="@color/gamora_on_hero"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnIniciar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:text="Bienvenido a"
-        android:textSize="23sp"
-        android:textColor="@color/white"
-        />
+        android:text="Iniciar sesión"
+        android:textColor="@color/gamora_hero_start"
+        app:backgroundTint="@color/white" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GAMORA"
-        android:textStyle="bold"
-        android:textSize="38sp"
-        android:letterSpacing="0.12"
-        android:textColor="@color/white"
-
-    />
-
-    <TextView
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCrearCuenta"
+        style="@style/Widget.Gamora.Button.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="36dp"
+        android:text="Crear cuenta"
         android:textColor="@color/white"
+        app:strokeColor="@color/gamora_on_hero_secondary" />
+
+    <TextView
+        android:id="@+id/txtPoliticas"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
-        android:text="Controla tu Dinero \nConstruye tu futuro"
-        android:textSize="16sp"
-        android:lineSpacingExtra="5dp"
-        />
-
-
-        <Button
-            android:id="@+id/btnIniciar"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Iniciar Sesion"
-            android:textSize="16sp"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            />
-
-        <TextView
-            android:id="@+id/txtPoliticas"
-            android:layout_marginTop="100dp"
-            android:textAlignment="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Politica de Privacidad"
-            android:clickable="true"
-            android:textSize="15sp"
-            android:textColor="@color/white"
-            />
-
+        android:text="Política de privacidad"
+        android:textColor="@color/gamora_on_hero_secondary"
+        android:textSize="14sp" />
 
 </LinearLayout>

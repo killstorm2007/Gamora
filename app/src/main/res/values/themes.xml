@@ -1,32 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Gamora"
-        parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Gamora" parent="Theme.Material3.DayNight.NoActionBar">
 
         <item name="colorPrimary">@color/gamora_accent</item>
-        <item name="colorOnPrimary">@color/gamora_background</item>
+        <item name="colorOnPrimary">@color/gamora_on_accent</item>
+        <item name="colorPrimaryContainer">@color/gamora_accent_light</item>
+        <item name="colorOnPrimaryContainer">@color/gamora_text_primary</item>
 
         <item name="colorSecondary">@color/gamora_accent</item>
-        <item name="colorOnSecondary">@color/gamora_background</item>
+        <item name="colorOnSecondary">@color/gamora_on_accent</item>
+        <item name="colorSecondaryContainer">@color/gamora_accent_light</item>
+        <item name="colorOnSecondaryContainer">@color/gamora_text_primary</item>
 
         <item name="colorSurface">@color/gamora_surface</item>
         <item name="colorOnSurface">@color/gamora_text_primary</item>
-
-        <item name="colorSurfaceVariant">@color/gamora_accent_light</item>
+        <item name="colorSurfaceVariant">@color/gamora_surface_variant</item>
         <item name="colorOnSurfaceVariant">@color/gamora_text_secondary</item>
+        <item name="colorSurfaceContainerHigh">@color/gamora_surface</item>
+        <item name="colorSurfaceContainer">@color/gamora_surface</item>
 
         <item name="colorOutline">@color/gamora_border</item>
+        <item name="colorOutlineVariant">@color/gamora_border</item>
         <item name="colorError">@color/gamora_expense</item>
 
         <item name="android:colorBackground">@color/gamora_background</item>
         <item name="android:windowBackground">@color/gamora_background</item>
+        <item name="android:textColorPrimary">@color/gamora_text_primary</item>
+        <item name="android:textColorSecondary">@color/gamora_text_secondary</item>
 
         <item name="android:statusBarColor">@color/gamora_background</item>
-        <item name="android:navigationBarColor">@color/gamora_background</item>
-
+        <item name="android:navigationBarColor">@color/gamora_surface</item>
         <item name="android:windowLightStatusBar">true</item>
 
+        <!-- Esquinas redondeadas en todos los componentes -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Gamora.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Gamora.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Gamora.Large</item>
+
+        <item name="materialButtonStyle">@style/Widget.Gamora.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.Gamora.Button.Outlined</item>
+        <item name="textInputStyle">@style/Widget.Gamora.TextInput</item>
+        <item name="chipStyle">@style/Widget.Gamora.Chip</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Gamora.Dialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.Gamora.Dialog</item>
+        <item name="materialSwitchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
+    </style>
+
+    <style name="Theme.Gamora" parent="Base.Theme.Gamora" />
+
+    <!-- Formas -->
+    <style name="ShapeAppearance.Gamora.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">14dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Gamora.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">20dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Gamora.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">28dp</item>
+    </style>
+
+    <!-- Botones -->
+    <style name="Widget.Gamora.Button" parent="Widget.Material3.Button">
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="backgroundTint">@color/gamora_accent</item>
+        <item name="android:textColor">@color/gamora_on_accent</item>
+    </style>
+
+    <style name="Widget.Gamora.Button.Tonal" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="backgroundTint">@color/gamora_accent_light</item>
+        <item name="android:textColor">@color/gamora_accent</item>
+    </style>
+
+    <style name="Widget.Gamora.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="strokeColor">@color/gamora_border</item>
+        <item name="android:textColor">@color/gamora_text_primary</item>
+    </style>
+
+    <style name="Widget.Gamora.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/gamora_accent</item>
+    </style>
+
+    <!-- Campos de texto -->
+    <style name="Widget.Gamora.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">16dp</item>
+        <item name="boxCornerRadiusTopEnd">16dp</item>
+        <item name="boxCornerRadiusBottomStart">16dp</item>
+        <item name="boxCornerRadiusBottomEnd">16dp</item>
+        <item name="boxStrokeColor">@color/gamora_accent</item>
+        <item name="boxBackgroundColor">@color/gamora_surface</item>
+        <item name="hintTextColor">@color/gamora_accent</item>
+    </style>
+
+    <!-- Chips -->
+    <style name="Widget.Gamora.Chip" parent="Widget.Material3.Chip.Suggestion">
+        <item name="chipBackgroundColor">@color/gamora_surface</item>
+        <item name="chipStrokeColor">@color/gamora_border</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipCornerRadius">18dp</item>
+        <item name="android:textColor">@color/gamora_text_primary</item>
+        <item name="chipMinHeight">40dp</item>
+    </style>
+
+    <!-- Diálogos -->
+    <style name="ThemeOverlay.Gamora.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Gamora.Large</item>
+        <item name="colorSurface">@color/gamora_surface</item>
+        <item name="colorPrimary">@color/gamora_accent</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.Gamora.Button.Text</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.Gamora.Button.Text</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.Gamora.Button.Text</item>
+    </style>
+
+    <!-- Indicador de la pestaña activa en la barra inferior -->
+    <style name="Widget.Gamora.NavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/gamora_accent_light</item>
+    </style>
+
+    <style name="TextAppearance.Gamora.NavLabel" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- Tipografía -->
+    <style name="TextAppearance.Gamora.Overline" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/gamora_accent</item>
+    </style>
+
+    <style name="TextAppearance.Gamora.Headline" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">@color/gamora_text_primary</item>
+    </style>
+
+    <style name="TextAppearance.Gamora.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">19sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gamora_text_primary</item>
+    </style>
+
+    <style name="TextAppearance.Gamora.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/gamora_text_secondary</item>
+        <item name="android:lineSpacingExtra">3dp</item>
+    </style>
+
+    <style name="TextAppearance.Gamora.Amount" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:textSize">36sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.03</item>
+        <item name="android:textColor">@color/gamora_on_hero</item>
+    </style>
+
+    <style name="TextAppearance.Gamora.AmountSmall" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.02</item>
+    </style>
+
+    <style name="TextAppearance.Gamora.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/gamora_text_secondary</item>
+    </style>
+
+    <!-- Fila de ajustes del perfil -->
+    <style name="Gamora.SettingRow" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">18dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:drawableEnd">@drawable/ic_chevron_right</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textColor">@color/gamora_text_primary</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Gamora.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">56dp</item>
+        <item name="android:background">@color/gamora_border</item>
+    </style>
+
+    <style name="Gamora.SectionLabel" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">28dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Gamora.Overline</item>
+        <item name="android:textColor">@color/gamora_text_secondary</item>
+    </style>
+
+    <!-- Contenedores reutilizables -->
+    <style name="Gamora.Card" parent="">
+        <item name="android:background">@drawable/bg_dashboard_card</item>
+        <item name="android:padding">18dp</item>
+        <item name="android:elevation">1dp</item>
+    </style>
+
+    <style name="Gamora.Hero" parent="">
+        <item name="android:background">@drawable/bg_dashboard_balance</item>
+        <item name="android:padding">22dp</item>
+        <item name="android:elevation">6dp</item>
     </style>
 
 </resources>

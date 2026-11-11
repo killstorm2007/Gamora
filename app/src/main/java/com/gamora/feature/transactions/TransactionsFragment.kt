@@ -1,6 +1,9 @@
 
 package com.gamora.feature.transactions
 
+import com.gamora.core.ui.LOCALE_MX
+import com.gamora.core.ui.dp
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -13,7 +16,9 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.gamora.R
 import java.text.NumberFormat
@@ -27,29 +32,10 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
     private var selectedCategory = "Todas las categorías"
     private var searchQuery = ""
 
-    private val categories = listOf(
-        "Todas las categorías",
-        "Salario",
-        "Ventas",
-        "Negocio",
-        "Inversiones",
-        "Regalo",
-        "Comida",
-        "Transporte",
-        "Vivienda",
-        "Servicios",
-        "Salud",
-        "Educación",
-        "Entretenimiento",
-        "Compras",
-        "Otros"
-    )
-
-    private val currencyFormat =
-        NumberFormat.getCurrencyInstance(Locale("es", "MX"))
+    private val categories = listOf("Todas las categorías") + CATEGORIAS
 
     private val dateFormat =
-        SimpleDateFormat("dd MMM yyyy", Locale("es", "MX"))
+        SimpleDateFormat("dd MMM yyyy", LOCALE_MX)
 
     override fun onViewCreated(
         view: View,
@@ -140,12 +126,16 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
 
         view.findViewById<View>(R.id.btnAddIncome)
             .setOnClickListener {
-                Toast.makeText(
-                    requireContext(),
-                    "Por ahora, registra los movimientos desde Inicio.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Agregar movimiento")
+                    .setItems(arrayOf("Ingreso", "Gasto")) { _, opcion ->
+                        mostrarDialogoMovimiento(esIngreso = opcion == 0)
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
             }
+
+        observarMovimientos(::aplicarFiltros)
     }
 
     private fun actualizarBotones(
@@ -163,14 +153,16 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
             val selected = selectedType == type
 
             button.backgroundTintList = ColorStateList.valueOf(
-                Color.parseColor(
-                    if (selected) "#7AE0B0" else "#243447"
+                ContextCompat.getColor(
+                    requireContext(),
+                    if (selected) R.color.gamora_accent else R.color.gamora_surface_variant
                 )
             )
 
             button.setTextColor(
-                Color.parseColor(
-                    if (selected) "#101820" else "#F1F5F9"
+                ContextCompat.getColor(
+                    requireContext(),
+                    if (selected) R.color.gamora_on_accent else R.color.gamora_text_primary
                 )
             )
         }
@@ -213,119 +205,36 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         container.removeAllViews()
 
         if (movements.isEmpty()) {
-            val emptyMessage = TextView(requireContext()).apply {
-                text = "No hay movimientos que coincidan con tu búsqueda."
-                textSize = 14f
-                gravity = Gravity.CENTER
-                setTextColor(Color.parseColor("#A7B4C2"))
-                setPadding(32, 40, 32, 40)
-            }
-
-            container.addView(emptyMessage)
+            container.addView(
+                crearEstadoVacio(
+                    requireContext(),
+                    "🔍",
+                    if (GamoraTransactionStore.movements.isEmpty()) "Aún no registras movimientos. Toca «Agregar movimiento» para empezar."
+                    else "No hay movimientos que coincidan con tu búsqueda."
+                )
+            )
             return
         }
 
         var lastDate = ""
 
         movements.forEach { movement ->
-            val currentDate = dateFormat.format(
-                Date(movement.timestamp)
-            )
+            val currentDate = dateFormat.format(Date(movement.timestamp))
 
             if (currentDate != lastDate) {
-                val dateHeader = TextView(requireContext()).apply {
-                    text = currentDate
-                    textSize = 13f
-                    setTypeface(null, android.graphics.Typeface.BOLD)
-                    setTextColor(Color.parseColor("#A7B4C2"))
-
-                    setPadding(0, 16, 0, 8)
-                }
-
-                container.addView(dateHeader)
+                container.addView(TextView(requireContext()).apply {
+                    text = currentDate.uppercase(LOCALE_MX)
+                    setTextAppearance(R.style.TextAppearance_Gamora_Overline)
+                    setTextColor(ContextCompat.getColor(requireContext(), R.color.gamora_text_secondary))
+                    setPadding(dp(4), dp(18), 0, dp(10))
+                })
                 lastDate = currentDate
             }
 
-            val row = LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                setPadding(16, 14, 16, 14)
-                setBackgroundResource(R.drawable.bg_dashboard_card)
-
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    bottomMargin = 8
-                }
-            }
-
-            val icon = TextView(requireContext()).apply {
-                text = if (movement.isIncome) "＋" else "−"
-                textSize = 22f
-                gravity = Gravity.CENTER
-                setTextColor(
-                    Color.parseColor(
-                        if (movement.isIncome) "#7AE0B0"
-                        else "#F87171"
-                    )
-                )
-            }
-
-            val details = LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(12, 0, 8, 0)
-            }
-
-            val description = TextView(requireContext()).apply {
-                text = movement.description
-                textSize = 15f
-                setTextColor(Color.parseColor("#F1F5F9"))
-            }
-
-            val category = TextView(requireContext()).apply {
-                text = movement.category
-                textSize = 12f
-                setTextColor(Color.parseColor("#A7B4C2"))
-            }
-
-            details.addView(description)
-            details.addView(category)
-
-            val amount = TextView(requireContext()).apply {
-                val sign = if (movement.isIncome) "+" else "−"
-                text = sign + currencyFormat.format(
-                    movement.amountCents / 100.0
-                )
-                textSize = 14f
-                setTypeface(null, android.graphics.Typeface.BOLD)
-
-                setTextColor(
-                    Color.parseColor(
-                        if (movement.isIncome) "#7AE0B0"
-                        else "#F87171"
-                    )
-                )
-            }
-
-            row.addView(icon)
-
-            row.addView(
-                details,
-                LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
+            container.addView(
+                crearFilaMovimiento(requireContext(), movement) { editarMovimiento(movement) }
             )
-
-            row.addView(amount)
-            container.addView(row)
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        view?.let { aplicarFiltros(it) }
-    }
 }

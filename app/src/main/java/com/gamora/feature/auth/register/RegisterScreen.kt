@@ -1,30 +1,33 @@
+
 package com.gamora.feature.auth.register
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Patterns
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.gamora.R
+import com.gamora.feature.auth.configurarBotonGoogle
+import com.gamora.core.auth.AuthRepository
+import com.gamora.core.auth.ConsentData
+import com.gamora.core.auth.RegisterData
 import com.gamora.feature.auth.login.LoginScreen
 import com.gamora.feature.home.HomeActivity
 
 class RegisterScreen : AppCompatActivity() {
+
+    private lateinit var btnRegistrarse: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_register_screen)
 
-        val txtRegistrarse = findViewById<TextView>(R.id.txtRegistrarse)
-        val btnRegistrarse = findViewById<Button>(R.id.btnRegistrarse)
-
-        // Guarda las referencias de las vistas, NO su texto todavía
         val edtNombre = findViewById<EditText>(R.id.edtNombre)
         val edtApPat = findViewById<EditText>(R.id.edtApPat)
         val edtApMat = findViewById<EditText>(R.id.edtApMat)
@@ -32,78 +35,153 @@ class RegisterScreen : AppCompatActivity() {
         val edtTelefono = findViewById<EditText>(R.id.edtTelefono)
         val edtPassword = findViewById<EditText>(R.id.edtPassword)
         val edtConfPassword = findViewById<EditText>(R.id.edtConfPassword)
+
         val cbTerminos = findViewById<CheckBox>(R.id.cbTerminos)
+        val cbPrivacidad = findViewById<CheckBox>(R.id.cbPrivacidad)
+        val cbAnalitica = findViewById<CheckBox>(R.id.cbAnalitica)
+        val cbIA = findViewById<CheckBox>(R.id.cbIA)
 
-        btnRegistrarse.setOnClickListener {
-            // Obtenemos el texto real en el momento exacto del clic
-            val nombre = edtNombre.text.toString().trim()
-            val apPat = edtApPat.text.toString().trim()
-            val apMat = edtApMat.text.toString().trim()
-            val correo = edtCorreo.text.toString().trim()
-            val telefono = edtTelefono.text.toString().trim()
-            val password = edtPassword.text.toString().trim()
-            val confPassword = edtConfPassword.text.toString().trim()
+        val txtVerTerminos = findViewById<TextView>(R.id.txtVerTerminos)
+        val txtVerPrivacidad = findViewById<TextView>(R.id.txtVerPrivacidad)
+        val txtRegistrarse = findViewById<TextView>(R.id.txtRegistrarse)
 
-            // 1. Validar que ningún campo esté vacío
-            if (nombre.isEmpty() || apPat.isEmpty() || apMat.isEmpty() ||
-                correo.isEmpty() || telefono.isEmpty() || password.isEmpty() || confPassword.isEmpty()) {
+        btnRegistrarse = findViewById(R.id.btnRegistrarse)
+        configurarBotonGoogle(findViewById(R.id.btnGoogle))
 
-                Toast.makeText(this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show()
-            }
-            // 2. Validar que las contraseñas coincidan
-            else if (password != confPassword) {
-                Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
-            }
-            // 3. Validar que acepte los términos y condiciones
-            else if (!cbTerminos.isChecked) {
-                Toast.makeText(this, "Debes aceptar los términos y condiciones", Toast.LENGTH_SHORT).show()
-            }
-            // 4. Si todo está correcto, registrar
-            else {
-                Toast.makeText(this, "Registrado Correctamente, redirigiendo...", Toast.LENGTH_SHORT).show()
-                val cambio = Intent(this, HomeActivity::class.java)
-                startActivity(cambio)
-                finish() // Cierra esta pantalla para que no puedan regresar con el botón atrás
-            }
+        txtVerTerminos.setOnClickListener {
+            mostrarDocumento(
+                "Términos y condiciones",
+                R.string.terminos_condiciones
+            )
+        }
+
+        txtVerPrivacidad.setOnClickListener {
+            mostrarDocumento(
+                "Política de privacidad",
+                R.string.politica_privacidad
+            )
         }
 
         txtRegistrarse.setOnClickListener {
-            val cambio = Intent(this, LoginScreen::class.java)
-            startActivity(cambio)
+            startActivity(Intent(this, LoginScreen::class.java))
+            finish()
         }
 
-        cbTerminos.setOnClickListener {
-            mostrarPoliticas()
+        btnRegistrarse.setOnClickListener {
+
+            val nombre = edtNombre.text.toString().trim()
+            val apellidoPaterno = edtApPat.text.toString().trim()
+            val apellidoMaterno = edtApMat.text.toString().trim()
+            val correo = edtCorreo.text.toString().trim()
+            val telefono = edtTelefono.text.toString().trim()
+
+            // No recortamos las contraseñas: los espacios pueden formar parte de ellas.
+            val password = edtPassword.text.toString()
+            val confirmarPassword = edtConfPassword.text.toString()
+
+            when {
+                nombre.isBlank() ||
+                        apellidoPaterno.isBlank() ||
+                        apellidoMaterno.isBlank() ||
+                        correo.isBlank() ||
+                        password.isBlank() ||
+                        confirmarPassword.isBlank() -> {
+                    mostrarMensaje("Completa todos los campos obligatorios.")
+                }
+
+                !Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> {
+                    mostrarMensaje("Introduce un correo electrónico válido.")
+                }
+
+                password.length < 6 -> {
+                    mostrarMensaje("La contraseña debe tener al menos 6 caracteres.")
+                }
+
+                password != confirmarPassword -> {
+                    mostrarMensaje("Las contraseñas no coinciden.")
+                }
+
+                !cbTerminos.isChecked -> {
+                    mostrarMensaje("Debes aceptar los términos y condiciones.")
+                }
+
+                !cbPrivacidad.isChecked -> {
+                    mostrarMensaje("Debes confirmar que revisaste la política de privacidad.")
+                }
+
+                else -> {
+
+                    btnRegistrarse.isEnabled = false
+                    btnRegistrarse.text = "Creando cuenta..."
+
+                    val datos = RegisterData(
+                        nombre = nombre,
+                        apellidoPaterno = apellidoPaterno,
+                        apellidoMaterno = apellidoMaterno,
+                        correo = correo,
+                        telefono = telefono
+                    )
+
+                    val consentimientos = ConsentData(
+                        terminosAceptados = cbTerminos.isChecked,
+                        privacidadRevisada = cbPrivacidad.isChecked,
+                        analiticaAutorizada = cbAnalitica.isChecked,
+                        iaAutorizada = cbIA.isChecked
+                    )
+
+                    AuthRepository.registrarUsuario(
+                        datos = datos,
+                        password = password,
+                        consentimientos = consentimientos,
+
+                        onSuccess = {
+                            runOnUiThread {
+                                mostrarMensaje("¡Cuenta creada correctamente!")
+
+                                startActivity(
+                                    Intent(this, HomeActivity::class.java)
+                                )
+
+                                finish()
+                            }
+                        },
+
+                        onError = { error ->
+                            runOnUiThread {
+                                btnRegistrarse.isEnabled = true
+                                btnRegistrarse.text = "Crear cuenta"
+                                mostrarMensaje(error)
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 
-    private fun mostrarPoliticas() {
-        mostrarDocumento(
-            "Politica de Privacidad",
-            R.string.terminos_condiciones
-        )
+    private fun mostrarMensaje(mensaje: String) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show()
     }
 
     private fun mostrarDocumento(
         titulo: String,
         recursoTexto: Int
     ) {
-        val vista = LayoutInflater.from(this)
-            .inflate(R.layout.dialog_documento_legal,null)
+        val vista = layoutInflater.inflate(
+            R.layout.dialog_documento_legal,
+            null
+        )
 
-        val tvDocumento = vista.findViewById<TextView>(R.id.tvDocumento)
+        val tvDocumento = vista.findViewById<TextView>(
+            R.id.tvDocumento
+        )
 
         tvDocumento.text = getString(recursoTexto)
 
-        val dialogo = AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(titulo)
             .setView(vista)
-            .setPositiveButton("Cerrar") {
-                    dialog, _ -> dialog.dismiss()
-            }
-            .create()
-
-        dialogo.setCancelable(true)
-        dialogo.show()
+            .setPositiveButton("Cerrar", null)
+            .show()
     }
 }
