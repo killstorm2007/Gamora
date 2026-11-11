@@ -14,4 +14,14 @@
 .cxx
 local.properties
 .firebaserc
+/app/google-services.json
+/.idea/artifacts/shared.xml
+/.kotlin
 
+
+# Generados al compilar / configuración local
+.kotlin/
+.idea/artifacts/
+
+# Configuración de Firebase (cada quien descarga la suya)
+app/google-services.json
