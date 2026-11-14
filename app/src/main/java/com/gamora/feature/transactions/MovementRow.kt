@@ -1,5 +1,7 @@
 package com.gamora.feature.transactions
 
+import com.gamora.core.texto
+import com.gamora.core.nombre
 import com.gamora.core.ui.dp
 import com.gamora.core.ui.dinero
 import android.content.Context
@@ -13,24 +15,6 @@ import androidx.core.content.ContextCompat
 import com.gamora.R
 import java.text.NumberFormat
 import java.util.Locale
-
-fun iconoCategoria(categoria: String): String = when (categoria) {
-    "Salario" -> "💼"
-    "Ventas" -> "🏷️"
-    "Negocio" -> "🏪"
-    "Inversiones" -> "📈"
-    "Regalo" -> "🎁"
-    "Comida" -> "🍽️"
-    "Transporte" -> "🚗"
-    "Vivienda" -> "🏠"
-    "Servicios" -> "💡"
-    "Salud" -> "🩺"
-    "Educación" -> "🎓"
-    "Entretenimiento" -> "🎬"
-    "Compras" -> "🛍️"
-    "Ahorro" -> "🐷"
-    else -> "💸"
-}
 
 /** Fila de un movimiento: ícono, descripción, categoría (y detalle opcional) y monto. */
 fun crearFilaMovimiento(
@@ -64,11 +48,11 @@ fun crearFilaMovimiento(
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply { bottomMargin = context.dp(10) }
         contentDescription = "${if (movimiento.isIncome) "Ingreso" else "Gasto"}: " +
-                "${movimiento.description}, ${movimiento.category}, ${dinero(movimiento.amountCents)}"
+                "${movimiento.description}, ${movimiento.category.nombre(context)}, ${dinero(movimiento.amountCents)}"
     }
 
     val icono = TextView(context).apply {
-        text = iconoCategoria(movimiento.category)
+        text = movimiento.category.emoji
         textSize = 20f
         gravity = Gravity.CENTER
         setBackgroundResource(R.drawable.bg_icon_circle)
@@ -90,7 +74,7 @@ fun crearFilaMovimiento(
         })
 
         addView(TextView(context).apply {
-            text = listOfNotNull(movimiento.category, detalle).joinToString(" · ")
+            text = listOfNotNull(movimiento.category.nombre(context), detalle).joinToString(" · ")
             textSize = 12f
             setPadding(0, context.dp(2), 0, 0)
             setTextColor(color(R.color.gamora_text_secondary))
@@ -98,8 +82,10 @@ fun crearFilaMovimiento(
     }
 
     val monto = TextView(context).apply {
-        text = (if (movimiento.isIncome) "+" else "−") +
-                dinero(movimiento.amountCents)
+        text = texto(
+            if (movimiento.isIncome) R.string.movimiento_monto_ingreso else R.string.movimiento_monto_gasto,
+            dinero(movimiento.amountCents)
+        )
         textSize = 15f
         typeface = Typeface.create("sans-serif", Typeface.BOLD)
         setTextColor(colorMonto)

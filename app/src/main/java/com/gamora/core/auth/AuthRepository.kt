@@ -1,6 +1,9 @@
 
 package com.gamora.core.auth
 
+import com.gamora.core.legal.VERSION_POLITICAS
+import com.gamora.R
+import com.gamora.core.texto
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -25,7 +28,9 @@ data class ConsentData(
     val terminosAceptados: Boolean,
     val privacidadRevisada: Boolean,
     val analiticaAutorizada: Boolean,
-    val iaAutorizada: Boolean
+    val iaAutorizada: Boolean,
+    // Versión del aviso y los términos que aceptó; null si no se sabe (p. ej. al crear la cuenta).
+    val versionPoliticas: String? = null
 )
 
 data class PerfilUsuario(
@@ -64,7 +69,7 @@ object AuthRepository {
         if (!consentimientos.terminosAceptados ||
             !consentimientos.privacidadRevisada
         ) {
-            onError("Debes aceptar los términos y revisar la política de privacidad.")
+            onError(texto(R.string.auth_repository_debes_aceptar_los_terminos))
             return
         }
 
@@ -76,7 +81,7 @@ object AuthRepository {
             val usuario = resultado.user
 
             if (usuario == null) {
-                onError("No fue posible obtener los datos de la cuenta.")
+                onError(texto(R.string.auth_repository_no_fue_posible_obtener))
                 return@addOnSuccessListener
             }
 
@@ -98,7 +103,7 @@ object AuthRepository {
                 "privacidadRevisada" to true,
                 "analiticaAutorizada" to consentimientos.analiticaAutorizada,
                 "iaAutorizada" to consentimientos.iaAutorizada,
-                "versionPoliticas" to "1.0",
+                "versionPoliticas" to VERSION_POLITICAS,
                 "fechaRegistro" to FieldValue.serverTimestamp(),
                 "fechaRevocacion" to null
             )
@@ -130,17 +135,14 @@ object AuthRepository {
                             auth.signOut()
 
                             val mensaje = if (eliminacion.isSuccessful) {
-                                "No se pudo guardar el perfil y los consentimientos. " +
-                                        "La creación de la cuenta fue cancelada."
+                                texto(R.string.auth_repository_no_se_pudo_guardar)
                             } else {
-                                "No se pudo completar el registro. " +
-                                        "La cuenta de acceso podría haber quedado creada. " +
-                                        "Contacta con soporte antes de intentar registrarte otra vez."
+                                texto(R.string.auth_repository_no_se_pudo_completar)
                             }
 
                             onError(
                                 mensaje + " Detalle: " +
-                                        (error.localizedMessage ?: "Error desconocido")
+                                        (error.localizedMessage ?: texto(R.string.auth_repository_error_desconocido))
                             )
                         }
                 }
@@ -152,16 +154,16 @@ object AuthRepository {
                     "email address is already in use",
                     true
                 ) == true ->
-                    "Este correo ya está registrado."
+                    texto(R.string.auth_repository_este_correo_ya_esta)
 
                 error.message?.contains(
                     "badly formatted",
                     true
                 ) == true ->
-                    "El correo electrónico no tiene un formato válido."
+                    texto(R.string.auth_repository_el_correo_electronico_no)
 
                 else ->
-                    error.localizedMessage ?: "No se pudo crear la cuenta."
+                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_crear)
             }
 
             onError(mensaje)
@@ -181,7 +183,7 @@ object AuthRepository {
             onSuccess()
         }.addOnFailureListener { error ->
             onError(
-                error.localizedMessage ?: "No se pudo iniciar sesión."
+                error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_iniciar)
             )
         }
     }
@@ -199,7 +201,7 @@ object AuthRepository {
             }
             .addOnSuccessListener { perfil -> onSuccess(perfil.exists()) }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudo iniciar sesión con Google.")
+                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_iniciar_2))
             }
     }
 
@@ -215,7 +217,7 @@ object AuthRepository {
         val correo = usuario?.email
 
         if (usuario == null || correo == null) {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -244,7 +246,7 @@ object AuthRepository {
                     "privacidadRevisada" to true,
                     "analiticaAutorizada" to consentimientos.analiticaAutorizada,
                     "iaAutorizada" to consentimientos.iaAutorizada,
-                    "versionPoliticas" to "1.0",
+                    "versionPoliticas" to VERSION_POLITICAS,
                     "fechaRegistro" to FieldValue.serverTimestamp(),
                     "fechaRevocacion" to null
                 )
@@ -252,7 +254,7 @@ object AuthRepository {
         }.commit()
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudo crear tu perfil.")
+                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_crear_2))
             }
     }
 
@@ -303,7 +305,7 @@ object AuthRepository {
             }
             .addOnFailureListener { error ->
                 onError(
-                    error.localizedMessage ?: "No se pudo enviar el correo."
+                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_enviar)
                 )
             }
     }
@@ -315,7 +317,7 @@ object AuthRepository {
         val uid = obtenerUid()
 
         if (uid == null) {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -325,7 +327,7 @@ object AuthRepository {
             .addOnSuccessListener { documento ->
 
                 if (!documento.exists()) {
-                    onError("No se encontró el perfil del usuario.")
+                    onError(texto(R.string.auth_repository_no_se_encontro_el))
                     return@addOnSuccessListener
                 }
 
@@ -345,7 +347,7 @@ object AuthRepository {
             .addOnFailureListener { error ->
                 onError(
                     error.localizedMessage
-                        ?: "No se pudo cargar el perfil."
+                        ?: texto(R.string.auth_repository_no_se_pudo_cargar)
                 )
             }
     }
@@ -361,7 +363,7 @@ object AuthRepository {
         val uid = obtenerUid()
 
         if (uid == null) {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -371,7 +373,7 @@ object AuthRepository {
         val telefonoLimpio = telefono.trim()
 
         if (nombreLimpio.isBlank() || paternoLimpio.isBlank()) {
-            onError("El nombre y el apellido paterno son obligatorios.")
+            onError(texto(R.string.auth_repository_el_nombre_y_el))
             return
         }
 
@@ -379,12 +381,12 @@ object AuthRepository {
             paternoLimpio.length > 60 ||
             maternoLimpio.length > 60
         ) {
-            onError("Los nombres y apellidos no pueden superar 60 caracteres.")
+            onError(texto(R.string.auth_repository_los_nombres_y_apellidos))
             return
         }
 
         if (telefonoLimpio.length > 25) {
-            onError("El número de teléfono es demasiado largo.")
+            onError(texto(R.string.auth_repository_el_numero_de_telefono))
             return
         }
 
@@ -405,7 +407,7 @@ object AuthRepository {
             .addOnFailureListener { error ->
                 onError(
                     error.localizedMessage
-                        ?: "No se pudo actualizar la información personal."
+                        ?: texto(R.string.auth_repository_no_se_pudo_actualizar)
                 )
             }
     }
@@ -417,7 +419,7 @@ object AuthRepository {
         val uid = obtenerUid();
 
         if(uid == null) {
-            onError("No hay una sesion activa")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion_2))
             return
         }
 
@@ -444,7 +446,7 @@ object AuthRepository {
             }
             .addOnFailureListener { error ->
                 onError(
-                    error.localizedMessage ?: "No se pudieron cargar las preferencias financieras."
+                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_cargar)
                 )
             }
 
@@ -458,14 +460,14 @@ object AuthRepository {
         val uid = obtenerUid()
 
         if(uid == null){
-            onError("No hay una sesion activa")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion_2))
             return
         }
 
         val monedasPermitidas = setOf("MXN", "USD", "EUR")
 
         if(preferencias.moneda !in monedasPermitidas){
-            onError("Selecciona una moneda valida")
+            onError(texto(R.string.auth_repository_selecciona_una_moneda_valida))
             return
         }
 
@@ -474,7 +476,7 @@ object AuthRepository {
             preferencias.presupuestoMensualCentavos < 0 ||
             preferencias.objetivoAhorroMensualCentavos < 0
         ) {
-            onError("Las cantidades no pueden ser negativas")
+            onError(texto(R.string.auth_repository_las_cantidades_no_pueden))
             return
         }
 
@@ -483,12 +485,12 @@ object AuthRepository {
             preferencias.presupuestoMensualCentavos > 100_000_000_000L ||
             preferencias.objetivoAhorroMensualCentavos > 100_000_000_000L
         ) {
-            onError("Una de las cantidades supera el limite permitido")
+            onError(texto(R.string.auth_repository_una_de_las_cantidades))
             return
         }
 
         if(preferencias.diaInicioPeriodo !in 1..28){
-            onError("El dia de inicio debe de estar entre el 1 y 28")
+            onError(texto(R.string.auth_repository_el_dia_de_inicio))
             return
         }
 
@@ -511,7 +513,7 @@ object AuthRepository {
             }
             .addOnFailureListener { error ->
                 onError(
-                    error.localizedMessage ?: "No se pudieron guardar las preferencias"
+                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_guardar)
                 )
             }
     }
@@ -523,7 +525,7 @@ object AuthRepository {
         onError: (String) -> Unit
     ) {
         val uid = obtenerUid() ?: run {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -532,7 +534,7 @@ object AuthRepository {
             .get()
             .addOnSuccessListener { onSuccess(it.data) }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudieron cargar las preferencias.")
+                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_cargar_2))
             }
     }
 
@@ -543,7 +545,7 @@ object AuthRepository {
         onError: (String) -> Unit
     ) {
         val uid = obtenerUid() ?: run {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -552,7 +554,7 @@ object AuthRepository {
             .set(datos + ("fechaActualizacion" to FieldValue.serverTimestamp()), SetOptions.merge())
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudieron guardar las preferencias.")
+                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_guardar_2))
             }
     }
 
@@ -562,7 +564,7 @@ object AuthRepository {
         onError: (String) -> Unit
     ) {
         val uid = obtenerUid() ?: run {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -578,12 +580,13 @@ object AuthRepository {
                         terminosAceptados = doc?.getBoolean("terminosAceptados") ?: true,
                         privacidadRevisada = doc?.getBoolean("privacidadRevisada") ?: true,
                         analiticaAutorizada = doc?.getBoolean("analiticaAutorizada") ?: false,
-                        iaAutorizada = doc?.getBoolean("iaAutorizada") ?: false
+                        iaAutorizada = doc?.getBoolean("iaAutorizada") ?: false,
+                        versionPoliticas = doc?.getString("versionPoliticas")
                     )
                 )
             }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudieron cargar tus consentimientos.")
+                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_cargar_3))
             }
     }
 
@@ -594,7 +597,7 @@ object AuthRepository {
         onError: (String) -> Unit
     ) {
         val uid = obtenerUid() ?: run {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -606,7 +609,7 @@ object AuthRepository {
                     "privacidadRevisada" to consentimiento.privacidadRevisada,
                     "analiticaAutorizada" to consentimiento.analiticaAutorizada,
                     "iaAutorizada" to consentimiento.iaAutorizada,
-                    "versionPoliticas" to "1.0",
+                    "versionPoliticas" to VERSION_POLITICAS,
                     "fechaRegistro" to FieldValue.serverTimestamp(),
                     "fechaRevocacion" to null
                 )
@@ -616,7 +619,7 @@ object AuthRepository {
                 onSuccess()
             }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudo guardar tu consentimiento.")
+                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_guardar_2))
             }
     }
 
@@ -632,7 +635,7 @@ object AuthRepository {
         val usuario = auth.currentUser
 
         if (usuario == null) {
-            onError("No hay una sesión activa.")
+            onError(texto(R.string.auth_repository_no_hay_una_sesion))
             return
         }
 
@@ -643,7 +646,7 @@ object AuthRepository {
             .continueWithTask { reautenticacion ->
                 reautenticacion.exception?.let { error ->
                     throw if (error is FirebaseAuthInvalidCredentialsException) {
-                        IllegalStateException("La contraseña no es correcta.")
+                        IllegalStateException(texto(R.string.auth_contrasena_incorrecta))
                     } else error
                 }
                 Tasks.whenAllSuccess<com.google.firebase.firestore.QuerySnapshot>(
@@ -671,7 +674,7 @@ object AuthRepository {
                 onSuccess()
             }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudo eliminar la cuenta.")
+                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_eliminar))
             }
     }
 }

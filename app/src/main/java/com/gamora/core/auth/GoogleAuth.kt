@@ -1,5 +1,6 @@
 package com.gamora.core.auth
 
+import com.gamora.core.texto
 import android.app.Activity
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -37,16 +38,16 @@ suspend fun elegirCuentaGoogle(activity: Activity): CuentaGoogle? {
     } catch (_: GetCredentialCancellationException) {
         return null
     } catch (_: NoCredentialException) {
-        throw GoogleNoDisponible("No hay una cuenta de Google en este teléfono. Agrégala en Ajustes y vuelve a intentarlo.")
+        throw GoogleNoDisponible(texto(R.string.google_auth_no_hay_una_cuenta))
     } catch (error: GetCredentialException) {
-        throw GoogleNoDisponible("No se pudo conectar con Google. ${error.message.orEmpty()}".trim())
+        throw GoogleNoDisponible(texto(R.string.google_auth_no_se_pudo_conectar, error.message.orEmpty()).trim())
     }
 
     val credencial = resultado.credential
     if (credencial !is CustomCredential ||
         credencial.type != GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
     ) {
-        throw GoogleNoDisponible("Google no devolvió una cuenta válida.")
+        throw GoogleNoDisponible(texto(R.string.google_auth_google_no_devolvio_una))
     }
 
     val google = GoogleIdTokenCredential.createFrom(credencial.data)

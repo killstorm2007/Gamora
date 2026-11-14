@@ -1,5 +1,10 @@
 package com.gamora.core.ui
 
+import java.text.SimpleDateFormat
+import android.text.format.DateFormat
+import androidx.appcompat.app.AppCompatDelegate
+import com.gamora.R
+import com.gamora.core.texto
 import android.content.Context
 import androidx.fragment.app.Fragment
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +16,18 @@ import java.util.Locale
 
 val LOCALE_MX: Locale = Locale.forLanguageTag("es-MX")
 
+/** Idioma en que se muestra la app: el elegido en Perfil o, si no hay, el del teléfono. */
+fun localeApp(): Locale = AppCompatDelegate.getApplicationLocales()[0] ?: Locale.getDefault()
+
+/**
+ * Formato de fecha en el idioma de la app a partir de un "esqueleto" (p. ej. "dMMMM" da
+ * "13 de noviembre" en español y "November 13" en inglés).
+ */
+fun formatoFecha(esqueleto: String): SimpleDateFormat {
+    val locale = localeApp()
+    return SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, esqueleto), locale)
+}
+
 /**
  * Moneda elegida en Perfil › Preferencias financieras. Se guarda también en el teléfono
  * para mostrar los montos bien desde el arranque, antes de leer Firestore.
@@ -18,11 +35,13 @@ val LOCALE_MX: Locale = Locale.forLanguageTag("es-MX")
 object Moneda {
     val DISPONIBLES = listOf("MXN", "USD", "EUR")
 
-    val NOMBRES = mapOf(
-        "MXN" to "Peso mexicano (MXN)",
-        "USD" to "Dólar estadounidense (USD)",
-        "EUR" to "Euro (EUR)"
-    )
+    // Se leen al usarse (no al cargar la clase) para que salgan en el idioma de la app.
+    val NOMBRES: Map<String, String>
+        get() = mapOf(
+            "MXN" to texto(R.string.moneda_mxn),
+            "USD" to texto(R.string.moneda_usd),
+            "EUR" to texto(R.string.moneda_eur)
+        )
 
     private const val ARCHIVO = "gamora_moneda"
     private const val CLAVE = "codigo"

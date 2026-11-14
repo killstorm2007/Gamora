@@ -12,6 +12,13 @@ service cloud.firestore {
       return request.resource.data[campo] == request.time;
     }
 
+    // Claves de categoría (Categoria.kt): lo único que se guarda en "categoria".
+    function categorias() {
+      return ['salario', 'ventas', 'negocio', 'inversiones', 'regalo', 'comida', 'transporte',
+              'vivienda', 'servicios', 'salud', 'educacion', 'entretenimiento', 'compras',
+              'ahorro', 'otros'];
+    }
+
     match /users/{userId} {
 
       // Consultar únicamente el perfil propio.
@@ -123,12 +130,12 @@ service cloud.firestore {
           && request.resource.data.resumenSemanal is bool
           && fechaServidor('fechaActualizacion');
 
-        // Límite mensual por categoría: { categorias: { "Comida": 300000, … } }.
+        // Límite mensual por categoría: { categorias: { "comida": 300000, … } }.
         allow create, update: if esPropietario(userId)
           && preferenciaId == 'presupuestos'
           && request.resource.data.keys().hasOnly(['categorias', 'fechaActualizacion'])
           && request.resource.data.categorias is map
-          && request.resource.data.categorias.size() <= 20
+          && request.resource.data.categorias.keys().hasOnly(categorias())
           && fechaServidor('fechaActualizacion');
 
         allow delete: if esPropietario(userId);
@@ -152,7 +159,7 @@ service cloud.firestore {
           && request.resource.data.privacidadRevisada == true
           && request.resource.data.analiticaAutorizada is bool
           && request.resource.data.iaAutorizada is bool
-          && request.resource.data.versionPoliticas == '1.0'
+          && request.resource.data.versionPoliticas == '1.1'
           && fechaServidor('fechaRegistro')
           && request.resource.data.fechaRevocacion == null;
 
@@ -166,9 +173,7 @@ service cloud.firestore {
         return datos.descripcion is string
             && datos.descripcion.size() > 0
             && datos.descripcion.size() <= 200
-            && datos.categoria is string
-            && datos.categoria.size() > 0
-            && datos.categoria.size() <= 40
+            && datos.categoria in categorias()
             && datos.montoCentavos is int
             && datos.montoCentavos > 0
             && datos.montoCentavos <= 100000000000

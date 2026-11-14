@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English -->
+<resources>
+    <string name="categoria_salario">Salary</string>
+    <string name="categoria_ventas">Sales</string>
+    <string name="categoria_negocio">Business</string>
+    <string name="categoria_inversiones">Investments</string>
+    <string name="categoria_regalo">Gift</string>
+    <string name="categoria_comida">Food</string>
+    <string name="categoria_transporte">Transportation</string>
+    <string name="categoria_vivienda">Housing</string>
+    <string name="categoria_servicios">Utilities</string>
+    <string name="categoria_salud">Health</string>
+    <string name="categoria_educacion">Education</string>
+    <string name="categoria_entretenimiento">Entertainment</string>
+    <string name="categoria_compras">Shopping</string>
+    <string name="categoria_ahorro">Savings</string>
+    <string name="categoria_otros">Other</string>
+    <string name="home_abrir_asistente_gamora">Open Gamora assistant</string>
+    <string name="login_screen_g">G</string>
+    <string name="login_screen_hola_de_nuevo">Welcome back!</string>
+    <string name="login_screen_inicia_sesion_para_ver">Sign in to see your finances.</string>
+    <string name="login_screen_correo_electronico">Email</string>
+    <string name="login_screen_contrasena">Password</string>
+    <string name="login_screen_olvidaste_tu_contrasena">Forgot your password?</string>
+    <string name="login_screen_iniciar_sesion">Sign in</string>
+    <string name="login_screen_o">or</string>
+    <string name="login_screen_continuar_con_google">Continue with Google</string>
+    <string name="login_screen_no_tienes_cuenta_registrate">Don\'t have an account? Sign up</string>
+    <string name="mainactivity_bienvenido_a">Welcome to</string>
+    <string name="mainactivity_controla_tu_dinero_cumple">Take control of your money, reach your goals and get tips from an assistant that knows you.</string>
+    <string name="mainactivity_analiza_a_donde_va">"📊   See where your money goes\n🎯   Save for your goals\n✨   Ask Gamora AI"</string>
+    <string name="mainactivity_crear_cuenta">Create account</string>
+    <string name="mainactivity_politica_de_privacidad">Privacy notice</string>
+    <string name="register_screen_crea_tu_cuenta">Create your account</string>
+    <string name="register_screen_empieza_a_tomar_el">Start taking control of your money.</string>
+    <string name="register_screen_tus_datos">Your details</string>
+    <string name="register_screen_nombre">First name</string>
+    <string name="register_screen_apellido_paterno">Last name</string>
+    <string name="register_screen_apellido_materno">Second last name</string>
+    <string name="register_screen_telefono_opcional">Phone (optional)</string>
+    <string name="register_screen_confirmar_contrasena">Confirm password</string>
+    <string name="register_screen_privacidad_y_consentimientos">Privacy and consent</string>
+    <string name="register_screen_acepto_los_terminos_y">I accept the terms and conditions</string>
+    <string name="register_screen_leer_terminos_y_condiciones">Read terms and conditions</string>
+    <string name="register_screen_confirmo_que_revise_la">I confirm I have reviewed the privacy notice</string>
+    <string name="register_screen_leer_politica_de_privacidad">Read privacy notice</string>
+    <string name="register_screen_opcionales">Optional</string>
+    <string name="register_screen_autorizo_el_uso_de">I allow the use of my data for analytics and to improve Gamora</string>
+    <string name="register_screen_autorizo_que_el_asistente">I allow the AI assistant to analyze my financial data</string>
+    <string name="register_screen_ya_tienes_cuenta_inicia">Already have an account? Sign in</string>
+    <string name="analytics_tus_numeros">Your numbers</string>
+    <string name="analytics_analisis">Insights</string>
+    <string name="analytics_comprende_tus_finanzas_y">Understand your finances and make better decisions.</string>
+    <string name="analytics_balance_general">Overall balance</string>
+    <string name="analytics_0_00">$0.00</string>
+    <string name="analytics_ingresos">"↑  Income"</string>
+    <string name="analytics_gastos">"↓  Expenses"</string>
+    <string name="analytics_a_donde_va_tu">Where does your money go?</string>
+    <string name="analytics_n_ntodavia_no_hay">📊\n\nNo expenses to analyze yet.\nOnce you record transactions, you\'ll see where your money goes here.</string>
+    <string name="analytics_presupuesto_por_categoria">Budget by category</string>
+    <string name="analytics_editar">Edit</string>
+    <string name="analytics_ingresos_vs_gastos">Income vs. expenses</string>
+    <string name="analytics_ultimos_6_meses">Last 6 months</string>
+    <string name="analytics_ingresos_2">● Income</string>
+    <string name="analytics_gastos_2">● Expenses</string>
+    <string name="analytics_consejos_para_ti">Tips for you</string>
+    <string name="analytics_registra_tus_movimientos_para">Record your transactions so Gamora can spot spending patterns and give you recommendations.</string>
+    <string name="chatbot_regresar">Back</string>
+    <string name="chatbot_gamora_ai">Gamora AI</string>
+    <string name="chatbot_tu_asistente_de_finanzas">Your finance assistant</string>
+    <string name="chatbot_borrar_conversacion">Clear conversation</string>
+    <string name="chatbot_hola_soy_gamora_ai">Hi! 👋 I\'m Gamora AI. I can analyze your spending, help you with your budget and build a plan for your goals. I remember what you tell me.</string>
+    <string name="chatbot_preguntale_algo_a_gamora">Ask Gamora something…</string>
+    <string name="chatbot_enviar_mensaje">Send message</string>
+    <string name="dashboard_tu_dinero_bajo_control">Your money, under control</string>
+    <string name="dashboard_saldo_disponible">Available balance</string>
+    <string name="dashboard_ingreso">"+  Income"</string>
+    <string name="dashboard_gasto">"−  Expense"</string>
+    <string name="dashboard_recientes">Recent</string>
+    <string name="dashboard_filtrar_por_categoria">Filter by category</string>
+    <string name="goals_mis_metas">My goals</string>
+    <string name="goals_convierte_tus_planes_en">Turn your plans into savings goals.</string>
+    <string name="goals_ahorrado_en_tus_metas">Saved in your goals</string>
+    <string name="goals_0_metas_activas">0 active goals</string>
+    <string name="goals_crear_nueva_meta">"+  Create new goal"</string>
+    <string name="goals_tus_objetivos">Your goals</string>
+    <string name="goals_n_ntodavia_no_tienes">🎯\n\nYou don\'t have any goals yet.\nCreate your first goal and start planning your savings.</string>
+    <string name="import_review_revisa_tus_movimientos">Review your transactions</string>
+    <string name="import_review_seleccionar_todos">Select all</string>
+    <string name="import_review_fecha">Date</string>
+    <string name="import_review_descripcion">Description</string>
+    <string name="import_review_categoria">Category</string>
+    <string name="import_review_monto">Amount</string>
+    <string name="import_review_cancelar">Cancel</string>
+    <string name="import_review_guardar">Save</string>
+    <string name="profile_cuenta">Account</string>
+    <string name="profile_mi_perfil">My profile</string>
+    <string name="profile_mi_cuenta">My account</string>
+    <string name="profile_balance_de_movimientos">Transaction balance</string>
+    <string name="profile_ahorro_acumulado">Total savings</string>
+    <string name="profile_metas_activas">Active goals</string>
+    <string name="profile_0">0</string>
+    <string name="profile_informacion_personal">"👤     Personal information"</string>
+    <string name="profile_preferencias_financieras">"💰     Financial preferences"</string>
+    <string name="profile_movimientos_recurrentes">"🔁     Recurring transactions"</string>
+    <string name="profile_personalizacion">Personalization</string>
+    <string name="profile_apariencia">"🎨     Appearance"</string>
+    <string name="profile_claro">Light</string>
+    <string name="profile_oscuro">Dark</string>
+    <string name="profile_sistema">System</string>
+    <string name="profile_notificaciones">"🔔     Notifications"</string>
+    <string name="profile_privacidad_y_ayuda">Privacy and help</string>
+    <string name="profile_privacidad_y_seguridad">"🔒     Privacy and security"</string>
+    <string name="profile_bloqueo_con_huella_o">"🔐     Fingerprint or PIN lock"</string>
+    <string name="profile_inteligencia_artificial">"✨     Artificial intelligence"</string>
+    <string name="profile_documentos_legales">"📄     Legal documents"</string>
+    <string name="profile_ayuda_y_soporte">"💬     Help and support"</string>
+    <string name="profile_eliminar_mis_datos">Delete my data</string>
+    <string name="profile_borra_tu_cuenta_y">Permanently delete your account and all your information.</string>
+    <string name="profile_cerrar_sesion">Sign out</string>
+    <string name="profile_gamora_tu_dinero_tus">Gamora · Your money, your decisions</string>
+    <string name="transactions_historial">History</string>
+    <string name="transactions_movimientos">Transactions</string>
+    <string name="transactions_consulta_busca_y_registra">View, search and record your income and expenses.</string>
+    <string name="transactions_agregar_movimiento">"+  Add transaction"</string>
+    <string name="transactions_importar_estado_de_cuenta">"📄  Import bank statement"</string>
+    <string name="transactions_todos">All</string>
+    <string name="transactions_gastos">Expenses</string>
+    <string name="transactions_ingresos">Income</string>
+    <string name="bottom_navigation_inicio">Home</string>
+    <string name="bottom_navigation_metas">Goals</string>
+    <string name="bottom_navigation_perfil">Profile</string>
+    <string name="main_politica_de_privacidad">Privacy Notice</string>
+    <string name="main_cerrar">Close</string>
+    <string name="auth_repository_debes_aceptar_los_terminos">You must accept the terms and review the privacy notice.</string>
+    <string name="auth_repository_no_fue_posible_obtener">Couldn\'t get the account details.</string>
+    <string name="auth_repository_no_se_pudo_guardar">Couldn\'t save the profile and consents. Account creation was canceled.</string>
+    <string name="auth_repository_no_se_pudo_completar">Couldn\'t complete sign-up. The sign-in account may have been created. Contact support before trying to sign up again.</string>
+    <string name="auth_repository_error_desconocido">Unknown error</string>
+    <string name="auth_repository_este_correo_ya_esta">This email is already registered.</string>
+    <string name="auth_repository_el_correo_electronico_no">The email address is not valid.</string>
+    <string name="auth_repository_no_se_pudo_crear">Couldn\'t create the account.</string>
+    <string name="auth_repository_no_se_pudo_iniciar">Couldn\'t sign in.</string>
+    <string name="auth_repository_no_se_pudo_iniciar_2">Couldn\'t sign in with Google.</string>
+    <string name="auth_repository_no_hay_una_sesion">No active session.</string>
+    <string name="auth_repository_no_se_pudo_crear_2">Couldn\'t create your profile.</string>
+    <string name="auth_repository_no_se_pudo_enviar">Couldn\'t send the email.</string>
+    <string name="auth_repository_no_se_encontro_el">User profile not found.</string>
+    <string name="auth_repository_no_se_pudo_cargar">Couldn\'t load the profile.</string>
+    <string name="auth_repository_el_nombre_y_el">First name and last name are required.</string>
+    <string name="auth_repository_los_nombres_y_apellidos">First and last names can\'t be longer than 60 characters.</string>
+    <string name="auth_repository_el_numero_de_telefono">The phone number is too long.</string>
+    <string name="auth_repository_no_se_pudo_actualizar">Couldn\'t update your personal information.</string>
+    <string name="auth_repository_no_hay_una_sesion_2">No active session</string>
+    <string name="auth_repository_no_se_pudieron_cargar">Couldn\'t load your financial preferences.</string>
+    <string name="auth_repository_selecciona_una_moneda_valida">Select a valid currency</string>
+    <string name="auth_repository_las_cantidades_no_pueden">Amounts can\'t be negative</string>
+    <string name="auth_repository_una_de_las_cantidades">One of the amounts is over the allowed limit</string>
+    <string name="auth_repository_el_dia_de_inicio">The start day must be between 1 and 28</string>
+    <string name="auth_repository_no_se_pudieron_guardar">Couldn\'t save your preferences</string>
+    <string name="auth_repository_no_se_pudieron_cargar_2">Couldn\'t load your preferences.</string>
+    <string name="auth_repository_no_se_pudieron_guardar_2">Couldn\'t save your preferences.</string>
+    <string name="auth_repository_no_se_pudieron_cargar_3">Couldn\'t load your consents.</string>
+    <string name="auth_repository_no_se_pudo_guardar_2">Couldn\'t save your consent.</string>
+    <string name="auth_repository_no_se_pudo_eliminar">Couldn\'t delete the account.</string>
+    <string name="google_auth_no_hay_una_cuenta">There\'s no Google account on this phone. Add one in Settings and try again.</string>
+    <string name="google_auth_no_se_pudo_conectar">Couldn\'t connect to Google. %1$s</string>
+    <string name="google_auth_google_no_devolvio_una">Google didn\'t return a valid account.</string>
+    <string name="avisos_avisos_de_gamora">Gamora alerts</string>
+    <string name="avisos_presupuesto_metas_y_resumen">Budget, goals and weekly summary</string>
+    <string name="avisos_te_pasaste_en">You went over in %1$s</string>
+    <string name="avisos_llevas_de_este_periodo">You\'ve spent %1$s of %2$s this period.</string>
+    <string name="avisos_vas_en_el">%1$s: you\'re at %2$s%%</string>
+    <string name="avisos_te_quedan_en_para">You have %1$s left in %2$s for this period.</string>
+    <string name="avisos_superaste_tu_presupuesto">You went over your budget</string>
+    <string name="avisos_vas_en_el_de">You\'re at %1$s%% of your budget</string>
+    <string name="avisos_te_quedan_para_este">You have %1$s left for this period.</string>
+    <string name="avisos_tu_meta_vence_manana">Your goal “%1$s” is due tomorrow</string>
+    <string name="avisos_te_faltan_para_lograrla">You need %1$s more to reach it.</string>
+    <string name="avisos_quedan_dias_para">%1$s days left for “%2$s”</string>
+    <string name="avisos_tu_semana_en_gamora">Your week in Gamora</string>
+    <string name="avisos_ingresos_gastos_balance">Income %1$s · Expenses %2$s · Balance %3$s</string>
+    <string name="bloqueo_app_desbloquea_gamora">Unlock Gamora</string>
+    <string name="bloqueo_app_usa_tu_huella_rostro">Use your fingerprint, face or phone PIN</string>
+    <string name="analytics_gastos_totales">Total expenses</string>
+    <string name="analytics_gastos_por_categoria">"Expenses by category: "</string>
+    <string name="analytics_de_tus_gastos">%1$s%% of your expenses</string>
+    <string name="analytics_n_ndefine_cuanto_quieres">🎯\n\nSet how much you want to spend each month in each category and Gamora will warn you before you go over.</string>
+    <string name="analytics_usado_te_quedan">%1$s%% used · %2$s left</string>
+    <string name="analytics_te_pasaste_por">You went over by %1$s</string>
+    <string name="analytics_limite_mensual_para_cada">Monthly limit for each category. Leave it empty if you don\'t want a limit.</string>
+    <string name="analytics_importe_no_valido">Invalid amount</string>
+    <string name="analytics_presupuestos_guardados">Budgets saved</string>
+    <string name="analytics_ingresos_y_gastos_de">"Income and expenses for the last 6 months: "</string>
+    <string name="analytics_ingresos_gastos">%1$s, income %2$s, expenses %3$s</string>
+    <string name="consejos_ahorro_registra_tus_ingresos_y">Record your income and expenses so Gamora can give you tips based on your data.</string>
+    <string name="consejos_ahorro_este_mes_llevas_mas">This month you\'ve spent %1$s more than you\'ve earned. See which expenses you can postpone.</string>
+    <string name="consejos_ahorro_vas_muy_bien_este">You\'re doing great! This month you\'re keeping %1$s%% of your income.</string>
+    <string name="consejos_ahorro_este_mes_conservas_el">This month you\'re keeping %1$s%% of your income. Try to set aside at least 20%% as soon as you get paid.</string>
+    <string name="consejos_ahorro_tu_mayor_gasto_del">Your biggest expense this month is %1$s (%2$s%%). Cutting it by 10%% would save you %3$s a month.</string>
+    <string name="consejos_ahorro_entretenimiento_y_compras_suman">Entertainment and shopping make up %1$s%% of your expenses. Wait 24 hours before unplanned purchases.</string>
+    <string name="consejos_ahorro_superaste_tu_presupuesto_mensual">You went over your monthly budget by %1$s.</string>
+    <string name="consejos_ahorro_ya_usaste_el_de">You\'ve used %1$s%% of your monthly budget. You have %2$s left.</string>
+    <string name="consejos_ahorro_define_un_presupuesto_mensual">Set a monthly budget in Profile › Financial preferences to get alerts.</string>
+    <string name="consejos_ahorro_la_fecha_de_tu">The date for your goal \"%1$s\" has passed and you still need %2$s. Adjust the date or the amount.</string>
+    <string name="consejos_ahorro_para_lograr_a_tiempo">To reach \"%1$s\" on time, set aside %2$s a month.</string>
+    <string name="continuar_con_google_acepto_los_terminos_y">I accept the Terms and conditions</string>
+    <string name="continuar_con_google_he_leido_la_politica">I have read the Privacy notice</string>
+    <string name="continuar_con_google_autorizo_la_analitica_de">I allow usage analytics (optional)</string>
+    <string name="continuar_con_google_autorizo_que_el_asistente">I allow the AI assistant to analyze my financial data (optional)</string>
+    <string name="continuar_con_google_bienvenido_a_gamora">Welcome to Gamora</string>
+    <string name="continuar_con_google_antes_de_crear_tu">Before creating your account with Google, review and accept the following. You can read the documents on the sign-up screen.</string>
+    <string name="continuar_con_google_debes_aceptar_los_terminos">You must accept the terms and the privacy notice.</string>
+    <string name="login_introduce_tu_correo_electronico">Enter your email.</string>
+    <string name="login_introduce_un_correo_valido">Enter a valid email.</string>
+    <string name="login_introduce_tu_contrasena">Enter your password.</string>
+    <string name="login_iniciando_sesion">Signing in...</string>
+    <string name="login_recuperar_contrasena">Reset password</string>
+    <string name="login_introduce_el_correo_asociado">Enter the email linked to your account.</string>
+    <string name="login_enviar">Send</string>
+    <string name="login_si_la_cuenta_existe">If the account exists, you\'ll receive instructions by email.</string>
+    <string name="login_no_se_pudo_procesar">Couldn\'t process the request. Please try again.</string>
+    <string name="register_terminos_y_condiciones">Terms and conditions</string>
+    <string name="register_completa_todos_los_campos">Fill in all required fields.</string>
+    <string name="register_introduce_un_correo_electronico">Enter a valid email address.</string>
+    <string name="register_la_contrasena_debe_tener">Your password must be at least 8 characters long.</string>
+    <string name="register_las_contrasenas_no_coinciden">Passwords don\'t match.</string>
+    <string name="register_debes_aceptar_los_terminos">You must accept the terms and conditions.</string>
+    <string name="register_debes_confirmar_que_revisaste">You must confirm that you reviewed the privacy notice.</string>
+    <string name="register_creando_cuenta">Creating account...</string>
+    <string name="register_cuenta_creada_correctamente">Account created!</string>
+    <string name="presupuestos_no_se_pudieron_guardar">Couldn\'t save the budgets.</string>
+    <string name="chat_repository_no_se_pudo_cargar">Couldn\'t load the conversation.</string>
+    <string name="chat_repository_no_se_pudo_borrar">Couldn\'t clear the conversation.</string>
+    <string name="chatbot_analiza_mis_gastos_de">Analyze my spending this month</string>
+    <string name="chatbot_en_que_puedo_recortar">Where can I cut back?</string>
+    <string name="chatbot_como_voy_con_mis">How am I doing with my goals?</string>
+    <string name="chatbot_hazme_un_plan_de">Make me a savings plan</string>
+    <string name="chatbot_puedo_darte_consejos_generales">I can give you general tips. To analyze your transactions and goals, turn on AI in Profile › Artificial intelligence preferences.</string>
+    <string name="chatbot_no_pude_cargar_la">I couldn\'t load the conversation: %1$s</string>
+    <string name="chatbot_escribiendo">Typing…</string>
+    <string name="chatbot_escribiendo_hay_mucha_demanda">Typing… (high demand, one moment)</string>
+    <string name="chatbot_el_asistente_todavia_no">The assistant isn\'t enabled in Firebase yet (AI Logic).</string>
+    <string name="chatbot_el_modelo_de_ia">The configured AI model isn\'t available.</string>
+    <string name="chatbot_el_asistente_tiene_mucha">The assistant is in high demand right now. Try again in a few seconds.</string>
+    <string name="chatbot_se_alcanzo_el_limite">The assistant\'s usage limit was reached. Try again later.</string>
+    <string name="chatbot_la_app_no_paso">The app didn\'t pass the security check (App Check).</string>
+    <string name="chatbot_no_hay_conexion_a">No internet connection. Check it and try again.</string>
+    <string name="chatbot_no_pude_responder_en">I couldn\'t answer right now. Try again.</string>
+    <string name="chatbot_n_n_detalle_tecnico">%1$s\n\n[Technical detail] %2$s</string>
+    <string name="chatbot_gamora_ai_olvidara_todo">Gamora AI will forget everything you\'ve told it. Do you want to continue?</string>
+    <string name="chatbot_borrar">Clear</string>
+    <string name="dashboard_todas">All</string>
+    <string name="dashboard_tus_movimientos_apareceran_aqui">Your transactions will show up here once you record income or expenses.</string>
+    <string name="dashboard_no_hay_movimientos_recientes">No recent transactions in this category.</string>
+    <string name="goals_nombre_de_la_meta">Goal name</string>
+    <string name="goals_cuanto_quieres_ahorrar_mxn">How much do you want to save? (MXN)</string>
+    <string name="goals_fecha_limite_opcional">Deadline (optional)</string>
+    <string name="goals_crear_meta_de_ahorro">Create savings goal</string>
+    <string name="goals_crear">Create</string>
+    <string name="goals_escribe_un_nombre">Enter a name</string>
+    <string name="goals_introduce_una_cantidad_valida">Enter a valid amount</string>
+    <string name="goals_meta_creada_correctamente">Goal created</string>
+    <string name="goals_cantidad_a_aportar_mxn">Amount to add (MXN)</string>
+    <string name="goals_descontar_de_mi_saldo">Deduct from my balance (recorded as a Savings expense)</string>
+    <string name="goals_aportar_a">Add to %1$s</string>
+    <string name="goals_objetivo_nahorrado">Target: %1$s\nSaved: %2$s</string>
+    <string name="goals_registrar">Save</string>
+    <string name="goals_la_cantidad_es_demasiado">The amount is too large</string>
+    <string name="goals_aportacion_registrada">Contribution saved</string>
+    <string name="goals_eliminar_meta">Delete goal</string>
+    <string name="goals_quieres_eliminar_se_eliminara">Delete \"%1$s\"? Its contribution history will also be deleted.</string>
+    <string name="goals_eliminar">Delete</string>
+    <string name="goals_objetivo">Target: %1$s</string>
+    <string name="goals_ahorrados">%1$s saved · %2$s%%</string>
+    <string name="goals_meta_completada">Goal reached!</string>
+    <string name="goals_te_faltan">%1$s to go</string>
+    <string name="goals_fecha_limite">Deadline: %1$s</string>
+    <string name="goals_aportar">+ Add money</string>
+    <string name="savings_goal_no_se_pudo_crear">Couldn\'t create the goal.</string>
+    <string name="savings_goal_aportacion_a">Contribution to “%1$s”</string>
+    <string name="savings_goal_no_se_pudo_registrar">Couldn\'t save the contribution.</string>
+    <string name="savings_goal_no_se_pudo_eliminar">Couldn\'t delete the goal.</string>
+    <string name="import_review_la_revision_se_perdio">The review was lost; import the document again.</string>
+    <string name="import_review_seleccionados_ingresos_gastos">Selected: %1$s · Income +%2$s · Expenses -%3$s</string>
+    <string name="import_review_incluir">Include %1$s</string>
+    <string name="import_review_repetido">⚠ duplicate · %1$s</string>
+    <string name="import_review_cambiar_a_gasto">Change to expense</string>
+    <string name="import_review_cambiar_a_ingreso">Change to income</string>
+    <string name="import_review_descartar_estos_movimientos">Discard these transactions?</string>
+    <string name="import_review_no_se_guardara_ninguno">None of the transactions read will be saved.</string>
+    <string name="import_review_seguir_revisando">Keep reviewing</string>
+    <string name="import_review_descartar">Discard</string>
+    <string name="import_review_guardando">Saving…</string>
+    <string name="import_review_algunos_movimientos_no_se">Some transactions couldn\'t be saved.</string>
+    <string name="import_review_no_se_pudieron_guardar">Couldn\'t save the transactions.</string>
+    <string name="importar_documento_gemini_no_pudo_leer">Gemini couldn\'t read this document. Try another file or a clearer photo.</string>
+    <string name="importar_documento_llegaste_al_limite_de">You\'ve reached the reading limit for now. Try again in a few minutes.</string>
+    <string name="importar_documento_el_documento_es_muy">The document is too long to read at once. Try a shorter period or fewer pages.</string>
+    <string name="importar_documento_gemini_tardo_demasiado_en">Gemini took too long to read the document. Try again in a moment.</string>
+    <string name="importar_documento_no_se_pudo_leer">Couldn\'t read the document. Check your connection and try again.</string>
+    <string name="importar_documento_no_se_pudo_abrir">Couldn\'t open the PDF: it seems damaged or in an unsupported format.</string>
+    <string name="importar_documento_gemini_tuvo_un_problema">Gemini had a problem processing this document. Try again in a moment; if it happens again, try a photo or a shorter PDF.</string>
+    <string name="importar_documento_no_se_pudo_leer_2">Couldn\'t read the document. Try again in a moment.</string>
+    <string name="importar_documento_importar_estado_de_cuenta">Import bank statement</string>
+    <string name="importar_documento_gamora_lee_tu_estado">Gamora reads your statement on your phone. If it doesn\'t recognize your bank\'s format, it will send it to Gemini (Google) only to read it. The document is not stored.\n\nYou can choose a bank statement or pay stub as a PDF or photo, or your payroll XML. You\'ll be able to review each transaction before saving.</string>
+    <string name="importar_documento_aceptar">OK</string>
+    <string name="importar_documento_el_archivo_pesa_mas">The file is larger than 15 MB. Choose a smaller one.</string>
+    <string name="importar_documento_ese_tipo_de_archivo">That file type can\'t be read. Use a PDF, a photo or your payroll XML.</string>
+    <string name="importar_documento_no_encontramos_movimientos_en">We didn\'t find any transactions in this document</string>
+    <string name="importar_documento_se_interrumpio_la_lectura">Reading was interrupted; try again.</string>
+    <string name="importar_documento_contrasena_incorrecta">Incorrect password</string>
+    <string name="importar_documento_contrasena_del_pdf">PDF password</string>
+    <string name="importar_documento_este_pdf_tiene_contrasena">This PDF is password-protected</string>
+    <string name="importar_documento_escribela_para_abrirlo_en">Enter it to open the file on your phone. It isn\'t stored.</string>
+    <string name="importar_documento_abrir">Open</string>
+    <string name="importar_documento_leido_en_tu_telefono">Read on your phone: the document wasn\'t sent anywhere.</string>
+    <string name="importar_documento_reconociendo_el_texto_pagina">Recognizing text (page %1$s of %2$s)…</string>
+    <string name="importar_documento_leyendo_tu_documento">Reading your document…</string>
+    <string name="importar_documento_hay_muchas_lecturas_en">There are many reads right now. Retrying in %1$s s…</string>
+    <string name="nomina_cfdi_este_xml_no_es">This XML is not a pay stub.</string>
+    <string name="nomina_cfdi_el_recibo_no_indica">The pay stub doesn\'t show a valid total.</string>
+    <string name="nomina_cfdi_el_recibo_no_indica_2">The pay stub doesn\'t show the payment date.</string>
+    <string name="nomina_cfdi_nomina_2">Payroll</string>
+    <string name="nomina_cfdi_nomina_3">Payroll · %1$s</string>
+    <string name="bienvenida_1_de_3_en">1 of 3 · Which currency do you use?</string>
+    <string name="bienvenida_omitir">Skip</string>
+    <string name="bienvenida_siguiente">Next</string>
+    <string name="bienvenida_presupuesto_mensual_ej_8000">Monthly budget (e.g. 8000)</string>
+    <string name="bienvenida_2_de_3_cuanto">2 of 3 · What\'s the most you want to spend each month?</string>
+    <string name="bienvenida_gamora_te_avisara_cuando">Gamora will let you know when you reach 80 percent and if you go over. You can change it later in Profile.</string>
+    <string name="bienvenida_3_de_3_registra">3 of 3 · Record your first transaction</string>
+    <string name="bienvenida_empieza_por_tu_ingreso">Start with this month\'s income or an expense from today. If it repeats every month (salary, rent, subscriptions), check “Repeat every month” and Gamora will record it for you.</string>
+    <string name="bienvenida_despues">Later</string>
+    <string name="bienvenida_un_gasto">An expense</string>
+    <string name="bienvenida_un_ingreso">An income</string>
+    <string name="profile_no_se_pudieron_cargar">Couldn\'t load your recurring transactions.</string>
+    <string name="profile_movimientos_recurrentes_2">Recurring transactions</string>
+    <string name="profile_aun_no_tienes_ninguno">You don\'t have any yet. When you record income or an expense, check “Repeat every month” and Gamora will record it for you each month.</string>
+    <string name="profile_entendido">Got it</string>
+    <string name="profile_ndia_de_cada_mes">%1$s · %2$s%3$s\nDay %4$s of every month · %5$s</string>
+    <string name="profile_dejar_de_repetir">Stop repeating</string>
+    <string name="profile_ya_no_se_registrara">“%1$s” will no longer be recorded every month. Transactions already recorded are kept.</string>
+    <string name="profile_ya_no_se_repetira">It will no longer repeat</string>
+    <string name="profile_no_se_pudo_actualizar">Couldn\'t update.</string>
+    <string name="profile_bloqueo_de_la_app">App lock</string>
+    <string name="profile_gamora_pedira_tu_huella">Gamora will ask for your fingerprint, face or phone PIN every time you open it.</string>
+    <string name="profile_activar_bloqueo">Turn on lock</string>
+    <string name="profile_primero_configura_una_huella">First set up a fingerprint or PIN in your phone\'s settings.</string>
+    <string name="profile_bloqueo_activado">Lock turned on</string>
+    <string name="profile_bloqueo_desactivado">Lock turned off</string>
+    <string name="profile_cargando_perfil">Loading profile...</string>
+    <string name="profile_usuario_gamora">Gamora user</string>
+    <string name="profile_correo_no_disponible">Email not available</string>
+    <string name="profile_no_se_pudo_cargar">Couldn\'t load the profile</string>
+    <string name="profile_estas_seguro_de_que">Are you sure you want to sign out of Gamora?</string>
+    <string name="profile_preferencia_guardada">Preference saved</string>
+    <string name="profile_privacidad_y_seguridad_2">Privacy and security</string>
+    <string name="profile_decide_como_usa_gamora">Decide how Gamora uses your data and protect your account.</string>
+    <string name="profile_permitir_analitica_de_uso">Allow usage analytics</string>
+    <string name="profile_cambiar_contrasena">Change password</string>
+    <string name="profile_no_hay_un_correo">There\'s no email linked to the account.</string>
+    <string name="profile_te_enviamos_un_correo">We sent an email to %1$s so you can change your password.</string>
+    <string name="profile_inteligencia_artificial_2">Artificial intelligence</string>
+    <string name="profile_el_asistente_puede_usar">The assistant can use your transactions to give you personalized recommendations.</string>
+    <string name="profile_permitir_que_la_ia">Allow the AI to use my financial data</string>
+    <string name="profile_activa_las_notificaciones_de">Turn on Gamora notifications to get alerts.</string>
+    <string name="profile_alertas_de_presupuesto">Budget alerts</string>
+    <string name="profile_recordatorios_de_metas">Goal reminders</string>
+    <string name="profile_resumen_semanal">Weekly summary</string>
+    <string name="profile_notificaciones_2">Notifications</string>
+    <string name="profile_elige_que_avisos_quieres">Choose which alerts you want to get from Gamora.</string>
+    <string name="profile_notificaciones_guardadas">Notifications saved</string>
+    <string name="profile_documentos_legales_2">Legal documents</string>
+    <string name="profile_ayuda_y_soporte_2">Help and support</string>
+    <string name="profile_registra_ingresos_y_gastos">• Record income and expenses from Home.\n• Adjust your budget in Financial preferences.\n• Your data is saved in your account and synced across devices.\n\nNeed more help? Write to us at %1$s</string>
+    <string name="profile_escribir_a_soporte">Email support</string>
+    <string name="profile_ayuda_con_gamora">Help with Gamora</string>
+    <string name="profile_no_hay_una_app">There\'s no email app installed.</string>
+    <string name="profile_eliminar_mi_cuenta_y">Delete my account and data</string>
+    <string name="profile_se_borraran_de_forma">Your profile, transactions, preferences, consents and sign-in account will be permanently deleted. This can\'t be undone.\n\n</string>
+    <string name="profile_confirma_con_tu_cuenta">Confirm with your Google account.</string>
+    <string name="profile_escribe_tu_contrasena_para">Enter your password to confirm.</string>
+    <string name="profile_tu_cuenta_y_tus">Your account and data were deleted.</string>
+    <string name="profile_escribe_tu_contrasena">Enter your password</string>
+    <string name="profile_moneda">Currency</string>
+    <string name="profile_ingreso_mensual">Monthly income</string>
+    <string name="profile_presupuesto_mensual">Monthly budget</string>
+    <string name="profile_dia_de_inicio_del">Period start day (1-28)</string>
+    <string name="profile_objetivo_de_ahorro_mensual">Monthly savings target</string>
+    <string name="profile_preferencias_financieras_2">Financial preferences</string>
+    <string name="profile_personaliza_la_forma_en">Customize how Gamora organizes your finances.</string>
+    <string name="profile_revisa_las_cantidades_ingresadas">Check the amounts you entered.</string>
+    <string name="profile_preferencias_financieras_guardadas">Financial preferences saved</string>
+    <string name="profile_telefono">Phone</string>
+    <string name="profile_informacion_personal_2">Personal information</string>
+    <string name="profile_manten_tus_datos_actualizados">Keep your details up to date in Gamora.</string>
+    <string name="profile_informacion_actualizada_correctamente">Information updated</string>
+    <string name="gamora_movement_no_se_pudo_guardar">Couldn\'t save the transaction.</string>
+    <string name="gamora_movement_no_se_pudo_eliminar">Couldn\'t delete the transaction.</string>
+    <string name="movement_dialog_descripcion_ej_nomina">Description (e.g. Paycheck)</string>
+    <string name="movement_dialog_importe_ej_250_50">Amount (e.g. 250.50)</string>
+    <string name="movement_dialog_repetir_cada_mes_renta">Repeat every month (rent, salary, subscriptions…)</string>
+    <string name="movement_dialog_registrar">Add %1$s</string>
+    <string name="movement_dialog_editar">Edit %1$s</string>
+    <string name="movement_dialog_eliminar">Delete %1$s</string>
+    <string name="movement_dialog_eliminar_esta_accion_no">Delete \"%1$s\"? This can\'t be undone.</string>
+    <string name="movement_dialog_escribe_una_descripcion">Enter a description</string>
+    <string name="movement_dialog_introduce_un_importe_valido">Enter a valid amount with up to 2 decimals</string>
+    <string name="movement_dialog_cambios_guardados">Changes saved</string>
+    <string name="movement_dialog_registrado_se_repetira_cada">Saved; it will repeat every month</string>
+    <string name="movement_dialog_ingreso_registrado">Income saved</string>
+    <string name="movement_dialog_gasto_registrado">Expense saved</string>
+    <string name="recurrentes_no_se_pudo_programar">Couldn\'t schedule the repeat.</string>
+    <string name="transactions_todas_las_categorias">All categories</string>
+    <string name="transactions_agregar_movimiento_2">Add transaction</string>
+    <string name="transactions_ingreso">Income</string>
+    <string name="transactions_gasto">Expense</string>
+    <string name="transactions_aun_no_registras_movimientos">You haven\'t recorded any transactions yet. Tap “Add transaction” to start.</string>
+    <string name="transactions_no_hay_movimientos_que">No transactions match your search.</string>
+    <string name="analytics_desde_el">Since %1$s</string>
+    <string name="comun_icono_y_texto">"%1$s  %2$s"</string>
+    <string name="comun_monto_de_monto">%1$s / %2$s</string>
+    <string name="comun_numero">%1$d</string>
+    <string name="movimiento_monto_ingreso">+%1$s</string>
+    <string name="movimiento_monto_gasto">−%1$s</string>
+    <string name="moneda_mxn">Mexican peso (MXN)</string>
+    <string name="moneda_usd">US dollar (USD)</string>
+    <string name="moneda_eur">Euro (EUR)</string>
+    <string name="auth_contrasena_incorrecta">The password is incorrect.</string>
+    <string name="importar_no_se_pudo_abrir">Couldn\'t open the file.</string>
+    <string name="nomina_periodo">%1$s to %2$s</string>
+    <string name="politicas_actualizadas_titulo">We updated the privacy notice and terms</string>
+    <string name="politicas_actualizadas_mensaje">They now cover people who use Gamora in the United States, better explain where your data is stored and how to exercise your rights, and mention error reports (Crashlytics). What Gamora does with your data hasn\'t changed.\n\nTo keep using the app, accept them or sign out.</string>
+    <string name="politicas_aceptar">Accept</string>
+    <string name="politicas_cerrar_sesion">Sign out</string>
+    <string name="politicas_leer">Read</string>
+    <string name="movement_tipo_ingreso">income</string>
+    <string name="movement_tipo_gasto">expense</string>
+    <plurals name="goals_metas_activas">
+        <item quantity="one">%1$d active goal</item>
+        <item quantity="other">%1$d active goals</item>
+    </plurals>
+    <plurals name="import_review_guardar_movimientos">
+        <item quantity="one">Save %1$d transaction</item>
+        <item quantity="other">Save %1$d transactions</item>
+    </plurals>
+    <plurals name="import_review_se_registraron_movimientos">
+        <item quantity="one">%1$d transaction saved</item>
+        <item quantity="other">%1$d transactions saved</item>
+    </plurals>
+    <plurals name="importar_documento_renglones_no_leidos">
+        <item quantity="one">%1$d row couldn\'t be read; check that nothing is missing.</item>
+        <item quantity="other">%1$d rows couldn\'t be read; check that nothing is missing.</item>
+    </plurals>
+    <string name="profile_idioma">"🌐     Language"</string>
+    <string name="profile_idioma_titulo">App language</string>
+    <string name="profile_idioma_sistema">Same as phone</string>
+
+    <string name="politica_privacidad"><![CDATA[
+GAMORA PRIVACY NOTICE
+
+Last updated: November 14, 2026 · Version 1.1
+
+This notice applies to everyone who uses Gamora, in Mexico, the United States or anywhere else. This is a translation; if it differs from the Spanish version, the Spanish version governs.
+
+1. WHO IS RESPONSIBLE
+
+[Nombre completo o razón social], located at [Domicilio], is responsible for processing your personal data in Gamora, a personal finance app. For any privacy matter, write to [Correo de privacidad].
+
+2. DATA WE PROCESS AND WHERE IT COMES FROM
+
+• Identity and contact: first and last names, email address and, if you provide it, phone number. You give them to us when you sign up; if you sign in with Google, we receive your name and email from your Google account.
+• Financial data you enter: income, expenses, categories, recurring transactions, savings goals, budgets and preferences (currency, first day of the period).
+• Conversations with the Gamora AI assistant, which are stored in your account until you delete them.
+• Documents you choose to import (bank statements and pay stubs) and the transactions you confirm from them.
+• App preferences: theme, notifications and the consents you give.
+• Technical data: installation identifiers and device integrity checks to protect the service. If the app crashes, a technical crash report (phone model and OS, app version and where the error happened; never your transactions or amounts). App usage data only if you allow analytics.
+
+Gamora does not ask for or store card numbers, bank accounts or your bank passwords, and it does not connect to your bank accounts. Gamora does not intentionally process sensitive personal data; if a document you import contains it, it is not stored (see section 4).
+
+3. WHY WE USE IT
+
+Necessary purposes:
+• Create and protect your account and sign you in.
+• Store and sync your transactions, goals and budgets.
+• Calculate balances, statistics and savings tips inside the app.
+• Record your recurring transactions and send the alerts you turn on (budget, goals, weekly summary).
+• Detect and fix app errors, and prevent abuse and fraud.
+
+Optional purposes (only with your permission, which you can withdraw in Profile at any time):
+• Usage analytics, to understand which parts of the app are used and improve it.
+• Letting Gamora AI use your financial data to give you personalized recommendations.
+
+We do not use your data for advertising or to build profiles for commercial purposes.
+
+4. ARTIFICIAL INTELLIGENCE AND DOCUMENT IMPORT
+
+What you write to Gamora AI is sent to Google\'s Gemini model to generate the answer. If you allow the use of your financial data, a summary of your transactions, goals and budgets is also sent. If you don\'t, the assistant answers without knowing your data. Answers may contain errors and are not professional financial advice.
+
+Importing bank statements and pay stubs: when you choose a PDF or a photo, Gamora first reads it on your phone, using the PDF text or Google ML Kit text recognition, which works offline; in that case the document never leaves your phone. Only if the format is not recognized is the document sent to Gemini to extract the transactions. If the PDF is password-protected, it is opened on your phone and, when it has to be sent, an unprotected copy is sent. Gamora does not store the file, the copy or the password, on any server or on your phone; it only stores the transactions you review and confirm. These documents may contain data such as your account number, address or tax ID (RFC). Payroll XML files (CFDI) are read on your phone and are not sent to Gemini.
+
+5. WHO WE SHARE IT WITH AND TRANSFERS
+
+We use Google services as processors that handle data only on Gamora\'s behalf: Firebase Authentication (sign-in), Cloud Firestore (cloud storage), Firebase App Check and Play Integrity (security), Firebase Crashlytics (error reports), Google Analytics for Firebase (only if you allow it) and Gemini through Firebase AI Logic (assistant). Their servers may be located outside your country, for example in the United States. Sharing data with these processors does not require your consent.
+
+We do not sell, rent or trade your personal data, and we do not transfer it to third parties for their own purposes. We would only disclose it to an authority when a law or court order requires it.
+
+6. HOW IT IS PROTECTED
+
+Your data is stored linked to your account and encrypted in transit. Database security rules prevent other people from reading or changing your information, and we use device integrity checks to help block requests that do not come from the original app. You can also lock the app with your fingerprint, face or PIN. No measure is foolproof; if a breach affecting your rights occurs, we will notify you without undue delay.
+
+7. HOW LONG WE KEEP IT
+
+• Your account and data: as long as you have an account. They are deleted immediately when you delete it.
+• Gamora AI conversations: until you delete them or your account.
+• Error reports (Crashlytics): 90 days.
+• Analytics data (if you allowed it): the period set in Google Analytics, no longer than 14 months.
+• Records of your consents: as long as your account exists, to show what you agreed to.
+
+8. DELETING YOUR ACCOUNT
+
+You can delete your account and all your information at any time from Profile › Delete my data. Deletion is immediate and permanent. If you cannot access the app, write to [Correo de privacidad] from your account\'s email address.
+
+9. YOUR RIGHTS (ARCO)
+
+You can access, correct and delete your data or object to its processing, and withdraw your consent or limit its use. Many of these changes can be made directly in Profile. For anything else, send your request to [Correo de privacidad] with your name, your account email and what you are asking for; we will reply within 20 business days. If you believe we did not handle your request or that your data was misused, you can contact the personal data protection authority in Mexico (the Secretaría Anticorrupción y Buen Gobierno).
+
+10. PEOPLE IN THE UNITED STATES
+
+• Categories of data: identifiers (name, email, optional phone number, account and installation IDs), financial information you enter, the content of your conversations with the assistant, documents you choose to import (processed only, not stored), technical and diagnostic information, and in-app activity if you allow analytics. The sources are you and your phone; if you sign in with Google, also your Google account.
+• We do not sell your personal data or share it for advertising based on your activity on other sites or apps. Gamora shows no ads.
+• Whatever state you live in, you can ask us what data we have, get a copy, correct it and delete it, and we will not treat you differently for exercising these rights. You can do so as described in sections 8 and 9; to protect your account we may confirm your identity using your account email.
+• Do Not Track: Gamora does not track your activity on other sites or apps, so it does not change how it works when it receives that signal.
+• Gamora is not directed to children under 13 and does not knowingly collect their data (see section 11).
+
+11. MINORS
+
+Gamora is intended for people 18 years of age or older. If we learn that an account belongs to a minor, we will delete it along with its data.
+
+12. CHANGES TO THIS NOTICE
+
+We will publish any change in the app and on our website, with its update date and version number. If a change affects what data we process or why, we will ask you to accept the new version the next time you open the app; if you don\'t accept it, you can sign out and delete your account.
+    ]]></string>
+
+    <string name="terminos_condiciones"><![CDATA[
+GAMORA TERMS AND CONDITIONS
+
+Last updated: November 14, 2026 · Version 1.1
+
+This is a translation; if it differs from the Spanish version, the Spanish version governs.
+
+1. ACCEPTANCE
+
+By creating a Gamora account you accept these terms and the Privacy Notice. If you do not agree, do not use the app. Gamora is offered by [Nombre completo o razón social].
+
+2. WHAT GAMORA IS
+
+Gamora is a tool to organize your personal finances: record income and expenses, import transactions from bank statements and pay stubs, schedule recurring transactions, set budgets and savings goals, view statistics, get alerts and chat with the Gamora AI assistant.
+
+Gamora is not a bank or a financial institution: it does not hold money, make payments or transfers, or connect to your bank accounts.
+
+3. NOT ADVICE
+
+The information, calculations, savings tips and Gamora AI answers are for guidance only. They are not financial, investment, tax, accounting or legal advice, and Gamora does not guarantee savings or results. Consult a professional before making important decisions.
+
+4. YOUR ACCOUNT
+
+You must be 18 or older and provide truthful information. You are responsible for protecting access to your account and your phone. If you suspect unauthorized use, change your password and contact us.
+
+5. YOUR DATA
+
+The information you enter is yours. You are responsible for the accuracy of amounts, dates and categories; Gamora\'s calculations, alerts and tips depend on that data. The processing of your personal data is governed by the Privacy Notice.
+
+6. GAMORA AI ASSISTANT AND IMPORTS
+
+Gamora AI generates answers with artificial intelligence that may be inaccurate or incomplete. Review any recommendation before acting on it.
+
+Reading bank statements and pay stubs is automatic (on your phone or, when needed, with AI): it may miss transactions, misread an amount or a date, or assign the wrong category. Review the transactions before saving them; the ones you confirm are recorded as if you had entered them yourself.
+
+7. ALERTS AND RECURRING TRANSACTIONS
+
+Alerts and the automatic recording of recurring transactions depend on your phone allowing notifications and background tasks and having a connection. They may arrive late or not at all; they do not replace your own tracking of payments.
+
+8. ACCEPTABLE USE
+
+Do not use Gamora for unlawful activities, or try to access other people\'s data, alter the app or interfere with its security. We may suspend accounts that break these terms.
+
+9. AVAILABILITY
+
+We try to keep Gamora always working, but there may be interruptions due to maintenance, updates or provider failures. Some features may change or be discontinued.
+
+10. LIABILITY
+
+Gamora is provided "as is" and "as available". To the extent permitted by law, we are not liable for indirect losses or for decisions you make based on information in the app. Nothing in these terms limits the consumer rights that the law of your country or state gives you and that cannot be waived.
+
+11. INTELLECTUAL PROPERTY
+
+Gamora\'s name, design and code belong to their owner. Your data remains yours.
+
+12. CANCELLATION
+
+You can stop using Gamora and delete your account and all your data at any time from Profile › Delete my data.
+
+13. CHANGES
+
+We will publish any change in the app with its date and version number. If the change is significant, we will ask you to accept it the next time you open the app; if you don\'t, you can sign out and delete your account.
+
+14. GOVERNING LAW AND CONTACT
+
+These terms are governed by the laws of Mexico. If you live in Mexico, you can contact PROFECO; if you live in another country, you keep the consumer rights granted by the law of your place of residence. Contact: [Correo de soporte] · [Domicilio].
+    ]]></string>
+</resources>

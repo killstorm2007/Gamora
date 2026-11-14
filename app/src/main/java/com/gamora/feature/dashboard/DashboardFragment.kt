@@ -1,9 +1,11 @@
 
 package com.gamora.feature.dashboard
 
+import com.gamora.core.texto
+import com.gamora.core.nombre
+import com.gamora.core.Categoria
 import com.gamora.feature.transactions.fechaCorta
 import com.gamora.feature.transactions.editarMovimiento
-import com.gamora.feature.transactions.CATEGORIAS
 import com.gamora.core.ui.dinero
 import android.os.Bundle
 import android.text.InputType
@@ -33,9 +35,9 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
     private val movements
         get() = GamoraTransactionStore.movements
 
-    private var categoriaSeleccionada: String = "Todas"
+    private var categoriaSeleccionada: Categoria? = null
 
-    private val categorias = listOf("Todas") + CATEGORIAS
+    private val categorias: List<Categoria?> = listOf(null) + Categoria.TODAS
 
     override fun onViewCreated(
         view: View,
@@ -57,7 +59,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
 
         val filtroCategoria = view.findViewById<Spinner>(R.id.spinnerCategoria)
 
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categorias)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categorias.map { it?.nombre(requireContext()) ?: texto(R.string.dashboard_todas) })
 
         adapter.setDropDownViewResource(
             android.R.layout.simple_spinner_dropdown_item
@@ -113,7 +115,7 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
         container.removeAllViews()
 
         val visibles = movements
-            .filter { categoriaSeleccionada == "Todas" || it.category == categoriaSeleccionada }
+            .filter { categoriaSeleccionada == null || it.category == categoriaSeleccionada }
             .sortedByDescending { it.timestamp }
             .take(5)
 
@@ -122,8 +124,8 @@ class DashboardFragment : Fragment(R.layout.fragment_dashboard) {
                 crearEstadoVacio(
                     requireContext(),
                     "🧾",
-                    if (movements.isEmpty()) "Tus movimientos aparecerán aquí cuando registres ingresos o gastos."
-                    else "No hay movimientos recientes en esta categoría."
+                    if (movements.isEmpty()) texto(R.string.dashboard_tus_movimientos_apareceran_aqui)
+                    else texto(R.string.dashboard_no_hay_movimientos_recientes)
                 )
             )
             return

@@ -1,10 +1,13 @@
 
 package com.gamora.feature.transactions
 
+import com.gamora.core.ui.localeApp
+import com.gamora.core.ui.formatoFecha
+import com.gamora.core.texto
+import com.gamora.core.nombre
+import com.gamora.core.Categoria
 import com.gamora.core.ui.LOCALE_MX
 import com.gamora.core.ui.dp
-import com.gamora.core.ui.paraBuscar
-import java.math.BigDecimal
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -34,14 +37,15 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
     // Se registra al crear el fragment, como exige registerForActivityResult.
     private val importador = ImportadorDocumentos(this)
 
-    private var selectedType = "Todos"
-    private var selectedCategory = "Todas las categorías"
+    private var selectedType = texto(R.string.transactions_todos)
+    private var selectedCategory: Categoria? = null
     private var searchQuery = ""
 
-    private val categories = listOf("Todas las categorías") + CATEGORIAS
+    // null = todas las categorías.
+    private val categories: List<Categoria?> = listOf(null) + Categoria.TODAS
 
     private val dateFormat =
-        SimpleDateFormat("dd MMM yyyy", LOCALE_MX)
+        formatoFecha("ddMMMyyyy")
 
     override fun onViewCreated(
         view: View,
@@ -62,7 +66,7 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
-            categories
+            categories.map { it?.nombre(requireContext()) ?: texto(R.string.transactions_todas_las_categorias) }
         )
 
         adapter.setDropDownViewResource(
@@ -92,19 +96,19 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         )
 
         btnTodos.setOnClickListener {
-            selectedType = "Todos"
+            selectedType = texto(R.string.transactions_todos)
             actualizarBotones(btnTodos, btnGastos, btnIngresos)
             aplicarFiltros(view)
         }
 
         btnGastos.setOnClickListener {
-            selectedType = "Gastos"
+            selectedType = texto(R.string.transactions_gastos)
             actualizarBotones(btnTodos, btnGastos, btnIngresos)
             aplicarFiltros(view)
         }
 
         btnIngresos.setOnClickListener {
-            selectedType = "Ingresos"
+            selectedType = texto(R.string.transactions_ingresos)
             actualizarBotones(btnTodos, btnGastos, btnIngresos)
             aplicarFiltros(view)
         }
@@ -135,11 +139,11 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         view.findViewById<View>(R.id.btnAddIncome)
             .setOnClickListener {
                 MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Agregar movimiento")
-                    .setItems(arrayOf("Ingreso", "Gasto")) { _, opcion ->
+                    .setTitle(texto(R.string.transactions_agregar_movimiento_2))
+                    .setItems(arrayOf(texto(R.string.transactions_ingreso), texto(R.string.transactions_gasto))) { _, opcion ->
                         mostrarDialogoMovimiento(esIngreso = opcion == 0)
                     }
-                    .setNegativeButton("Cancelar", null)
+                    .setNegativeButton(texto(R.string.import_review_cancelar), null)
                     .show()
             }
 
@@ -177,27 +181,18 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
     }
 
     private fun aplicarFiltros(view: View) {
-        val busqueda = searchQuery.paraBuscar()
+        val contexto = requireContext()
 
-        val filteredMovements = GamoraTransactionStore.movements
+        // Busca en descripción y categoría (sin acentos) o en el importe ("450", "450.50").
+        val filteredMovements = filtrarMovimientos(
+            GamoraTransactionStore.movements, searchQuery, selectedCategory
+        ) { it.nombre(contexto) }
             .filter { movement ->
-                // Busca en descripción y categoría (sin acentos) o en el importe ("450", "450.50").
-                val matchesSearch = busqueda.isEmpty() ||
-                        movement.description.paraBuscar().contains(busqueda) ||
-                        movement.category.paraBuscar().contains(busqueda) ||
-                        BigDecimal.valueOf(movement.amountCents, 2).toPlainString().startsWith(busqueda)
-
-                val matchesType = when (selectedType) {
-                    "Gastos" -> !movement.isIncome
-                    "Ingresos" -> movement.isIncome
+                when (selectedType) {
+                    texto(R.string.transactions_gastos) -> !movement.isIncome
+                    texto(R.string.transactions_ingresos) -> movement.isIncome
                     else -> true
                 }
-
-                val matchesCategory =
-                    selectedCategory == "Todas las categorías" ||
-                            movement.category == selectedCategory
-
-                matchesSearch && matchesType && matchesCategory
             }
             .sortedByDescending { it.timestamp }
 
@@ -219,8 +214,8 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
                 crearEstadoVacio(
                     requireContext(),
                     "🔍",
-                    if (GamoraTransactionStore.movements.isEmpty()) "Aún no registras movimientos. Toca «Agregar movimiento» para empezar."
-                    else "No hay movimientos que coincidan con tu búsqueda."
+                    if (GamoraTransactionStore.movements.isEmpty()) texto(R.string.transactions_aun_no_registras_movimientos)
+                    else texto(R.string.transactions_no_hay_movimientos_que)
                 )
             )
             return
@@ -233,7 +228,7 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
 
             if (currentDate != lastDate) {
                 container.addView(TextView(requireContext()).apply {
-                    text = currentDate.uppercase(LOCALE_MX)
+                    text = currentDate.uppercase(localeApp())
                     setTextAppearance(R.style.TextAppearance_Gamora_Overline)
                     setTextColor(ContextCompat.getColor(requireContext(), R.color.gamora_text_secondary))
                     setPadding(dp(4), dp(18), 0, dp(10))

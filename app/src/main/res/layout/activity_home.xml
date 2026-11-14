@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:contentDescription="Abrir asistente Gamora"
+        android:contentDescription="@string/home_abrir_asistente_gamora"
         android:src="@drawable/ic_sparkle"
         app:backgroundTint="@color/gamora_accent"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Gamora.Medium"

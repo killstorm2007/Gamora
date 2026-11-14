@@ -1,6 +1,8 @@
 
 package com.gamora
 
+import com.gamora.R
+import com.gamora.core.texto
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Intent
 import android.os.Bundle
@@ -125,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun mostrarPoliticas() {
         mostrarDocumento(
-            "Política de Privacidad",
+            texto(R.string.main_politica_de_privacidad),
             R.string.politica_privacidad
         )
     }
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity() {
         val dialogo = MaterialAlertDialogBuilder(this)
             .setTitle(titulo)
             .setView(vista)
-            .setPositiveButton("Cerrar") { dialog, _ ->
+            .setPositiveButton(texto(R.string.main_cerrar)) { dialog, _ ->
                 dialog.dismiss()
             }
             .create()

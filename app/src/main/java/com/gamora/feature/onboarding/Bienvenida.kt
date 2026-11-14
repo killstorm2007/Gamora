@@ -1,5 +1,7 @@
 package com.gamora.feature.onboarding
 
+import com.gamora.R
+import com.gamora.core.texto
 import android.content.Context
 import android.text.InputType
 import android.widget.Toast
@@ -56,14 +58,14 @@ private fun AppCompatActivity.pasoMoneda(
     var elegida = Moneda.DISPONIBLES.indexOf(Moneda.actual).coerceAtLeast(0)
 
     MaterialAlertDialogBuilder(this)
-        .setTitle("1 de 3 · ¿En qué moneda manejas tu dinero?")
+        .setTitle(texto(R.string.bienvenida_1_de_3_en))
         .setSingleChoiceItems(
             Moneda.DISPONIBLES.map { Moneda.NOMBRES.getValue(it) }.toTypedArray(),
             elegida
         ) { _, indice -> elegida = indice }
         .setCancelable(false)
-        .setNegativeButton("Omitir") { _, _ -> alTerminar() }
-        .setPositiveButton("Siguiente") { _, _ ->
+        .setNegativeButton(texto(R.string.bienvenida_omitir)) { _, _ -> alTerminar() }
+        .setPositiveButton(texto(R.string.bienvenida_siguiente)) { _, _ ->
             pasoPresupuesto(Moneda.DISPONIBLES[elegida], registrarMovimiento, alTerminar)
         }
         .show()
@@ -75,7 +77,7 @@ private fun AppCompatActivity.pasoPresupuesto(
     alTerminar: () -> Unit
 ) {
     val campo = TextInputEditText(this).apply {
-        hint = "Presupuesto mensual (ej. 8000)"
+        hint = texto(R.string.bienvenida_presupuesto_mensual_ej_8000)
         inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         maxLines = 1
     }
@@ -91,12 +93,12 @@ private fun AppCompatActivity.pasoPresupuesto(
     }
 
     MaterialAlertDialogBuilder(this)
-        .setTitle("2 de 3 · ¿Cuánto quieres gastar al mes como máximo?")
-        .setMessage("Gamora te avisará cuando vayas en el 80 % y si te pasas. Puedes cambiarlo después en Perfil.")
+        .setTitle(texto(R.string.bienvenida_2_de_3_cuanto))
+        .setMessage(texto(R.string.bienvenida_gamora_te_avisara_cuando))
         .setView(campo.enDialogo())
         .setCancelable(false)
-        .setNegativeButton("Omitir") { _, _ -> guardar(0L) }
-        .setPositiveButton("Siguiente") { _, _ ->
+        .setNegativeButton(texto(R.string.bienvenida_omitir)) { _, _ -> guardar(0L) }
+        .setPositiveButton(texto(R.string.bienvenida_siguiente)) { _, _ ->
             val centavos = centavosDe(campo.text?.toString().orEmpty())
             guardar(centavos?.takeIf { it in 1..100_000_000_000L } ?: 0L)
         }
@@ -108,16 +110,15 @@ private fun AppCompatActivity.pasoPrimerMovimiento(
     alTerminar: () -> Unit
 ) {
     MaterialAlertDialogBuilder(this)
-        .setTitle("3 de 3 · Registra tu primer movimiento")
+        .setTitle(texto(R.string.bienvenida_3_de_3_registra))
         .setMessage(
-            "Empieza por tu ingreso del mes o por un gasto de hoy. Si se repite cada mes " +
-                    "(salario, renta, suscripciones), marca «Repetir cada mes» y Gamora lo registrará solo."
+            texto(R.string.bienvenida_empieza_por_tu_ingreso)
         )
         .setCancelable(false)
-        .setNeutralButton("Después") { _, _ -> alTerminar() }
+        .setNeutralButton(texto(R.string.bienvenida_despues)) { _, _ -> alTerminar() }
         // Al registrar no se llama a alTerminar: el permiso de avisos se pedirá la próxima vez
         // para no encimarlo con el formulario.
-        .setNegativeButton("Un gasto") { _, _ -> registrarMovimiento(false) }
-        .setPositiveButton("Un ingreso") { _, _ -> registrarMovimiento(true) }
+        .setNegativeButton(texto(R.string.bienvenida_un_gasto)) { _, _ -> registrarMovimiento(false) }
+        .setPositiveButton(texto(R.string.bienvenida_un_ingreso)) { _, _ -> registrarMovimiento(true) }
         .show()
 }

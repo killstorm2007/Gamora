@@ -1,5 +1,7 @@
 package com.gamora.feature.importar
 
+import com.gamora.core.textoPlural
+import com.gamora.core.texto
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -66,26 +68,26 @@ fun esLimiteDeCuota(error: Throwable): Boolean =
 
 /** Explica qué pasó en lugar de culpar siempre a la conexión. */
 internal fun mensajeDeError(error: Throwable): String {
-    val texto = generateSequence(error) { it.cause }.joinToString(" ") { "${it.javaClass.simpleName} ${it.message.orEmpty()}" }
+    val detalle = generateSequence(error) { it.cause }.joinToString(" ") { "${it.javaClass.simpleName} ${it.message.orEmpty()}" }
 
-    fun contiene(vararg palabras: String) = palabras.any { texto.contains(it, ignoreCase = true) }
+    fun contiene(vararg palabras: String) = palabras.any { detalle.contains(it, ignoreCase = true) }
 
     return when {
         error is IllegalArgumentException ->
-            "Gemini no pudo leer este documento. Intenta con otro archivo o una foto más clara."
+            texto(R.string.importar_documento_gemini_no_pudo_leer)
         esLimiteDeCuota(error) ->
-            "Llegaste al límite de lecturas por ahora. Intenta de nuevo en unos minutos."
+            texto(R.string.importar_documento_llegaste_al_limite_de)
         contiene("ResponseStopped", "MAX_TOKENS", "token count", "exceeds the maximum", "too large", "payload size") ->
-            "El documento es muy largo para leerlo de una vez. Prueba con un periodo más corto o con menos páginas."
+            texto(R.string.importar_documento_el_documento_es_muy)
         contiene("RequestTimeout", "DEADLINE_EXCEEDED", "timed out", "timeout") ->
-            "Gemini tardó demasiado en leer el documento. Intenta de nuevo en un momento."
+            texto(R.string.importar_documento_gemini_tardo_demasiado_en)
         contiene("UnknownHost", "ConnectException", "SocketException", "Unable to resolve host", "No address associated") ->
-            "No se pudo leer el documento. Revisa tu conexión e intenta de nuevo."
+            texto(R.string.importar_documento_no_se_pudo_leer)
         error is java.io.IOException ->
-            "No se pudo abrir el PDF: parece dañado o tiene un formato no compatible."
+            texto(R.string.importar_documento_no_se_pudo_abrir)
         contiene("ServerException", "INTERNAL", "500") ->
-            "Gemini tuvo un problema al procesar este documento. Intenta de nuevo en un momento; si se repite, prueba con una foto o un PDF más corto."
-        else -> "No se pudo leer el documento. Intenta de nuevo en un momento."
+            texto(R.string.importar_documento_gemini_tuvo_un_problema)
+        else -> texto(R.string.importar_documento_no_se_pudo_leer_2)
     }
 }
 
@@ -113,15 +115,12 @@ class ImportadorDocumentos(private val fragment: Fragment) {
         }
 
         MaterialAlertDialogBuilder(contexto)
-            .setTitle("Importar estado de cuenta")
+            .setTitle(texto(R.string.importar_documento_importar_estado_de_cuenta))
             .setMessage(
-                "Gamora lee tu estado de cuenta en tu teléfono. Si no reconoce el formato de tu banco, " +
-                        "lo enviará a Gemini (Google) solo para leerlo. El documento no se guarda.\n\n" +
-                        "Puedes elegir un estado de cuenta o recibo de nómina en PDF o foto, o el XML de tu nómina. " +
-                        "Antes de guardar podrás revisar cada movimiento."
+                texto(R.string.importar_documento_gamora_lee_tu_estado)
             )
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Aceptar") { _, _ ->
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.importar_documento_aceptar)) { _, _ ->
                 preferencias.edit().putBoolean(CLAVE_CONSENTIMIENTO, true).apply()
                 selector.launch(TIPOS)
             }
@@ -139,7 +138,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             if (cursor.moveToFirst() && !cursor.isNull(0)) cursor.getLong(0) else null
         }
         if (tamano != null && tamano > MAXIMO_BYTES) {
-            aviso("El archivo pesa más de 15 MB. Elige uno más ligero.")
+            aviso(texto(R.string.importar_documento_el_archivo_pesa_mas))
             return
         }
 
@@ -151,10 +150,10 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             try {
                 val bytes = withContext(Dispatchers.IO) {
                     resolver.openInputStream(uri)?.use { it.readBytes() }
-                } ?: error("No se pudo abrir el archivo.")
+                } ?: error(texto(R.string.importar_no_se_pudo_abrir))
 
                 if (bytes.size > MAXIMO_BYTES) {
-                    aviso("El archivo pesa más de 15 MB. Elige uno más ligero.")
+                    aviso(texto(R.string.importar_documento_el_archivo_pesa_mas))
                     return@launch
                 }
 
@@ -169,20 +168,19 @@ class ImportadorDocumentos(private val fragment: Fragment) {
                             ?: leerConReintento(bytes, resolver.getType(uri) ?: "image/jpeg")
                     }
                     TipoDocumento.OTRO -> {
-                        aviso("Ese tipo de archivo no se puede leer. Usa un PDF, una foto o el XML de tu nómina.")
+                        aviso(texto(R.string.importar_documento_ese_tipo_de_archivo))
                         return@launch
                     }
                 }
 
                 if (resultado.movimientos.isEmpty()) {
-                    aviso("No encontramos movimientos en este documento")
+                    aviso(texto(R.string.importar_documento_no_encontramos_movimientos_en))
                     return@launch
                 }
 
                 if (resultado.descartados > 0) {
                     aviso(
-                        if (resultado.descartados == 1) "1 renglón no se pudo leer; revisa que no falte nada."
-                        else "${resultado.descartados} renglones no se pudieron leer; revisa que no falte nada."
+                        textoPlural(R.plurals.importar_documento_renglones_no_leidos, resultado.descartados, resultado.descartados)
                     )
                 }
 
@@ -193,7 +191,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             } catch (error: CancellationException) {
                 // P. ej. la pantalla se recreó a media lectura: avisar en vez de cerrar en silencio.
                 if (!canceladaPorUsuario) {
-                    Toast.makeText(app, "Se interrumpió la lectura; vuelve a intentarlo.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(app, texto(R.string.importar_documento_se_interrumpio_la_lectura), Toast.LENGTH_LONG).show()
                 }
                 throw error
             } catch (error: NoEsNominaException) {
@@ -219,7 +217,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             } catch (_: ContrasenaRequeridaException) {
                 error = null
             } catch (_: ContrasenaIncorrectaException) {
-                error = "Contraseña incorrecta"
+                error = texto(R.string.importar_documento_contrasena_incorrecta)
             }
 
             progreso.hide()
@@ -230,7 +228,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
 
     private suspend fun pedirContrasena(error: String?): CharArray? = suspendCancellableCoroutine { continuacion ->
         val campo = TextInputEditText(contexto).apply {
-            hint = "Contraseña del PDF"
+            hint = texto(R.string.importar_documento_contrasena_del_pdf)
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             maxLines = 1
         }
@@ -242,12 +240,12 @@ class ImportadorDocumentos(private val fragment: Fragment) {
         }
 
         val dialogo = MaterialAlertDialogBuilder(contexto)
-            .setTitle("Este PDF tiene contraseña")
-            .setMessage("Escríbela para abrirlo en tu teléfono. No se guarda.")
+            .setTitle(texto(R.string.importar_documento_este_pdf_tiene_contrasena))
+            .setMessage(texto(R.string.importar_documento_escribela_para_abrirlo_en))
             .setView(campo.enDialogo())
             .setCancelable(false)
-            .setNegativeButton("Cancelar") { _, _ -> responder(null) }
-            .setPositiveButton("Abrir") { _, _ ->
+            .setNegativeButton(texto(R.string.import_review_cancelar)) { _, _ -> responder(null) }
+            .setPositiveButton(texto(R.string.importar_documento_abrir)) { _, _ ->
                 val texto = campo.text ?: ""
                 responder(CharArray(texto.length) { texto[it] })
             }
@@ -265,7 +263,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
     private suspend fun leerEnTelefono(lectura: suspend () -> ResultadoLectura?): ResultadoLectura? =
         try {
             withContext(Dispatchers.Default) { lectura() }
-                ?.also { aviso("Leído en tu teléfono: el documento no se envió a ningún lado.") }
+                ?.also { aviso(texto(R.string.importar_documento_leido_en_tu_telefono)) }
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {
@@ -280,9 +278,9 @@ class ImportadorDocumentos(private val fragment: Fragment) {
         if (!texto.esEscaneo) return null
 
         val reconocidas = reconocerPdf(pdf) { pagina, total ->
-            textoProgreso?.post { textoProgreso?.text = "Reconociendo el texto (página $pagina de $total)…" }
+            textoProgreso?.post { textoProgreso?.text = texto(R.string.importar_documento_reconociendo_el_texto_pagina, pagina, total) }
         }
-        textoProgreso?.post { textoProgreso?.text = "Leyendo tu documento…" }
+        textoProgreso?.post { textoProgreso?.text = texto(R.string.importar_documento_leyendo_tu_documento) }
         return leerTablas(reconocidas)
     }
 
@@ -299,10 +297,10 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             if (!esLimiteDeCuota(error)) throw error
 
             for (restantes in ESPERA_CUOTA_SEGUNDOS downTo 1) {
-                textoProgreso?.text = "Hay muchas lecturas en este momento. Reintentando en $restantes s…"
+                textoProgreso?.text = texto(R.string.importar_documento_hay_muchas_lecturas_en, restantes)
                 delay(1000)
             }
-            textoProgreso?.text = "Leyendo tu documento…"
+            textoProgreso?.text = texto(R.string.importar_documento_leyendo_tu_documento)
             leerConGemini(bytes, mime)
         }
 
@@ -316,7 +314,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             addView(CircularProgressIndicator(contexto).apply { isIndeterminate = true })
             addView(TextView(contexto).apply {
                 textoProgreso = this
-                text = "Leyendo tu documento…"
+                text = texto(R.string.importar_documento_leyendo_tu_documento)
                 textSize = 15f
                 setPadding(contexto.dp(16), 0, 0, 0)
                 setTextColor(contexto.getColor(R.color.gamora_text_primary))
@@ -328,7 +326,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
         return MaterialAlertDialogBuilder(contexto)
             .setView(contenido)
             .setCancelable(false)
-            .setNegativeButton("Cancelar") { _, _ ->
+            .setNegativeButton(texto(R.string.import_review_cancelar)) { _, _ ->
                 canceladaPorUsuario = true
                 lectura?.cancel()
             }

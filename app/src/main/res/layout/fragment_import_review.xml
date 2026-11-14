@@ -24,7 +24,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Regresar"
+            android:contentDescription="@string/chatbot_regresar"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/gamora_text_primary" />
 
@@ -38,7 +38,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Revisa tus movimientos"
+                android:text="@string/import_review_revisa_tus_movimientos"
                 android:textAppearance="@style/TextAppearance.Gamora.Title" />
 
             <TextView
@@ -71,7 +71,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.6"
-            android:contentDescription="Seleccionar todos"
+            android:contentDescription="@string/import_review_seleccionar_todos"
             android:minWidth="0dp"
             android:minHeight="0dp" />
 
@@ -79,26 +79,26 @@
             style="@style/Gamora.TablaEncabezado"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:text="Fecha" />
+            android:text="@string/import_review_fecha" />
 
         <TextView
             style="@style/Gamora.TablaEncabezado"
             android:layout_width="0dp"
             android:layout_weight="2.4"
-            android:text="Descripción" />
+            android:text="@string/import_review_descripcion" />
 
         <TextView
             style="@style/Gamora.TablaEncabezado"
             android:layout_width="0dp"
             android:layout_weight="1.4"
-            android:text="Categoría" />
+            android:text="@string/import_review_categoria" />
 
         <TextView
             style="@style/Gamora.TablaEncabezado"
             android:layout_width="0dp"
             android:layout_weight="1.6"
             android:gravity="end"
-            android:text="Monto" />
+            android:text="@string/import_review_monto" />
     </LinearLayout>
 
     <ScrollView
@@ -146,14 +146,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="1"
-                android:text="Cancelar" />
+                android:text="@string/import_review_cancelar" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGuardarRevision"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.6"
-                android:text="Guardar" />
+                android:text="@string/import_review_guardar" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

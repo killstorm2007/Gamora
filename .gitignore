@@ -26,4 +26,12 @@ local.properties
 # Configuración de Firebase (cada quien descarga la suya)
 app/google-services.json
 .superpowers/
-docs
+
+# Llave de firma de producción y sus contraseñas: nunca al repositorio
+keystore.properties
+*.jks
+*.keystore
+
+
+# Scripts locales (p. ej. el generador de páginas legales)
+scripts/

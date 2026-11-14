@@ -1,5 +1,8 @@
 package com.gamora.feature.importar
 
+import com.gamora.core.textoPlural
+import com.gamora.core.texto
+import com.gamora.core.nombre
 import android.os.Bundle
 import android.util.Log
 import android.text.TextUtils
@@ -47,7 +50,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
         val resultado = ImportacionEnCurso.resultado
         if (resultado == null) {
             // P. ej. Android cerró la app mientras estaba en segundo plano.
-            Toast.makeText(requireContext(), "La revisión se perdió; vuelve a importar el documento.", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), texto(R.string.import_review_la_revision_se_perdio), Toast.LENGTH_LONG).show()
             findNavController().popBackStack()
             return
         }
@@ -88,13 +91,9 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
         }
 
         val resumen = resumen(filas)
-        resumenTexto.text = "Seleccionados: ${resumen.seleccionados} · " +
-                "Ingresos +${dinero(resumen.ingresosCentavos)} · Gastos -${dinero(resumen.gastosCentavos)}"
+        resumenTexto.text = texto(R.string.import_review_seleccionados_ingresos_gastos, resumen.seleccionados, dinero(resumen.ingresosCentavos), dinero(resumen.gastosCentavos))
 
-        botonGuardar.text = when (resumen.seleccionados) {
-            1 -> "Guardar 1 movimiento"
-            else -> "Guardar ${resumen.seleccionados} movimientos"
-        }
+        botonGuardar.text = textoPlural(R.plurals.import_review_guardar_movimientos, resumen.seleccionados, resumen.seleccionados)
         botonGuardar.isEnabled = resumen.seleccionados > 0 && !guardando
         casillaTodos.isChecked = filas.isNotEmpty() && filas.all { it.seleccionado }
         casillaTodos.isEnabled = !guardando
@@ -129,7 +128,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
                 isEnabled = !guardando
                 minWidth = 0
                 minimumWidth = 0
-                contentDescription = "Incluir ${fila.descripcion}"
+                contentDescription = texto(R.string.import_review_incluir, fila.descripcion)
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.6f)
                 setOnClickListener {
                     actualizarFilas(filas.toMutableList().also { it[indice] = fila.copy(seleccionado = isChecked) })
@@ -138,11 +137,11 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
 
             addView(celda(fechaCorta(fila.fecha), 1f, secundario))
             addView(celda(
-                if (fila.repetido) "⚠ repetido · ${fila.descripcion}" else fila.descripcion,
+                if (fila.repetido) texto(R.string.import_review_repetido, fila.descripcion) else fila.descripcion,
                 2.4f,
                 if (fila.repetido) color(R.color.gamora_warning) else principal
             ))
-            addView(celda(fila.categoria, 1.4f, secundario))
+            addView(celda(fila.categoria.nombre(requireContext()), 1.4f, secundario))
             addView(celda(
                 (if (fila.esIngreso) "+" else "-") + dinero(fila.montoCentavos),
                 1.6f,
@@ -158,11 +157,11 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
 
     /** Gemini puede confundir un abono con un cargo: aquí se corrige además de editar. */
     private fun opciones(indice: Int, fila: MovimientoImportado) {
-        val cambio = if (fila.esIngreso) "Cambiar a gasto" else "Cambiar a ingreso"
+        val cambio = if (fila.esIngreso) texto(R.string.import_review_cambiar_a_gasto) else texto(R.string.import_review_cambiar_a_ingreso)
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(fila.descripcion)
-            .setItems(arrayOf("Editar", cambio)) { _, opcion ->
+            .setItems(arrayOf(texto(R.string.analytics_editar), cambio)) { _, opcion ->
                 if (opcion == 0) {
                     editar(indice, fila)
                 } else if (indice in filas.indices) {
@@ -176,7 +175,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
                     })
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
             .show()
     }
 
@@ -207,10 +206,10 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
         }
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("¿Descartar estos movimientos?")
-            .setMessage("No se guardará ninguno de los movimientos leídos.")
-            .setNegativeButton("Seguir revisando", null)
-            .setPositiveButton("Descartar") { _, _ -> terminar() }
+            .setTitle(texto(R.string.import_review_descartar_estos_movimientos))
+            .setMessage(texto(R.string.import_review_no_se_guardara_ninguno))
+            .setNegativeButton(texto(R.string.import_review_seguir_revisando), null)
+            .setPositiveButton(texto(R.string.import_review_descartar)) { _, _ -> terminar() }
             .show()
     }
 
@@ -225,7 +224,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
 
         guardando = true
         botonGuardar.isEnabled = false
-        botonGuardar.text = "Guardando…"
+        botonGuardar.text = texto(R.string.import_review_guardando)
 
         try {
             val db = FirebaseFirestore.getInstance()
@@ -237,18 +236,18 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
                 val batch = db.batch()
                 lote.forEach { fila ->
                     val referencia = GamoraTransactionStore.nuevaReferencia()
-                        ?: error("No hay una sesión activa.")
+                        ?: error(texto(R.string.auth_repository_no_hay_una_sesion))
                     batch.set(referencia, GamoraTransactionStore.datos(fila.aMovimiento()))
                 }
                 batch.commit().addOnFailureListener { error ->
                     Log.w("ImportReviewFragment", "Lote rechazado: ${error.javaClass.simpleName}")
-                    Toast.makeText(app, "Algunos movimientos no se pudieron guardar.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(app, texto(R.string.import_review_algunos_movimientos_no_se), Toast.LENGTH_LONG).show()
                 }
             }
 
             Toast.makeText(
                 app,
-                if (elegidos.size == 1) "Se registró 1 movimiento" else "Se registraron ${elegidos.size} movimientos",
+                textoPlural(R.plurals.import_review_se_registraron_movimientos, elegidos.size, elegidos.size),
                 Toast.LENGTH_LONG
             ).show()
             terminar()
@@ -257,7 +256,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
             dibujar()
             Toast.makeText(
                 requireContext(),
-                error.localizedMessage ?: "No se pudieron guardar los movimientos.",
+                error.localizedMessage ?: texto(R.string.import_review_no_se_pudieron_guardar),
                 Toast.LENGTH_LONG
             ).show()
         }

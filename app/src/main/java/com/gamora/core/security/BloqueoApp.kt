@@ -1,5 +1,7 @@
 package com.gamora.core.security
 
+import com.gamora.R
+import com.gamora.core.texto
 import android.content.Context
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
@@ -34,8 +36,8 @@ fun pedirDesbloqueo(activity: FragmentActivity, alTerminar: (Boolean) -> Unit) {
 
     prompt.authenticate(
         BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Desbloquea Gamora")
-            .setSubtitle("Usa tu huella, rostro o el PIN de tu teléfono")
+            .setTitle(texto(R.string.bloqueo_app_desbloquea_gamora))
+            .setSubtitle(texto(R.string.bloqueo_app_usa_tu_huella_rostro))
             .setAllowedAuthenticators(AUTENTICADORES)
             .build()
     )

@@ -1,6 +1,9 @@
 
 package com.gamora.feature.transactions
 
+import com.gamora.R
+import com.gamora.core.texto
+import com.gamora.core.Categoria
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -22,7 +25,7 @@ import java.util.Calendar
 
 data class GamoraMovement(
     val description: String,
-    val category: String,
+    val category: Categoria,
     val amountCents: Long,
     val isIncome: Boolean,
     val timestamp: Long = System.currentTimeMillis(),
@@ -50,7 +53,7 @@ fun List<GamoraMovement>.totalesPorMes(): Map<Int, TotalesMes> {
 }
 
 /** Gasto que en realidad es dinero apartado (p. ej. una aportación a una meta). */
-val GamoraMovement.esAhorro: Boolean get() = !isIncome && category == "Ahorro"
+val GamoraMovement.esAhorro: Boolean get() = !isIncome && category == Categoria.AHORRO
 
 /**
  * Lo que sobró cada mes; un mes en negativo no resta lo ahorrado en otros meses. Incluye el mes en curso.
@@ -99,7 +102,7 @@ object GamoraTransactionStore {
                 estado.value = snapshot?.documents.orEmpty().map { doc ->
                     GamoraMovement(
                         description = doc.getString("descripcion").orEmpty(),
-                        category = doc.getString("categoria") ?: "Otros",
+                        category = Categoria.porClave(doc.getString("categoria")) ?: Categoria.OTROS,
                         amountCents = doc.getLong("montoCentavos") ?: 0L,
                         isIncome = doc.getBoolean("esIngreso") ?: false,
                         timestamp = doc.getLong("fecha") ?: 0L,
@@ -119,7 +122,7 @@ object GamoraTransactionStore {
     /** Campos tal como se guardan en Firestore. */
     fun datos(movimiento: GamoraMovement): Map<String, Any> = mapOf(
         "descripcion" to movimiento.description,
-        "categoria" to movimiento.category,
+        "categoria" to movimiento.category.clave,
         "montoCentavos" to movimiento.amountCents,
         "esIngreso" to movimiento.isIncome,
         "fecha" to movimiento.timestamp
@@ -133,14 +136,14 @@ object GamoraTransactionStore {
         movimiento: GamoraMovement,
         onError: (String) -> Unit
     ) {
-        val uid = uidActual ?: return onError("No hay una sesión activa.")
+        val uid = uidActual ?: return onError(texto(R.string.auth_repository_no_hay_una_sesion))
         val coleccion = coleccion(uid)
 
         val tarea = if (movimiento.id.isBlank()) coleccion.add(datos(movimiento))
         else coleccion.document(movimiento.id).set(datos(movimiento))
 
         tarea.addOnFailureListener { error ->
-            onError(error.localizedMessage ?: "No se pudo guardar el movimiento.")
+            onError(error.localizedMessage ?: texto(R.string.gamora_movement_no_se_pudo_guardar))
         }
     }
 
@@ -148,11 +151,11 @@ object GamoraTransactionStore {
         id: String,
         onError: (String) -> Unit
     ) {
-        val uid = uidActual ?: return onError("No hay una sesión activa.")
+        val uid = uidActual ?: return onError(texto(R.string.auth_repository_no_hay_una_sesion))
 
         coleccion(uid).document(id).delete()
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudo eliminar el movimiento.")
+                onError(error.localizedMessage ?: texto(R.string.gamora_movement_no_se_pudo_eliminar))
             }
     }
 }

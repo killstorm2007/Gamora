@@ -28,7 +28,7 @@
             android:textStyle="bold"
             android:gravity="center"
             android:importantForAccessibility="no"
-            android:text="G"
+            android:text="@string/login_screen_g"
             android:textColor="@color/gamora_on_hero"
             android:textSize="34sp" />
 
@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Bienvenido a"
+            android:text="@string/mainactivity_bienvenido_a"
             android:textColor="@color/gamora_on_hero_secondary"
             android:textSize="18sp" />
 
@@ -46,7 +46,7 @@
             android:fontFamily="sans-serif"
             android:textStyle="bold"
             android:letterSpacing="0.04"
-            android:text="Gamora"
+            android:text="@string/app_name"
             android:textColor="@color/gamora_on_hero"
             android:textSize="48sp" />
 
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:lineSpacingExtra="4dp"
-            android:text="Controla tu dinero, cumple tus metas y recibe consejos de un asistente que te conoce."
+            android:text="@string/mainactivity_controla_tu_dinero_cumple"
             android:textColor="@color/gamora_on_hero_secondary"
             android:textSize="16sp" />
 
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:lineSpacingExtra="10dp"
-            android:text="📊   Analiza a dónde va tu dinero\n🎯   Ahorra para tus metas\n✨   Pregúntale a Gamora AI"
+            android:text="@string/mainactivity_analiza_a_donde_va"
             android:textColor="@color/gamora_on_hero"
             android:textSize="15sp" />
     </LinearLayout>
@@ -74,7 +74,7 @@
         android:id="@+id/btnIniciar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Iniciar sesión"
+        android:text="@string/login_screen_iniciar_sesion"
         android:textColor="@color/gamora_hero_start"
         app:backgroundTint="@color/white" />
 
@@ -84,7 +84,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Crear cuenta"
+        android:text="@string/mainactivity_crear_cuenta"
         android:textColor="@color/white"
         app:strokeColor="@color/gamora_on_hero_secondary" />
 
@@ -97,7 +97,7 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
-        android:text="Política de privacidad"
+        android:text="@string/mainactivity_politica_de_privacidad"
         android:textColor="@color/gamora_on_hero_secondary"
         android:textSize="14sp" />
 

@@ -1,6 +1,9 @@
 
 package com.gamora.feature.profile
 
+import androidx.core.os.LocaleListCompat
+import com.gamora.core.texto
+import com.gamora.core.nombre
 import kotlinx.coroutines.flow.first
 import com.gamora.core.security.puedeBloquear
 import com.gamora.core.preferences.SeguridadPreferences
@@ -80,6 +83,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         configurarPrivacidadEIA(view)
         configurarNotificaciones(view)
         configurarLegalesYAyuda(view)
+        configurarIdioma(view)
         configurarEliminarDatos(view)
         configurarBloqueo(view)
         configurarRecurrentes(view)
@@ -93,34 +97,33 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 val lista = try {
                     Recurrentes.listar(uid)
                 } catch (error: Exception) {
-                    mostrarToast(error.localizedMessage ?: "No se pudieron cargar los recurrentes.")
+                    mostrarToast(error.localizedMessage ?: texto(R.string.profile_no_se_pudieron_cargar))
                     return@launch
                 }
                 if (!vistaActiva()) return@launch
 
                 if (lista.isEmpty()) {
                     MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Movimientos recurrentes")
+                        .setTitle(texto(R.string.profile_movimientos_recurrentes_2))
                         .setMessage(
-                            "Aún no tienes ninguno. Al registrar un ingreso o gasto, marca " +
-                                    "«Repetir cada mes» y Gamora lo registrará solo cada mes."
+                            texto(R.string.profile_aun_no_tienes_ninguno)
                         )
-                        .setPositiveButton("Entendido", null)
+                        .setPositiveButton(texto(R.string.profile_entendido), null)
                         .show()
                     return@launch
                 }
 
                 val etiquetas = lista.map { r ->
                     val signo = if (r.esIngreso) "+" else "−"
-                    "${r.descripcion} · $signo${dinero(r.montoCentavos)}\nDía ${r.dia} de cada mes · ${r.categoria}"
+                    texto(R.string.profile_ndia_de_cada_mes, r.descripcion, signo, dinero(r.montoCentavos), r.dia, r.categoria.nombre(requireContext()))
                 }
 
                 MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Movimientos recurrentes")
+                    .setTitle(texto(R.string.profile_movimientos_recurrentes_2))
                     .setItems(etiquetas.toTypedArray()) { _, indice ->
                         confirmarFinRecurrente(uid, lista[indice])
                     }
-                    .setPositiveButton("Cerrar", null)
+                    .setPositiveButton(texto(R.string.main_cerrar), null)
                     .show()
             }
         }
@@ -128,19 +131,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun confirmarFinRecurrente(uid: String, recurrente: MovimientoRecurrente) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Dejar de repetir")
+            .setTitle(texto(R.string.profile_dejar_de_repetir))
             .setMessage(
-                "«${recurrente.descripcion}» ya no se registrará cada mes. " +
-                        "Los movimientos que ya se registraron se conservan."
+                texto(R.string.profile_ya_no_se_registrara, recurrente.descripcion)
             )
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Dejar de repetir") { _, _ ->
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.profile_dejar_de_repetir)) { _, _ ->
                 viewLifecycleOwner.lifecycleScope.launch {
                     try {
                         Recurrentes.eliminar(uid, recurrente.id)
-                        mostrarToast("Ya no se repetirá")
+                        mostrarToast(texto(R.string.profile_ya_no_se_repetira))
                     } catch (error: Exception) {
-                        mostrarToast(error.localizedMessage ?: "No se pudo actualizar.")
+                        mostrarToast(error.localizedMessage ?: texto(R.string.profile_no_se_pudo_actualizar))
                     }
                 }
             }
@@ -153,21 +155,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 val activo = SeguridadPreferences.bloqueoFlow(requireContext()).first()
 
                 mostrarDialogoInterruptores(
-                    "Bloqueo de la app",
-                    "Gamora pedirá tu huella, rostro o el PIN de tu teléfono cada vez que la abras.",
-                    listOf("Activar bloqueo" to activo)
+                    texto(R.string.profile_bloqueo_de_la_app),
+                    texto(R.string.profile_gamora_pedira_tu_huella),
+                    listOf(texto(R.string.profile_activar_bloqueo) to activo)
                 ) { valores, cerrar ->
                     val nuevo = valores[0]
 
                     if (nuevo && !puedeBloquear(requireContext())) {
-                        mostrarToast("Primero configura una huella o un PIN en los ajustes de tu teléfono.")
+                        mostrarToast(texto(R.string.profile_primero_configura_una_huella))
                         return@mostrarDialogoInterruptores
                     }
 
                     viewLifecycleOwner.lifecycleScope.launch {
                         SeguridadPreferences.setBloqueo(requireContext(), nuevo)
                         cerrar()
-                        mostrarToast(if (nuevo) "Bloqueo activado" else "Bloqueo desactivado")
+                        mostrarToast(if (nuevo) texto(R.string.profile_bloqueo_activado) else texto(R.string.profile_bloqueo_desactivado))
                     }
                 }
             }
@@ -184,7 +186,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             R.id.tvCorreoPerfil
         )
 
-        tvNombre.text = "Cargando perfil..."
+        tvNombre.text = texto(R.string.profile_cargando_perfil)
         tvCorreo.text = ""
 
         val propietarioVista = viewLifecycleOwner
@@ -207,14 +209,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     .joinToString(" ")
 
                 tvNombre.text = nombreCompleto.ifBlank {
-                    "Usuario Gamora"
+                    texto(R.string.profile_usuario_gamora)
                 }
 
                 view.findViewById<TextView>(R.id.tvAvatar).text =
-                    perfil.nombre.firstOrNull()?.uppercase() ?: "G"
+                    perfil.nombre.firstOrNull()?.uppercase() ?: texto(R.string.login_screen_g)
 
                 tvCorreo.text = perfil.correo.ifBlank {
-                    "Correo no disponible"
+                    texto(R.string.profile_correo_no_disponible)
                 }
             },
             onError = { mensaje ->
@@ -225,7 +227,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     return@obtenerPerfil
                 }
 
-                tvNombre.text = "No se pudo cargar el perfil"
+                tvNombre.text = texto(R.string.profile_no_se_pudo_cargar)
 
                 Toast.makeText(
                     requireContext(),
@@ -260,7 +262,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         view.findViewById<TextView>(
             R.id.tvMetasActivas
-        ).text = GamoraGoalStore.goals.count { it.activa }.toString()
+        ).text = texto(R.string.comun_numero, GamoraGoalStore.goals.count { it.activa })
     }
 
     private fun configurarSelectorTema(view: View) {
@@ -337,12 +339,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         btnCerrarSesion.setOnClickListener {
 
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Cerrar sesión")
+                .setTitle(texto(R.string.profile_cerrar_sesion))
                 .setMessage(
-                    "¿Estás seguro de que deseas cerrar tu sesión de Gamora?"
+                    texto(R.string.profile_estas_seguro_de_que)
                 )
-                .setNegativeButton("Cancelar", null)
-                .setPositiveButton("Cerrar sesión") { _, _ ->
+                .setNegativeButton(texto(R.string.import_review_cancelar), null)
+                .setPositiveButton(texto(R.string.profile_cerrar_sesion)) { _, _ ->
 
                     cancelarAvisos(requireContext())
                     AuthRepository.cerrarSesion()
@@ -400,8 +402,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             .setTitle(titulo)
             .setMessage(mensaje)
             .setView(contenedor)
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Guardar", null)
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.import_review_guardar), null)
             .apply {
                 botonExtra?.let { (etiqueta, accion) ->
                     setNeutralButton(etiqueta) { _, _ -> accion() }
@@ -448,7 +450,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                             aplicar(actual, valores[0]),
                             onSuccess = {
                                 cerrar()
-                                mostrarToast("Preferencia guardada")
+                                mostrarToast(texto(R.string.profile_preferencia_guardada))
                             },
                             onError = ::mostrarToast
                         )
@@ -460,21 +462,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         view.findViewById<View>(R.id.btnPrivacidad).setOnClickListener {
             editarConsentimiento(
-                titulo = "Privacidad y seguridad",
-                mensaje = "Decide cómo usa Gamora tus datos y protege tu cuenta.",
-                etiqueta = "Permitir analítica de uso",
+                titulo = texto(R.string.profile_privacidad_y_seguridad_2),
+                mensaje = texto(R.string.profile_decide_como_usa_gamora),
+                etiqueta = texto(R.string.profile_permitir_analitica_de_uso),
                 valorActual = { it.analiticaAutorizada },
                 aplicar = { c, valor -> c.copy(analiticaAutorizada = valor) },
-                botonExtra = "Cambiar contraseña" to {
+                botonExtra = texto(R.string.profile_cambiar_contrasena) to {
                     val correo = AuthRepository.obtenerCorreo()
 
                     if (correo == null) {
-                        mostrarToast("No hay un correo asociado a la cuenta.")
+                        mostrarToast(texto(R.string.profile_no_hay_un_correo))
                     } else {
                         AuthRepository.recuperarPassword(
                             correo,
                             onSuccess = {
-                                mostrarToast("Te enviamos un correo a $correo para cambiar tu contraseña.")
+                                mostrarToast(texto(R.string.profile_te_enviamos_un_correo, correo))
                             },
                             onError = ::mostrarToast
                         )
@@ -485,9 +487,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         view.findViewById<View>(R.id.btnPreferenciasIA).setOnClickListener {
             editarConsentimiento(
-                titulo = "Inteligencia artificial",
-                mensaje = "El asistente puede usar tus movimientos para darte recomendaciones personalizadas.",
-                etiqueta = "Permitir que la IA use mis datos financieros",
+                titulo = texto(R.string.profile_inteligencia_artificial_2),
+                mensaje = texto(R.string.profile_el_asistente_puede_usar),
+                etiqueta = texto(R.string.profile_permitir_que_la_ia),
                 valorActual = { it.iaAutorizada },
                 aplicar = { c, valor -> c.copy(iaAutorizada = valor) }
             )
@@ -499,7 +501,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { concedido ->
             if (concedido || !isAdded) return@registerForActivityResult
 
-            mostrarToast("Activa las notificaciones de Gamora para recibir los avisos.")
+            mostrarToast(texto(R.string.profile_activa_las_notificaciones_de))
             val paquete = requireContext().packageName
             startActivity(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -514,9 +516,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         // clave en Firestore, etiqueta, valor por defecto
         val opciones = listOf(
-            Triple("alertasPresupuesto", "Alertas de presupuesto", true),
-            Triple("recordatoriosMetas", "Recordatorios de metas", true),
-            Triple("resumenSemanal", "Resumen semanal", false)
+            Triple("alertasPresupuesto", texto(R.string.profile_alertas_de_presupuesto), true),
+            Triple("recordatoriosMetas", texto(R.string.profile_recordatorios_de_metas), true),
+            Triple("resumenSemanal", texto(R.string.profile_resumen_semanal), false)
         )
 
         view.findViewById<View>(R.id.btnNotificaciones).setOnClickListener {
@@ -527,8 +529,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     if (!vistaActiva()) return@obtenerPreferencia
 
                     mostrarDialogoInterruptores(
-                        "Notificaciones",
-                        "Elige qué avisos quieres recibir de Gamora.",
+                        texto(R.string.profile_notificaciones_2),
+                        texto(R.string.profile_elige_que_avisos_quieres),
                         opciones.map { (clave, etiqueta, porDefecto) ->
                             etiqueta to (datos?.get(clave) as? Boolean ?: porDefecto)
                         }
@@ -539,7 +541,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                             opciones.map { it.first }.zip(valores).toMap(),
                             onSuccess = {
                                 cerrar()
-                                mostrarToast("Notificaciones guardadas")
+                                mostrarToast(texto(R.string.profile_notificaciones_guardadas))
                                 if (valores.any { it } && !puedeNotificar(requireContext())) {
                                     permisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS)
                                 }
@@ -553,6 +555,26 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
+    /** Idioma de la app (idiomas por app de AndroidX; en Android 13+ también desde Ajustes del teléfono). */
+    private fun configurarIdioma(view: View) {
+        view.findViewById<View>(R.id.btnIdioma).setOnClickListener {
+            val etiquetas = arrayOf("", "es", "en")
+            val actual = AppCompatDelegate.getApplicationLocales().toLanguageTags().substringBefore('-')
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.profile_idioma_titulo)
+                .setSingleChoiceItems(
+                    arrayOf(getString(R.string.profile_idioma_sistema), "Español", "English"),
+                    etiquetas.indexOf(actual).coerceAtLeast(0)
+                ) { dialogo, opcion ->
+                    dialogo.dismiss()
+                    // La app se vuelve a dibujar en el idioma elegido; la sesión se conserva.
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(etiquetas[opcion]))
+                }
+                .setNegativeButton(R.string.import_review_cancelar, null)
+                .show()
+        }
+    }
+
     private fun configurarLegalesYAyuda(view: View) {
 
         fun mostrarDocumento(titulo: String, recursoTexto: Int) {
@@ -562,21 +584,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(titulo)
                 .setView(vista)
-                .setPositiveButton("Cerrar", null)
+                .setPositiveButton(texto(R.string.main_cerrar), null)
                 .show()
         }
 
         view.findViewById<View>(R.id.btnDocumentosLegales).setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Documentos legales")
-                .setItems(arrayOf("Términos y condiciones", "Política de privacidad")) { _, opcion ->
+                .setTitle(texto(R.string.profile_documentos_legales_2))
+                .setItems(arrayOf(texto(R.string.register_terminos_y_condiciones), texto(R.string.mainactivity_politica_de_privacidad))) { _, opcion ->
                     if (opcion == 0) {
-                        mostrarDocumento("Términos y condiciones", R.string.terminos_condiciones)
+                        mostrarDocumento(texto(R.string.register_terminos_y_condiciones), R.string.terminos_condiciones)
                     } else {
-                        mostrarDocumento("Política de privacidad", R.string.politica_privacidad)
+                        mostrarDocumento(texto(R.string.mainactivity_politica_de_privacidad), R.string.politica_privacidad)
                     }
                 }
-                .setNegativeButton("Cerrar", null)
+                .setNegativeButton(texto(R.string.main_cerrar), null)
                 .show()
         }
 
@@ -584,22 +606,19 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             val correoSoporte = getString(R.string.correo_soporte)
 
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Ayuda y soporte")
+                .setTitle(texto(R.string.profile_ayuda_y_soporte_2))
                 .setMessage(
-                    "• Registra ingresos y gastos desde Inicio.\n" +
-                            "• Ajusta tu presupuesto en Preferencias financieras.\n" +
-                            "• Tus datos se guardan en tu cuenta y se sincronizan entre dispositivos.\n\n" +
-                            "¿Necesitas más ayuda? Escríbenos a $correoSoporte"
+                    texto(R.string.profile_registra_ingresos_y_gastos, correoSoporte)
                 )
-                .setNegativeButton("Cerrar", null)
-                .setPositiveButton("Escribir a soporte") { _, _ ->
+                .setNegativeButton(texto(R.string.main_cerrar), null)
+                .setPositiveButton(texto(R.string.profile_escribir_a_soporte)) { _, _ ->
                     val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$correoSoporte"))
-                        .putExtra(Intent.EXTRA_SUBJECT, "Ayuda con Gamora")
+                        .putExtra(Intent.EXTRA_SUBJECT, texto(R.string.profile_ayuda_con_gamora))
 
                     try {
                         startActivity(intent)
                     } catch (_: ActivityNotFoundException) {
-                        mostrarToast("No hay una app de correo instalada.")
+                        mostrarToast(texto(R.string.profile_no_hay_una_app))
                     }
                 }
                 .show()
@@ -623,7 +642,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 setPadding(48, 12, 48, 0)
                 addView(
                     TextInputLayout(contexto, null, com.google.android.material.R.attr.textInputOutlinedStyle).apply {
-                        hint = "Contraseña"
+                        hint = texto(R.string.login_screen_contrasena)
                         endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
                         addView(campoPassword)
                     }
@@ -632,15 +651,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
 
             val dialogo = MaterialAlertDialogBuilder(contexto)
-                .setTitle("Eliminar mi cuenta y mis datos")
+                .setTitle(texto(R.string.profile_eliminar_mi_cuenta_y))
                 .setMessage(
-                    "Se borrarán de forma permanente tu perfil, movimientos, preferencias " +
-                            "y consentimientos, y tu cuenta de acceso. Esta acción no se puede deshacer.\n\n" +
-                            if (conGoogle) "Confirma con tu cuenta de Google." else "Escribe tu contraseña para confirmar."
+                    texto(R.string.profile_se_borraran_de_forma) +
+                            if (conGoogle) texto(R.string.profile_confirma_con_tu_cuenta) else texto(R.string.profile_escribe_tu_contrasena_para)
                 )
                 .setView(contenedor)
-                .setNegativeButton("Cancelar", null)
-                .setPositiveButton("Eliminar", null)
+                .setNegativeButton(texto(R.string.import_review_cancelar), null)
+                .setPositiveButton(texto(R.string.goals_eliminar), null)
                 .create()
 
             dialogo.setOnShowListener {
@@ -653,7 +671,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                         onSuccess = {
                             dialogo.dismiss()
                             cancelarAvisos(contexto)
-                            mostrarToast("Tu cuenta y tus datos fueron eliminados.")
+                            mostrarToast(texto(R.string.profile_tu_cuenta_y_tus))
                             if (isAdded) irAInicio()
                         },
                         onError = { mensaje ->
@@ -684,12 +702,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     val password = campoPassword.text?.toString().orEmpty()
 
                     if (password.isEmpty()) {
-                        campoPassword.error = "Escribe tu contraseña"
+                        campoPassword.error = texto(R.string.profile_escribe_tu_contrasena)
                         return@setOnClickListener
                     }
 
                     val credencial = AuthRepository.credencialConPassword(password) ?: run {
-                        mostrarToast("No hay un correo asociado a la cuenta.")
+                        mostrarToast(texto(R.string.profile_no_hay_un_correo))
                         return@setOnClickListener
                     }
 
@@ -802,14 +820,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 contexto, null,
                 com.google.android.material.R.attr.textInputOutlinedExposedDropdownMenuStyle
             ).apply {
-                hint = "Moneda"
+                hint = texto(R.string.profile_moneda)
                 endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
                 addView(campoMoneda)
             }
         )
 
         val campoIngreso = crearCampo(
-            "Ingreso Mensual",
+            texto(R.string.profile_ingreso_mensual),
             BigDecimal.valueOf(
                 preferencias.ingresoMensualCentavos,
                 2
@@ -818,7 +836,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         )
 
         val campoPresupuesto = crearCampo(
-            "Presupuesto mensual",
+            texto(R.string.profile_presupuesto_mensual),
             BigDecimal.valueOf(
                 preferencias.presupuestoMensualCentavos,
                 2
@@ -827,13 +845,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         )
 
         val campoDia = crearCampo(
-            "Dia de inicio del periodo (1-28)",
+            texto(R.string.profile_dia_de_inicio_del),
             preferencias.diaInicioPeriodo.toString(),
             InputType.TYPE_CLASS_NUMBER
         )
 
         val campoAhorro = crearCampo(
-            "Objetivo de Ahorro Mensual",
+            texto(R.string.profile_objetivo_de_ahorro_mensual),
             BigDecimal.valueOf(
                 preferencias.objetivoAhorroMensualCentavos,
                 2
@@ -842,13 +860,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         )
 
         val dialogo = MaterialAlertDialogBuilder(contexto)
-            .setTitle("Preferencias financieras")
+            .setTitle(texto(R.string.profile_preferencias_financieras_2))
             .setMessage(
-                "Personaliza la forma en que Gamora organiza tus finanzas."
+                texto(R.string.profile_personaliza_la_forma_en)
             )
             .setView(scroll)
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Guardar", null)
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.import_review_guardar), null)
             .create()
 
         dialogo.setOnShowListener {
@@ -881,7 +899,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     presupuesto == null ||
                     ahorro == null
                 ) {
-                    mostrarError("Revisa las cantidades ingresadas.")
+                    mostrarError(texto(R.string.profile_revisa_las_cantidades_ingresadas))
                     return@setOnClickListener
                 }
 
@@ -907,7 +925,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
                         Toast.makeText(
                             requireContext(),
-                            "Preferencias financieras guardadas",
+                            texto(R.string.profile_preferencias_financieras_guardadas),
                             Toast.LENGTH_SHORT
                         ).show()
                     },
@@ -945,33 +963,33 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         fun crearCampo(etiqueta: String, valor: String, editable: Boolean = true) =
             campoEnDialogo(contenedor, etiqueta, valor, InputType.TYPE_CLASS_TEXT, editable)
 
-        val campoNombre = crearCampo("Nombre", nombreActual)
+        val campoNombre = crearCampo(texto(R.string.register_screen_nombre), nombreActual)
         val campoPaterno = crearCampo(
-            "Apellido paterno",
+            texto(R.string.register_screen_apellido_paterno),
             paternoActual
         )
         val campoMaterno = crearCampo(
-            "Apellido materno",
+            texto(R.string.register_screen_apellido_materno),
             maternoActual
         )
         val campoCorreo = crearCampo(
-            "Correo electrónico",
+            texto(R.string.login_screen_correo_electronico),
             correoActual,
             false
         )
         val campoTelefono = crearCampo(
-            "Teléfono",
+            texto(R.string.profile_telefono),
             telefonoActual
         )
 
         MaterialAlertDialogBuilder(contexto)
-            .setTitle("Información personal")
+            .setTitle(texto(R.string.profile_informacion_personal_2))
             .setMessage(
-                "Mantén tus datos actualizados en Gamora."
+                texto(R.string.profile_manten_tus_datos_actualizados)
             )
             .setView(contenedor)
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Guardar", null)
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.import_review_guardar), null)
             .create()
             .also { dialogo ->
 
@@ -1006,7 +1024,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
                                 Toast.makeText(
                                     requireContext(),
-                                    "Información actualizada correctamente",
+                                    texto(R.string.profile_informacion_actualizada_correctamente),
                                     Toast.LENGTH_SHORT
                                 ).show()
 

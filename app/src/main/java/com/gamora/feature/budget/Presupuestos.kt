@@ -1,5 +1,8 @@
 package com.gamora.feature.budget
 
+import com.gamora.R
+import com.gamora.core.texto
+import com.gamora.core.Categoria
 import android.util.Log
 import com.gamora.feature.transactions.GamoraMovement
 import com.google.firebase.firestore.DocumentReference
@@ -11,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 /** Cuánto se lleva gastado en una categoría frente a su límite del periodo. */
 data class AvancePresupuesto(
-    val categoria: String,
+    val categoria: Categoria,
     val gastadoCentavos: Long,
     val limiteCentavos: Long
 ) {
@@ -22,7 +25,7 @@ data class AvancePresupuesto(
 /** Avance de cada categoría con límite, desde [inicioPeriodo]; primero las más cerca de pasarse. */
 fun avancePresupuestos(
     movimientos: List<GamoraMovement>,
-    limites: Map<String, Long>,
+    limites: Map<Categoria, Long>,
     inicioPeriodo: Long
 ): List<AvancePresupuesto> {
     val gastado = movimientos
@@ -36,12 +39,12 @@ fun avancePresupuestos(
         .sortedByDescending { it.gastadoCentavos.toDouble() / it.limiteCentavos }
 }
 
-/** Límites por categoría en users/{uid}/preferencias/presupuestos → { categorias: { "Comida": 300000, … } }. */
+/** Límites por categoría en users/{uid}/preferencias/presupuestos → { categorias: { "comida": 300000, … } } (claves de [Categoria]). */
 object PresupuestoStore {
 
-    private val estado = MutableStateFlow<Map<String, Long>>(emptyMap())
-    val flow: StateFlow<Map<String, Long>> = estado
-    val limites: Map<String, Long> get() = estado.value
+    private val estado = MutableStateFlow<Map<Categoria, Long>>(emptyMap())
+    val flow: StateFlow<Map<Categoria, Long>> = estado
+    val limites: Map<Categoria, Long> get() = estado.value
 
     private var uidActual: String? = null
     private var registro: ListenerRegistration? = null
@@ -51,11 +54,11 @@ object PresupuestoStore {
             .collection("users").document(uid)
             .collection("preferencias").document("presupuestos")
 
-    /** Lee el mapa "categorias" de un documento de Firestore. */
-    fun leer(datos: Map<String, Any>?): Map<String, Long> =
+    /** Lee el mapa "categorias" de un documento de Firestore; las claves desconocidas se ignoran. */
+    fun leer(datos: Map<String, Any>?): Map<Categoria, Long> =
         (datos?.get("categorias") as? Map<*, *>).orEmpty()
             .mapNotNull { (clave, valor) ->
-                val categoria = clave as? String ?: return@mapNotNull null
+                val categoria = Categoria.porClave(clave as? String) ?: return@mapNotNull null
                 val limite = (valor as? Number)?.toLong() ?: return@mapNotNull null
                 categoria to limite
             }
@@ -84,19 +87,19 @@ object PresupuestoStore {
     }
 
     /** Reemplaza todos los límites (sin merge, para que borrar una categoría sí la quite). */
-    fun guardar(limites: Map<String, Long>, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        val uid = uidActual ?: return onError("No hay una sesión activa.")
+    fun guardar(limites: Map<Categoria, Long>, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val uid = uidActual ?: return onError(texto(R.string.auth_repository_no_hay_una_sesion))
 
         documento(uid)
             .set(
                 mapOf(
-                    "categorias" to limites.filterValues { it > 0 },
+                    "categorias" to limites.filterValues { it > 0 }.mapKeys { it.key.clave },
                     "fechaActualizacion" to FieldValue.serverTimestamp()
                 )
             )
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: "No se pudieron guardar los presupuestos.")
+                onError(error.localizedMessage ?: texto(R.string.presupuestos_no_se_pudieron_guardar))
             }
     }
 }

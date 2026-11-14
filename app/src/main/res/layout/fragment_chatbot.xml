@@ -24,7 +24,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Regresar"
+            android:contentDescription="@string/chatbot_regresar"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/gamora_text_primary" />
 
@@ -55,14 +55,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gamora AI"
+                android:text="@string/chatbot_gamora_ai"
                 android:textAppearance="@style/TextAppearance.Gamora.Title"
                 android:textSize="17sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tu asistente de finanzas"
+                android:text="@string/chatbot_tu_asistente_de_finanzas"
                 android:textAppearance="@style/TextAppearance.Gamora.Caption" />
         </LinearLayout>
 
@@ -71,7 +71,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Borrar conversación"
+            android:contentDescription="@string/chatbot_borrar_conversacion"
             android:src="@drawable/ic_delete_sweep"
             app:tint="@color/gamora_text_secondary" />
     </LinearLayout>
@@ -107,7 +107,7 @@
                 android:paddingTop="12dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="12dp"
-                android:text="¡Hola! 👋 Soy Gamora AI. Puedo analizar tus gastos, ayudarte con tu presupuesto y armar un plan para tus metas. Recuerdo lo que me cuentes."
+                android:text="@string/chatbot_hola_soy_gamora_ai"
                 android:textColor="@color/gamora_text_primary"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -146,8 +146,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/bg_chat_input"
-            android:hint="Pregúntale algo a Gamora…"
+            android:hint="@string/chatbot_preguntale_algo_a_gamora"
             android:imeOptions="actionSend"
+            android:maxLength="2000"
             android:importantForAutofill="no"
             android:inputType="textCapSentences|textMultiLine"
             android:maxLines="4"
@@ -165,7 +166,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:contentDescription="Enviar mensaje"
+            android:contentDescription="@string/chatbot_enviar_mensaje"
             android:src="@drawable/ic_send"
             app:backgroundTint="@color/gamora_accent"
             app:elevation="0dp"

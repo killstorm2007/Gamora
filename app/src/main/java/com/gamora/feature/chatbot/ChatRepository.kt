@@ -1,5 +1,7 @@
 package com.gamora.feature.chatbot
 
+import com.gamora.R
+import com.gamora.core.texto
 import com.gamora.core.auth.AuthRepository
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.CollectionReference
@@ -30,7 +32,7 @@ object ChatRepository {
         onSuccess: (List<MensajeChat>) -> Unit,
         onError: (String) -> Unit
     ) {
-        val chat = coleccion() ?: return onError("No hay una sesión activa.")
+        val chat = coleccion() ?: return onError(texto(R.string.auth_repository_no_hay_una_sesion))
 
         chat.orderBy("fecha", Query.Direction.DESCENDING)
             .limit(LIMITE_HISTORIAL)
@@ -46,7 +48,7 @@ object ChatRepository {
                     }.reversed()
                 )
             }
-            .addOnFailureListener { onError(it.localizedMessage ?: "No se pudo cargar la conversación.") }
+            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.chat_repository_no_se_pudo_cargar)) }
     }
 
     /** Si falla, el mensaje solo se pierde del historial; la conversación en pantalla sigue. */
@@ -64,7 +66,7 @@ object ChatRepository {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        val chat = coleccion() ?: return onError("No hay una sesión activa.")
+        val chat = coleccion() ?: return onError(texto(R.string.auth_repository_no_hay_una_sesion))
         val db = FirebaseFirestore.getInstance()
 
         chat.get()
@@ -79,6 +81,6 @@ object ChatRepository {
                 )
             }
             .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { onError(it.localizedMessage ?: "No se pudo borrar la conversación.") }
+            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.chat_repository_no_se_pudo_borrar)) }
     }
 }

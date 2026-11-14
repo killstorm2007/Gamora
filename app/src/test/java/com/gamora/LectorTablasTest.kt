@@ -1,5 +1,6 @@
 package com.gamora
 
+import com.gamora.core.Categoria
 import com.gamora.feature.importar.sinia.Palabra
 import com.gamora.feature.importar.sinia.decodificarEbcdic
 import com.gamora.feature.importar.sinia.leerTablas
@@ -105,7 +106,7 @@ class LectorTablasTest {
         val m = r.movimientos.single()
         assertEquals(300000L, m.montoCentavos)
         assertTrue(m.esIngreso)
-        assertEquals("Salario", m.categoria)
+        assertEquals(Categoria.SALARIO, m.categoria)
     }
 
     @Test

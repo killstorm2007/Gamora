@@ -1,5 +1,9 @@
 package com.gamora.feature.transactions
 
+import com.gamora.core.ui.formatoFecha
+import com.gamora.core.texto
+import com.gamora.core.nombre
+import com.gamora.core.Categoria
 import android.app.DatePickerDialog
 import android.text.InputFilter
 import android.text.InputType
@@ -25,32 +29,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 
-val CATEGORIAS_INGRESO = listOf(
-    "Salario",
-    "Ventas",
-    "Negocio",
-    "Inversiones",
-    "Regalo",
-    "Otros"
-)
-
-val CATEGORIAS_GASTO = listOf(
-    "Comida",
-    "Transporte",
-    "Vivienda",
-    "Servicios",
-    "Salud",
-    "Educación",
-    "Entretenimiento",
-    "Compras",
-    "Ahorro",
-    "Otros"
-)
-
-/** Todas las categorías, sin repetir, para los filtros. */
-val CATEGORIAS = (CATEGORIAS_INGRESO + CATEGORIAS_GASTO).distinct()
-
-private val formatoFecha = SimpleDateFormat("EEEE d 'de' MMMM yyyy", LOCALE_MX)
 
 /** Abre el formulario para editar [movimiento] (ingreso o gasto según su tipo). */
 fun Fragment.editarMovimiento(movimiento: GamoraMovement) =
@@ -67,7 +45,8 @@ fun Fragment.mostrarDialogoMovimiento(
     alGuardarLocal: ((GamoraMovement) -> Unit)? = null
 ) {
     val context = requireContext()
-    val categorias = if (esIngreso) CATEGORIAS_INGRESO else CATEGORIAS_GASTO
+    val formatoDia = formatoFecha("EEEEdMMMMyyyy")
+    val categorias = if (esIngreso) Categoria.DE_INGRESO else Categoria.DE_GASTO
 
     val form = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
@@ -75,7 +54,7 @@ fun Fragment.mostrarDialogoMovimiento(
     }
 
     val descriptionInput = TextInputEditText(context).apply {
-        hint = "Descripción (ej. Nómina)"
+        hint = texto(R.string.movement_dialog_descripcion_ej_nomina)
         inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         maxLines = 1
         filters = arrayOf(InputFilter.LengthFilter(200))
@@ -83,7 +62,7 @@ fun Fragment.mostrarDialogoMovimiento(
     }
 
     val amountInput = TextInputEditText(context).apply {
-        hint = "Importe (ej. 250.50)"
+        hint = texto(R.string.movement_dialog_importe_ej_250_50)
         inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         maxLines = 1
         existente?.let { setText(BigDecimal.valueOf(it.amountCents, 2).toPlainString()) }
@@ -95,16 +74,16 @@ fun Fragment.mostrarDialogoMovimiento(
     }
 
     val dateInput = TextInputEditText(context).apply {
-        hint = "Fecha"
+        hint = texto(R.string.import_review_fecha)
         isFocusable = false
         isClickable = true
-        setText(formatoFecha.format(fecha.time))
+        setText(formatoDia.format(fecha.time))
         setOnClickListener {
             DatePickerDialog(
                 context,
                 { _, anio, mes, dia ->
                     fecha.set(anio, mes, dia)
-                    setText(formatoFecha.format(fecha.time))
+                    setText(formatoDia.format(fecha.time))
                 },
                 fecha.get(Calendar.YEAR),
                 fecha.get(Calendar.MONTH),
@@ -120,7 +99,7 @@ fun Fragment.mostrarDialogoMovimiento(
         adapter = ArrayAdapter(
             context,
             android.R.layout.simple_spinner_item,
-            categorias
+            categorias.map { it.nombre(context) }
         ).also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
@@ -134,7 +113,7 @@ fun Fragment.mostrarDialogoMovimiento(
     form.addView(dateInput.enCampo())
     form.addView(
         TextView(context).apply {
-            text = "Categoría"
+            text = texto(R.string.import_review_categoria)
             textSize = 13f
             setTextColor(ContextCompat.getColor(context, R.color.gamora_text_secondary))
         },
@@ -147,7 +126,7 @@ fun Fragment.mostrarDialogoMovimiento(
 
     // Solo al registrar: editar un movimiento no cambia su repetición.
     val repetirCheck = if (existente == null && alGuardarLocal == null) MaterialCheckBox(context).apply {
-        text = "Repetir cada mes (renta, salario, suscripciones…)"
+        text = texto(R.string.movement_dialog_repetir_cada_mes_renta)
         form.addView(this, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
@@ -157,21 +136,21 @@ fun Fragment.mostrarDialogoMovimiento(
     fun mostrarError(mensaje: String) =
         Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show()
 
-    val tipo = if (esIngreso) "ingreso" else "gasto"
+    val tipo = texto(if (esIngreso) R.string.movement_tipo_ingreso else R.string.movement_tipo_gasto)
 
     val dialog = MaterialAlertDialogBuilder(context)
-        .setTitle(if (existente == null) "Registrar $tipo" else "Editar $tipo")
+        .setTitle(if (existente == null) texto(R.string.movement_dialog_registrar, tipo) else texto(R.string.movement_dialog_editar, tipo))
         .setView(form)
-        .setNegativeButton("Cancelar", null)
-        .setPositiveButton("Guardar", null)
+        .setNegativeButton(texto(R.string.import_review_cancelar), null)
+        .setPositiveButton(texto(R.string.import_review_guardar), null)
         .apply {
             if (existente != null && alGuardarLocal == null) {
-                setNeutralButton("Eliminar") { _, _ ->
+                setNeutralButton(texto(R.string.goals_eliminar)) { _, _ ->
                     MaterialAlertDialogBuilder(context)
-                        .setTitle("Eliminar $tipo")
-                        .setMessage("¿Eliminar \"${existente.description}\"? Esta acción no se puede deshacer.")
-                        .setNegativeButton("Cancelar", null)
-                        .setPositiveButton("Eliminar") { _, _ ->
+                        .setTitle(texto(R.string.movement_dialog_eliminar, tipo))
+                        .setMessage(texto(R.string.movement_dialog_eliminar_esta_accion_no, existente.description))
+                        .setNegativeButton(texto(R.string.import_review_cancelar), null)
+                        .setPositiveButton(texto(R.string.goals_eliminar)) { _, _ ->
                             GamoraTransactionStore.eliminar(existente.id, ::mostrarError)
                         }
                         .show()
@@ -190,19 +169,19 @@ fun Fragment.mostrarDialogoMovimiento(
             val cents = centavosDe(amountInput.text.toString())
 
             if (description.isBlank()) {
-                descriptionInput.error = "Escribe una descripción"
+                descriptionInput.error = texto(R.string.movement_dialog_escribe_una_descripcion)
                 return@setOnClickListener
             }
 
             // Mismo límite que las reglas de Firestore.
             if (cents == null || cents <= 0L || cents > 100_000_000_000L) {
-                amountInput.error = "Introduce un importe válido con hasta 2 decimales"
+                amountInput.error = texto(R.string.movement_dialog_introduce_un_importe_valido)
                 return@setOnClickListener
             }
 
             val movimiento = GamoraMovement(
                 description = description,
-                category = categorySpinner.selectedItem.toString(),
+                category = categorias[categorySpinner.selectedItemPosition],
                 amountCents = cents,
                 isIncome = esIngreso,
                 timestamp = fecha.timeInMillis,
@@ -226,10 +205,10 @@ fun Fragment.mostrarDialogoMovimiento(
             Toast.makeText(
                 context,
                 when {
-                    existente != null -> "Cambios guardados"
-                    repetirCheck?.isChecked == true -> "Registrado; se repetirá cada mes"
-                    esIngreso -> "Ingreso registrado"
-                    else -> "Gasto registrado"
+                    existente != null -> texto(R.string.movement_dialog_cambios_guardados)
+                    repetirCheck?.isChecked == true -> texto(R.string.movement_dialog_registrado_se_repetira_cada)
+                    esIngreso -> texto(R.string.movement_dialog_ingreso_registrado)
+                    else -> texto(R.string.movement_dialog_gasto_registrado)
                 },
                 Toast.LENGTH_SHORT
             ).show()
@@ -243,4 +222,4 @@ fun Fragment.mostrarDialogoMovimiento(
 
 /** Para mostrar fechas cortas en listas, p. ej. "14 nov". */
 fun fechaCorta(millis: Long): String =
-    SimpleDateFormat("d MMM", LOCALE_MX).format(Date(millis)).trimEnd('.')
+    formatoFecha("dMMM").format(Date(millis)).trimEnd('.')

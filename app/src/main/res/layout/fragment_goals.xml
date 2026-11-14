@@ -18,21 +18,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ahorro"
+            android:text="@string/categoria_ahorro"
             android:textAppearance="@style/TextAppearance.Gamora.Overline" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Mis metas"
+            android:text="@string/goals_mis_metas"
             android:textAppearance="@style/TextAppearance.Gamora.Headline" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Convierte tus planes en objetivos de ahorro."
+            android:text="@string/goals_convierte_tus_planes_en"
             android:textAppearance="@style/TextAppearance.Gamora.Body" />
 
         <LinearLayout
@@ -45,7 +45,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ahorrado en tus metas"
+                android:text="@string/goals_ahorrado_en_tus_metas"
                 android:textColor="@color/gamora_on_hero_secondary"
                 android:textSize="14sp" />
 
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="$0.00"
+                android:text="@string/analytics_0_00"
                 android:textAppearance="@style/TextAppearance.Gamora.Amount" />
 
             <TextView
@@ -67,7 +67,7 @@
                 android:paddingTop="6dp"
                 android:paddingEnd="12dp"
                 android:paddingBottom="6dp"
-                android:text="0 metas activas"
+                android:text="@string/goals_0_metas_activas"
                 android:textColor="@color/gamora_on_hero"
                 android:textSize="13sp" />
         </LinearLayout>
@@ -77,13 +77,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="+  Crear nueva meta" />
+            android:text="@string/goals_crear_nueva_meta" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="Tus objetivos"
+            android:text="@string/goals_tus_objetivos"
             android:textAppearance="@style/TextAppearance.Gamora.Title" />
 
         <LinearLayout
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="28dp"
-                android:text="🎯\n\nTodavía no tienes metas.\nCrea tu primera meta y empieza a planificar tu ahorro."
+                android:text="@string/goals_n_ntodavia_no_tienes"
                 android:textAppearance="@style/TextAppearance.Gamora.Body" />
         </LinearLayout>
 

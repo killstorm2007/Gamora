@@ -1,6 +1,7 @@
 
 package com.gamora.feature.auth.login
 
+import com.gamora.core.texto
 import com.gamora.core.ui.enDialogo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Intent
@@ -52,15 +53,15 @@ class LoginScreen : AppCompatActivity() {
 
             when {
                 correo.isBlank() -> {
-                    mostrarMensaje("Introduce tu correo electrónico.")
+                    mostrarMensaje(texto(R.string.login_introduce_tu_correo_electronico))
                 }
 
                 !Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> {
-                    mostrarMensaje("Introduce un correo válido.")
+                    mostrarMensaje(texto(R.string.login_introduce_un_correo_valido))
                 }
 
                 password.isBlank() -> {
-                    mostrarMensaje("Introduce tu contraseña.")
+                    mostrarMensaje(texto(R.string.login_introduce_tu_contrasena))
                 }
 
                 else -> iniciarSesion(correo, password)
@@ -71,7 +72,7 @@ class LoginScreen : AppCompatActivity() {
     private fun iniciarSesion(correo: String, password: String) {
 
         btnIniciar.isEnabled = false
-        btnIniciar.text = "Iniciando sesión..."
+        btnIniciar.text = texto(R.string.login_iniciando_sesion)
 
         AuthRepository.iniciarSesion(
             correo = correo,
@@ -89,7 +90,7 @@ class LoginScreen : AppCompatActivity() {
             onError = { error ->
                 runOnUiThread {
                     btnIniciar.isEnabled = true
-                    btnIniciar.text = "Iniciar sesión"
+                    btnIniciar.text = texto(R.string.login_screen_iniciar_sesion)
                     mostrarMensaje(error)
                 }
             }
@@ -103,22 +104,22 @@ class LoginScreen : AppCompatActivity() {
     private fun recuperarPassword() {
 
         val campoCorreo = com.google.android.material.textfield.TextInputEditText(this).apply {
-            hint = "Correo electrónico"
+            hint = texto(R.string.login_screen_correo_electronico)
             inputType = android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
             setPadding(40, 30, 40, 30)
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("Recuperar contraseña")
-            .setMessage("Introduce el correo asociado a tu cuenta.")
+            .setTitle(texto(R.string.login_recuperar_contrasena))
+            .setMessage(texto(R.string.login_introduce_el_correo_asociado))
             .setView(campoCorreo.enDialogo())
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Enviar") { _, _ ->
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.login_enviar)) { _, _ ->
 
                 val correo = campoCorreo.text.toString().trim()
 
                 if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-                    mostrarMensaje("Introduce un correo válido.")
+                    mostrarMensaje(texto(R.string.login_introduce_un_correo_valido))
                     return@setPositiveButton
                 }
 
@@ -126,12 +127,12 @@ class LoginScreen : AppCompatActivity() {
                     correo = correo,
                     onSuccess = {
                         mostrarMensaje(
-                            "Si la cuenta existe, recibirás instrucciones en tu correo."
+                            texto(R.string.login_si_la_cuenta_existe)
                         )
                     },
                     onError = {
                         mostrarMensaje(
-                            "No se pudo procesar la solicitud. Inténtalo nuevamente."
+                            texto(R.string.login_no_se_pudo_procesar)
                         )
                     }
                 )

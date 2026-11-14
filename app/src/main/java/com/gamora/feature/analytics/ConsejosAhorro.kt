@@ -1,5 +1,8 @@
 package com.gamora.feature.analytics
 
+import com.gamora.R
+import com.gamora.core.texto
+import com.gamora.core.Categoria
 import com.gamora.feature.transactions.esAhorro
 import com.gamora.core.ui.dinero
 import com.gamora.feature.goals.SavingsGoal
@@ -16,11 +19,12 @@ fun generarConsejos(
     movimientos: List<GamoraMovement>,
     metas: List<SavingsGoal>,
     presupuestoCentavos: Long,
-    ahora: Calendar = Calendar.getInstance()
+    ahora: Calendar = Calendar.getInstance(),
+    nombre: (Categoria) -> String
 ): List<String> {
 
     if (movimientos.isEmpty()) {
-        return listOf("Registra tus ingresos y gastos para que Gamora pueda darte consejos basados en tus datos.")
+        return listOf(texto(R.string.consejos_ahorro_registra_tus_ingresos_y))
     }
 
     val consejos = mutableListOf<String>()
@@ -39,16 +43,15 @@ fun generarConsejos(
     // 1. Balance del mes y tasa de ahorro.
     when {
         gastos > ingresos ->
-            consejos += "Este mes llevas ${dinero(gastos - ingresos)} más de gastos que de ingresos. " +
-                    "Revisa qué gastos puedes posponer."
+            consejos += texto(R.string.consejos_ahorro_este_mes_llevas_mas, dinero(gastos - ingresos))
 
         ingresos > 0 -> {
             val tasa = (ingresos - gastos) * 100 / ingresos
 
             consejos += if (tasa >= 20) {
-                "¡Vas muy bien! Este mes conservas el $tasa% de tus ingresos."
+                texto(R.string.consejos_ahorro_vas_muy_bien_este, tasa)
             } else {
-                "Este mes conservas el $tasa% de tus ingresos. Intenta apartar al menos el 20% en cuanto recibas tu ingreso."
+                texto(R.string.consejos_ahorro_este_mes_conservas_el, tasa)
             }
         }
     }
@@ -62,17 +65,15 @@ fun generarConsejos(
         val porcentaje = monto * 100 / gastos
 
         if (porcentaje >= 30) {
-            consejos += "Tu mayor gasto del mes es $categoria ($porcentaje%). " +
-                    "Reducirlo un 10% te ahorraría ${dinero(monto / 10)} al mes."
+            consejos += texto(R.string.consejos_ahorro_tu_mayor_gasto_del, nombre(categoria), porcentaje, dinero(monto / 10))
         }
     }
 
     // 3. Gastos prescindibles.
-    val prescindibles = (porCategoria["Entretenimiento"] ?: 0L) + (porCategoria["Compras"] ?: 0L)
+    val prescindibles = (porCategoria[Categoria.ENTRETENIMIENTO] ?: 0L) + (porCategoria[Categoria.COMPRAS] ?: 0L)
 
     if (gastos > 0 && prescindibles * 100 / gastos >= 25) {
-        consejos += "Entretenimiento y compras suman el ${prescindibles * 100 / gastos}% de tus gastos. " +
-                "Espera 24 horas antes de compras no planeadas."
+        consejos += texto(R.string.consejos_ahorro_entretenimiento_y_compras_suman, prescindibles * 100 / gastos)
     }
 
     // 4. Presupuesto mensual.
@@ -80,11 +81,11 @@ fun generarConsejos(
         val uso = gastos * 100 / presupuestoCentavos
 
         when {
-            uso >= 100 -> consejos += "Superaste tu presupuesto mensual por ${dinero(gastos - presupuestoCentavos)}."
-            uso >= 80 -> consejos += "Ya usaste el $uso% de tu presupuesto mensual. Te quedan ${dinero(presupuestoCentavos - gastos)}."
+            uso >= 100 -> consejos += texto(R.string.consejos_ahorro_superaste_tu_presupuesto_mensual, dinero(gastos - presupuestoCentavos))
+            uso >= 80 -> consejos += texto(R.string.consejos_ahorro_ya_usaste_el_de, uso, dinero(presupuestoCentavos - gastos))
         }
     } else {
-        consejos += "Define un presupuesto mensual en Perfil › Preferencias financieras para recibir alertas."
+        consejos += texto(R.string.consejos_ahorro_define_un_presupuesto_mensual)
     }
 
     // 5. Cuánto apartar al mes para cada meta con fecha límite.
@@ -96,9 +97,9 @@ fun generarConsejos(
         val faltante = meta.targetCents - meta.savedCents
 
         consejos += if (mesesRestantes <= 0) {
-            "La fecha de tu meta \"${meta.name}\" ya pasó y te faltan ${dinero(faltante)}. Ajusta la fecha o el monto."
+            texto(R.string.consejos_ahorro_la_fecha_de_tu, meta.name, dinero(faltante))
         } else {
-            "Para lograr \"${meta.name}\" a tiempo, aparta ${dinero(faltante / mesesRestantes)} al mes."
+            texto(R.string.consejos_ahorro_para_lograr_a_tiempo, meta.name, dinero(faltante / mesesRestantes))
         }
     }
 

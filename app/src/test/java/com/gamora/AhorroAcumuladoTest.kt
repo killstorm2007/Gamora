@@ -1,5 +1,6 @@
 package com.gamora
 
+import com.gamora.core.Categoria
 import com.gamora.feature.transactions.GamoraMovement
 import com.gamora.feature.transactions.ahorroAcumulado
 import com.gamora.feature.transactions.totalesPorMes
@@ -13,7 +14,7 @@ class AhorroAcumuladoTest {
         Calendar.getInstance().apply { set(anio, mes, 15, 12, 0) }.timeInMillis
 
     private fun mov(centavos: Long, ingreso: Boolean, anio: Int, mes: Int) =
-        GamoraMovement("x", "Otros", centavos, ingreso, fecha(anio, mes))
+        GamoraMovement("x", Categoria.OTROS, centavos, ingreso, fecha(anio, mes))
 
     @Test
     fun sumaSoloLosMesesEnPositivo() {
@@ -33,7 +34,7 @@ class AhorroAcumuladoTest {
     fun aportarAUnaMetaNoReduceElAhorro() {
         val movimientos = listOf(
             mov(10_000, true, 2026, Calendar.JANUARY),
-            GamoraMovement("Aportación a «Viaje»", "Ahorro", 5_000, false, fecha(2026, Calendar.JANUARY))
+            GamoraMovement("Aportación a «Viaje»", Categoria.AHORRO, 5_000, false, fecha(2026, Calendar.JANUARY))
         )
 
         assertEquals(10_000L, movimientos.ahorroAcumulado())

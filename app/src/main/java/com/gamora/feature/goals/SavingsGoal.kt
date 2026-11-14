@@ -1,5 +1,8 @@
 package com.gamora.feature.goals
 
+import com.gamora.R
+import com.gamora.core.texto
+import com.gamora.core.Categoria
 import com.gamora.feature.transactions.GamoraTransactionStore
 import com.gamora.feature.transactions.GamoraMovement
 import android.util.Log
@@ -75,7 +78,7 @@ object GamoraGoalStore {
     }
 
     private fun conUid(onError: (String) -> Unit, accion: (String) -> Unit) {
-        uidActual?.let(accion) ?: onError("No hay una sesión activa.")
+        uidActual?.let(accion) ?: onError(texto(R.string.auth_repository_no_hay_una_sesion))
     }
 
     fun crear(
@@ -94,7 +97,7 @@ object GamoraGoalStore {
                     "fechaCreacion" to System.currentTimeMillis()
                 )
             )
-            .addOnFailureListener { onError(it.localizedMessage ?: "No se pudo crear la meta.") }
+            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.savings_goal_no_se_pudo_crear)) }
     }
 
     /**
@@ -118,14 +121,14 @@ object GamoraGoalStore {
 
         if (descontarDelSaldo) {
             val gasto = GamoraTransactionStore.nuevaReferencia()
-                ?: return@conUid onError("No hay una sesión activa.")
+                ?: return@conUid onError(texto(R.string.auth_repository_no_hay_una_sesion))
 
             batch.set(
                 gasto,
                 GamoraTransactionStore.datos(
                     GamoraMovement(
-                        description = "Aportación a «${meta.name}»",
-                        category = "Ahorro",
+                        description = texto(R.string.savings_goal_aportacion_a, meta.name),
+                        category = Categoria.AHORRO,
                         amountCents = montoCentavos,
                         isIncome = false
                     )
@@ -134,12 +137,12 @@ object GamoraGoalStore {
         }
 
         batch.commit()
-            .addOnFailureListener { onError(it.localizedMessage ?: "No se pudo registrar la aportación.") }
+            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.savings_goal_no_se_pudo_registrar)) }
     }
 
     fun eliminar(id: String, onError: (String) -> Unit) = conUid(onError) { uid ->
         coleccion(uid).document(id)
             .delete()
-            .addOnFailureListener { onError(it.localizedMessage ?: "No se pudo eliminar la meta.") }
+            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.savings_goal_no_se_pudo_eliminar)) }
     }
 }

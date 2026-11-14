@@ -4,26 +4,26 @@
     <item
         android:id="@+id/dashboardFragment"
         android:icon="@drawable/ic_home"
-        android:title="Inicio" />
+        android:title="@string/bottom_navigation_inicio" />
 
     <item
         android:id="@+id/transactionsFragment"
         android:icon="@drawable/ic_movements"
-        android:title="Movimientos" />
+        android:title="@string/transactions_movimientos" />
 
     <item
         android:id="@+id/analyticsFragment"
         android:icon="@drawable/ic_analytics"
-        android:title="Análisis" />
+        android:title="@string/analytics_analisis" />
 
     <item
         android:id="@+id/goalsFragment"
         android:icon="@drawable/ic_goals"
-        android:title="Metas" />
+        android:title="@string/bottom_navigation_metas" />
 
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_profile"
-        android:title="Perfil" />
+        android:title="@string/bottom_navigation_perfil" />
 
 </menu>

@@ -1,5 +1,8 @@
 package com.gamora.core.notifications
 
+import com.gamora.core.texto
+import com.gamora.core.nombre
+import com.gamora.core.Categoria
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -41,8 +44,8 @@ fun crearCanalNotificaciones(context: Context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
     context.getSystemService(NotificationManager::class.java).createNotificationChannel(
-        NotificationChannel(CANAL, "Avisos de Gamora", NotificationManager.IMPORTANCE_DEFAULT).apply {
-            description = "Presupuesto, metas y resumen semanal"
+        NotificationChannel(CANAL, texto(R.string.avisos_avisos_de_gamora), NotificationManager.IMPORTANCE_DEFAULT).apply {
+            description = texto(R.string.avisos_presupuesto_metas_y_resumen)
         }
     )
 }
@@ -144,41 +147,44 @@ class AvisosWorker(
 
             // Límites por categoría.
             gastosPeriodo
-                .groupBy { it.getString("categoria").orEmpty() }
+                .groupBy { Categoria.porClave(it.getString("categoria")) ?: Categoria.OTROS }
                 .mapValues { (_, docs) -> docs.sumOf { it.getLong("montoCentavos") ?: 0L } }
-                .forEach { (categoria, gastado) ->
-                    val limite = limites[categoria] ?: return@forEach
+                .forEach { (cat, gastado) ->
+                    val limite = limites[cat] ?: return@forEach
+                    // Los avisos ya enviados se recuerdan por clave; el texto usa el nombre traducido.
+                    val categoria = cat.clave
+                    val nombre = cat.nombre(applicationContext)
                     when (umbralPresupuesto(gastado, limite)) {
                         100 -> avisarUnaVez(
                             "categoria_${categoria}_${inicio}_100",
-                            "Te pasaste en $categoria",
-                            "Llevas ${dinero(gastado, moneda)} de ${dinero(limite, moneda)} este periodo."
+                            texto(R.string.avisos_te_pasaste_en, nombre),
+                            texto(R.string.avisos_llevas_de_este_periodo, dinero(gastado, moneda), dinero(limite, moneda))
                         ).also { enviados.edit().putBoolean("categoria_${categoria}_${inicio}_80", true).apply() }
 
                         80 -> avisarUnaVez(
                             "categoria_${categoria}_${inicio}_80",
-                            "$categoria: vas en el ${gastado * 100 / limite}%",
-                            "Te quedan ${dinero(limite - gastado, moneda)} en $categoria para este periodo."
+                            texto(R.string.avisos_vas_en_el, nombre, gastado * 100 / limite),
+                            texto(R.string.avisos_te_quedan_en_para, dinero(limite - gastado, moneda), nombre)
                         )
                     }
                 }
 
             if (presupuesto > 0) {
                 val gastos = gastosPeriodo
-                    .filter { it.getString("categoria") != "Ahorro" }
+                    .filter { it.getString("categoria") != Categoria.AHORRO.clave }
                     .sumOf { it.getLong("montoCentavos") ?: 0L }
 
                 when (umbralPresupuesto(gastos, presupuesto)) {
                     100 -> avisarUnaVez(
                         "presupuesto_${inicio}_100",
-                        "Superaste tu presupuesto",
-                        "Llevas ${dinero(gastos, moneda)} de ${dinero(presupuesto, moneda)} este periodo."
+                        texto(R.string.avisos_superaste_tu_presupuesto),
+                        texto(R.string.avisos_llevas_de_este_periodo, dinero(gastos, moneda), dinero(presupuesto, moneda))
                     ).also { enviados.edit().putBoolean("presupuesto_${inicio}_80", true).apply() }
 
                     80 -> avisarUnaVez(
                         "presupuesto_${inicio}_80",
-                        "Vas en el ${gastos * 100 / presupuesto}% de tu presupuesto",
-                        "Te quedan ${dinero(presupuesto - gastos, moneda)} para este periodo."
+                        texto(R.string.avisos_vas_en_el_de, gastos * 100 / presupuesto),
+                        texto(R.string.avisos_te_quedan_para_este, dinero(presupuesto - gastos, moneda))
                     )
                 }
             }
@@ -197,10 +203,10 @@ class AvisosWorker(
 
                 when {
                     dias in 0..1 -> avisarUnaVez(
-                        "meta_${meta.id}_1", "Tu meta «$nombre» vence mañana", "Te faltan $faltan para lograrla."
+                        "meta_${meta.id}_1", texto(R.string.avisos_tu_meta_vence_manana, nombre), texto(R.string.avisos_te_faltan_para_lograrla, faltan)
                     )
                     dias in 2..7 -> avisarUnaVez(
-                        "meta_${meta.id}_7", "Quedan $dias días para «$nombre»", "Te faltan $faltan para lograrla."
+                        "meta_${meta.id}_7", texto(R.string.avisos_quedan_dias_para, dias, nombre), texto(R.string.avisos_te_faltan_para_lograrla, faltan)
                     )
                 }
             }
@@ -219,9 +225,8 @@ class AvisosWorker(
 
             avisarUnaVez(
                 "resumen_${calendario.get(Calendar.YEAR)}_${calendario.get(Calendar.WEEK_OF_YEAR)}",
-                "Tu semana en Gamora",
-                "Ingresos ${dinero(ingresos, moneda)} · Gastos ${dinero(gastos, moneda)} · " +
-                        "Balance ${dinero(ingresos - gastos, moneda)}"
+                texto(R.string.avisos_tu_semana_en_gamora),
+                texto(R.string.avisos_ingresos_gastos_balance, dinero(ingresos, moneda), dinero(gastos, moneda), dinero(ingresos - gastos, moneda))
             )
         }
     }

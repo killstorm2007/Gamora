@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:textStyle="bold"
-                android:text="Crea tu cuenta"
+                android:text="@string/register_screen_crea_tu_cuenta"
                 android:textColor="@color/gamora_on_hero"
                 android:textSize="30sp" />
 
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Empieza a tomar el control de tu dinero."
+                android:text="@string/register_screen_empieza_a_tomar_el"
                 android:textColor="@color/gamora_on_hero_secondary"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -51,12 +51,12 @@
             <TextView
                 style="@style/Gamora.SectionLabel"
                 android:layout_marginTop="0dp"
-                android:text="Tus datos" />
+                android:text="@string/register_screen_tus_datos" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nombre">
+                android:hint="@string/register_screen_nombre">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtNombre"
@@ -77,7 +77,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
                     android:layout_weight="1"
-                    android:hint="Apellido paterno">
+                    android:hint="@string/register_screen_apellido_paterno">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtApPat"
@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:layout_weight="1"
-                    android:hint="Apellido materno">
+                    android:hint="@string/register_screen_apellido_materno">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edtApMat"
@@ -106,7 +106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Correo electrónico">
+                android:hint="@string/login_screen_correo_electronico">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtCorreo"
@@ -120,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Teléfono (opcional)">
+                android:hint="@string/register_screen_telefono_opcional">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtTelefono"
@@ -134,7 +134,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Contraseña"
+                android:hint="@string/login_screen_contrasena"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -149,7 +149,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Confirmar contraseña"
+                android:hint="@string/register_screen_confirmar_contrasena"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -163,7 +163,7 @@
             <!-- Consentimientos -->
             <TextView
                 style="@style/Gamora.SectionLabel"
-                android:text="Privacidad y consentimientos" />
+                android:text="@string/register_screen_privacidad_y_consentimientos" />
 
             <LinearLayout
                 style="@style/Gamora.Card"
@@ -176,7 +176,7 @@
                     android:id="@+id/cbTerminos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Acepto los términos y condiciones"
+                    android:text="@string/register_screen_acepto_los_terminos_y"
                     android:textColor="@color/gamora_text_primary" />
 
                 <TextView
@@ -188,7 +188,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center_vertical"
-                    android:text="Leer términos y condiciones"
+                    android:text="@string/register_screen_leer_terminos_y_condiciones"
                     android:textColor="@color/gamora_accent"
                     android:textSize="13sp" />
 
@@ -196,7 +196,7 @@
                     android:id="@+id/cbPrivacidad"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Confirmo que revisé la política de privacidad"
+                    android:text="@string/register_screen_confirmo_que_revise_la"
                     android:textColor="@color/gamora_text_primary" />
 
                 <TextView
@@ -208,7 +208,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center_vertical"
-                    android:text="Leer política de privacidad"
+                    android:text="@string/register_screen_leer_politica_de_privacidad"
                     android:textColor="@color/gamora_accent"
                     android:textSize="13sp" />
 
@@ -223,21 +223,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:text="Opcionales"
+                    android:text="@string/register_screen_opcionales"
                     android:textAppearance="@style/TextAppearance.Gamora.Caption" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/cbAnalitica"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Autorizo el uso de datos para analítica y mejora de Gamora"
+                    android:text="@string/register_screen_autorizo_el_uso_de"
                     android:textColor="@color/gamora_text_primary" />
 
                 <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/cbIA"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Autorizo que el asistente de IA analice mis datos financieros"
+                    android:text="@string/register_screen_autorizo_que_el_asistente"
                     android:textColor="@color/gamora_text_primary" />
             </LinearLayout>
 
@@ -246,14 +246,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Crear cuenta" />
+                android:text="@string/mainactivity_crear_cuenta" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="o"
+                android:text="@string/login_screen_o"
                 android:textAppearance="@style/TextAppearance.Gamora.Caption" />
 
             <com.google.android.material.button.MaterialButton
@@ -262,7 +262,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Continuar con Google" />
+                android:text="@string/login_screen_continuar_con_google" />
 
             <TextView
                 android:id="@+id/txtRegistrarse"
@@ -273,7 +273,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="¿Ya tienes cuenta? Inicia sesión"
+                android:text="@string/register_screen_ya_tienes_cuenta_inicia"
                 android:textColor="@color/gamora_accent"
                 android:textSize="14sp" />
         </LinearLayout>

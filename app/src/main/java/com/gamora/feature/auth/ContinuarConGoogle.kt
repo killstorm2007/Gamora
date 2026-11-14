@@ -1,5 +1,7 @@
 package com.gamora.feature.auth
 
+import com.gamora.R
+import com.gamora.core.texto
 import android.content.Intent
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -62,22 +64,21 @@ private fun AppCompatActivity.pedirConsentimientos(cuenta: CuentaGoogle, boton: 
         contenedor.addView(this)
     }
 
-    val terminos = casilla("Acepto los Términos y condiciones")
-    val privacidad = casilla("He leído la Política de privacidad")
-    val analitica = casilla("Autorizo la analítica de uso (opcional)")
-    val ia = casilla("Autorizo que el asistente de IA analice mis datos financieros (opcional)")
+    val terminos = casilla(texto(R.string.continuar_con_google_acepto_los_terminos_y))
+    val privacidad = casilla(texto(R.string.continuar_con_google_he_leido_la_politica))
+    val analitica = casilla(texto(R.string.continuar_con_google_autorizo_la_analitica_de))
+    val ia = casilla(texto(R.string.continuar_con_google_autorizo_que_el_asistente))
 
     val dialogo = MaterialAlertDialogBuilder(this)
-        .setTitle("Bienvenido a Gamora")
-        .setMessage("Antes de crear tu cuenta con Google, revisa y acepta lo siguiente. " +
-                "Puedes leer los documentos en la pantalla de registro.")
+        .setTitle(texto(R.string.continuar_con_google_bienvenido_a_gamora))
+        .setMessage(texto(R.string.continuar_con_google_antes_de_crear_tu))
         .setView(contenedor)
         .setCancelable(false)
-        .setNegativeButton("Cancelar") { _, _ ->
+        .setNegativeButton(texto(R.string.import_review_cancelar)) { _, _ ->
             AuthRepository.cancelarRegistroGoogle()
             boton.isEnabled = true
         }
-        .setPositiveButton("Crear cuenta", null)
+        .setPositiveButton(texto(R.string.mainactivity_crear_cuenta), null)
         .create()
 
     dialogo.setOnShowListener {
@@ -85,7 +86,7 @@ private fun AppCompatActivity.pedirConsentimientos(cuenta: CuentaGoogle, boton: 
 
         crear.setOnClickListener {
             if (!terminos.isChecked || !privacidad.isChecked) {
-                mensaje("Debes aceptar los términos y la política de privacidad.")
+                mensaje(texto(R.string.continuar_con_google_debes_aceptar_los_terminos))
                 return@setOnClickListener
             }
 

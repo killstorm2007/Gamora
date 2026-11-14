@@ -1,8 +1,7 @@
 package com.gamora.feature.importar
 
+import com.gamora.core.Categoria
 import com.gamora.feature.chatbot.conModeloDeRespaldo
-import com.gamora.feature.transactions.CATEGORIAS_GASTO
-import com.gamora.feature.transactions.CATEGORIAS_INGRESO
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
@@ -28,6 +27,8 @@ private val ESQUEMA = Schema.obj(
     )
 )
 
+private fun claves(categorias: List<Categoria>) = categorias.joinToString { "${it.clave} (${it.nombreEs})" }
+
 private val PROMPT_LECTOR = """
     Eres el lector de documentos de Gamora, una app de finanzas personales en México.
     Recibirás un estado de cuenta bancario o de tarjeta, o un recibo de nómina (PDF o foto).
@@ -38,18 +39,18 @@ private val PROMPT_LECTOR = """
     - descripcion: el concepto como aparece, sin números de cuenta ni referencias largas.
     - montoCentavos: entero positivo en centavos (p. ej. $1,234.50 → 123450).
     - esIngreso: true si es abono o depósito; false si es cargo, compra o retiro.
-    - categoria: si es ingreso, una de: ${CATEGORIAS_INGRESO.joinToString()}.
-      Si es gasto, una de: ${CATEGORIAS_GASTO.joinToString()}. Si dudas, "Otros".
+    - categoria: la clave (lo que va antes del paréntesis). Si es ingreso, una de: ${claves(Categoria.DE_INGRESO)}.
+      Si es gasto, una de: ${claves(Categoria.DE_GASTO)}. Si dudas, "otros".
     No incluyas saldos iniciales o finales, totales, subtotales ni renglones repetidos de resumen.
     En estados de tarjeta de crédito, omite los pagos a la propia tarjeta: no son ingresos.
-    Si es un recibo de nómina, registra un solo ingreso por el neto pagado, categoría "Salario".
+    Si es un recibo de nómina, registra un solo ingreso por el neto pagado, categoría "salario".
     Si no hay movimientos, devuelve la lista vacía.
 """.trimIndent()
 
 /** Envía el documento a Gemini y convierte su respuesta. El documento no se guarda en ningún lado. */
 suspend fun leerConGemini(bytes: ByteArray, mime: String): ResultadoLectura {
     val texto = conModeloDeRespaldo { modelo ->
-        Firebase.ai(backend = GenerativeBackend.googleAI())
+        Firebase.ai(backend = GenerativeBackend.googleAI(), useLimitedUseAppCheckTokens = true)
             .generativeModel(
                 modelName = modelo,
                 generationConfig = generationConfig {

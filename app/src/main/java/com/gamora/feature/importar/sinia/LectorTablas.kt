@@ -1,5 +1,6 @@
 package com.gamora.feature.importar.sinia
 
+import com.gamora.core.Categoria
 import com.gamora.feature.importar.MovimientoImportado
 import com.gamora.feature.importar.ResultadoLectura
 import com.gamora.feature.importar.categoriaValida
@@ -459,25 +460,25 @@ private fun esRuido(palabra: String): Boolean {
     return digitos >= 8 && digitos * 10 >= palabra.length * 6
 }
 
-/** Categoría por palabras clave comunes; lo que no se reconoce queda en "Otros". */
-internal fun categoriaSugerida(descripcion: String, esIngreso: Boolean): String {
+/** Categoría por palabras clave comunes; lo que no se reconoce queda en [Categoria.OTROS]. */
+internal fun categoriaSugerida(descripcion: String, esIngreso: Boolean): Categoria {
     val d = mayus(descripcion)
     fun hay(vararg claves: String) = claves.any { it in d }
     return if (esIngreso) when {
-        hay("NOMINA", "NÓMINA", "SUELDO", "SALARIO") -> "Salario"
-        hay("INTERES", "RENDIMIENTO") -> "Inversiones"
-        else -> "Otros"
+        hay("NOMINA", "NÓMINA", "SUELDO", "SALARIO") -> Categoria.SALARIO
+        hay("INTERES", "RENDIMIENTO") -> Categoria.INVERSIONES
+        else -> Categoria.OTROS
     } else when {
-        hay("TIEMPO AIRE", "RECARGA", "TELCEL", "CFE", "TELMEX", "IZZI", "TOTALPLAY", "MEGACABLE", "AGUA", "GAS DISTR", "AT&T") -> "Servicios"
-        hay("PEMEX", "GASOLIN", "OXXO GAS", "CASETA", "ESTACIONAMIENTO") -> "Transporte"
+        hay("TIEMPO AIRE", "RECARGA", "TELCEL", "CFE", "TELMEX", "IZZI", "TOTALPLAY", "MEGACABLE", "AGUA", "GAS DISTR", "AT&T") -> Categoria.SERVICIOS
+        hay("PEMEX", "GASOLIN", "OXXO GAS", "CASETA", "ESTACIONAMIENTO") -> Categoria.TRANSPORTE
         hay("OXXO", "SORIANA", "WALMART", "WAL MART", "CHEDRAUI", "SUPER", "HEB", "COSTCO", "SAMS", "IFOOD",
-            "RAPPI", "DIDI FOOD", "UBER EATS", "RESTAUR", "TACOS", "STARBUCKS", "MCDONALD", "BURGER", "PIZZA") -> "Comida"
-        hay("UBER", "DIDI") -> "Transporte"
-        hay("NETFLIX", "SPOTIFY", "DISNEY", "HBO", "PRIME VIDEO", "STEAM", "PLAYSTATION", "XBOX", "CINEPOLIS", "CINEMEX") -> "Entretenimiento"
-        hay("FARMACIA", "HOSPITAL", "MEDIC", "DOCTOR", "LABORATORIO") -> "Salud"
-        hay("AMAZON", "MERCADO LIBRE", "MERCADOLIBRE", "LIVERPOOL", "COPPEL", "SHEIN", "ELEKTRA") -> "Compras"
-        hay("COLEGIATURA", "ESCUELA", "UNIVERSIDAD") -> "Educación"
-        hay("RENTA", "HIPOTECA") -> "Vivienda"
-        else -> "Otros"
+            "RAPPI", "DIDI FOOD", "UBER EATS", "RESTAUR", "TACOS", "STARBUCKS", "MCDONALD", "BURGER", "PIZZA") -> Categoria.COMIDA
+        hay("UBER", "DIDI") -> Categoria.TRANSPORTE
+        hay("NETFLIX", "SPOTIFY", "DISNEY", "HBO", "PRIME VIDEO", "STEAM", "PLAYSTATION", "XBOX", "CINEPOLIS", "CINEMEX") -> Categoria.ENTRETENIMIENTO
+        hay("FARMACIA", "HOSPITAL", "MEDIC", "DOCTOR", "LABORATORIO") -> Categoria.SALUD
+        hay("AMAZON", "MERCADO LIBRE", "MERCADOLIBRE", "LIVERPOOL", "COPPEL", "SHEIN", "ELEKTRA") -> Categoria.COMPRAS
+        hay("COLEGIATURA", "ESCUELA", "UNIVERSIDAD") -> Categoria.EDUCACION
+        hay("RENTA", "HIPOTECA") -> Categoria.VIVIENDA
+        else -> Categoria.OTROS
     }
 }

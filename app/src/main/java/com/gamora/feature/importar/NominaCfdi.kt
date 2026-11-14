@@ -1,5 +1,8 @@
 package com.gamora.feature.importar
 
+import com.gamora.R
+import com.gamora.core.texto
+import com.gamora.core.Categoria
 import com.gamora.core.ui.centavosDe
 import org.w3c.dom.Element
 import java.io.ByteArrayInputStream
@@ -7,7 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 
 class NoEsNominaException(mensaje: String) : Exception(mensaje)
 
-private const val NO_ES_NOMINA = "Este XML no es un recibo de nómina."
+private val NO_ES_NOMINA get() = texto(R.string.nomina_cfdi_este_xml_no_es)
 
 /**
  * Lee un CFDI de nómina (XML del SAT) en el teléfono, sin IA.
@@ -38,11 +41,11 @@ fun leerNominaCfdi(xml: ByteArray): ResultadoLectura {
     val nomina = elemento("Nomina") ?: throw NoEsNominaException(NO_ES_NOMINA)
 
     val monto = centavosDe(comprobante.atributo("Total"))?.takeIf { it > 0 }
-        ?: throw NoEsNominaException("El recibo no indica un total válido.")
+        ?: throw NoEsNominaException(texto(R.string.nomina_cfdi_el_recibo_no_indica))
 
     val fecha = fechaDe(nomina.atributo("FechaPago"))
         ?: fechaDe(comprobante.atributo("Fecha").take(10))
-        ?: throw NoEsNominaException("El recibo no indica la fecha de pago.")
+        ?: throw NoEsNominaException(texto(R.string.nomina_cfdi_el_recibo_no_indica_2))
 
     val empresa = elemento("Emisor")?.atributo("Nombre").orEmpty()
 
@@ -51,14 +54,14 @@ fun leerNominaCfdi(xml: ByteArray): ResultadoLectura {
 
     return ResultadoLectura(
         banco = empresa,
-        periodo = if (inicio.isNotEmpty() && fin.isNotEmpty()) "$inicio al $fin" else "",
+        periodo = if (inicio.isNotEmpty() && fin.isNotEmpty()) texto(R.string.nomina_periodo, inicio, fin) else "",
         movimientos = listOf(
             MovimientoImportado(
                 fecha = fecha,
-                descripcion = if (empresa.isEmpty()) "Nómina" else "Nómina · $empresa".take(200),
+                descripcion = if (empresa.isEmpty()) texto(R.string.nomina_cfdi_nomina_2) else texto(R.string.nomina_cfdi_nomina_3, empresa).take(200),
                 montoCentavos = monto,
                 esIngreso = true,
-                categoria = "Salario"
+                categoria = Categoria.SALARIO
             )
         ),
         descartados = 0

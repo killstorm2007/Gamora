@@ -1,5 +1,6 @@
 package com.gamora
 
+import com.gamora.core.Categoria
 import com.gamora.feature.importar.NoEsNominaException
 import com.gamora.feature.importar.leerNominaCfdi
 import org.junit.Assert.assertEquals
@@ -9,6 +10,10 @@ import org.junit.Test
 import java.util.Calendar
 
 class NominaCfdiTest {
+
+    init {
+        TextosDePrueba.instalar()
+    }
 
     private fun cfdi(complemento: String, fecha: String = "2026-10-15T10:00:00") = """
         <?xml version="1.0" encoding="UTF-8"?>
@@ -30,7 +35,7 @@ class NominaCfdiTest {
         val m = r.movimientos.single()
         assertEquals(1250000L, m.montoCentavos)
         assertTrue(m.esIngreso)
-        assertEquals("Salario", m.categoria)
+        assertEquals(Categoria.SALARIO, m.categoria)
         assertEquals("Nómina · EMPRESA SA", m.descripcion)
         assertEquals(15, Calendar.getInstance().apply { timeInMillis = m.fecha }.get(Calendar.DAY_OF_MONTH))
         assertEquals("EMPRESA SA", r.banco)

@@ -1,5 +1,6 @@
 package com.gamora
 
+import com.gamora.core.Categoria
 import com.gamora.feature.importar.MovimientoImportado
 import com.gamora.feature.importar.Resumen
 import com.gamora.feature.importar.enLotes
@@ -71,7 +72,24 @@ class ImportacionTest {
             )
         )
 
-        assertEquals(listOf("Otros", "Comida"), r.movimientos.map { it.categoria })
+        assertEquals(listOf(Categoria.OTROS, Categoria.COMIDA), r.movimientos.map { it.categoria })
+    }
+
+    @Test
+    fun geminiPuedeResponderNombreOClave() {
+        val r = leerRespuestaGemini(
+            respuesta(
+                fila("2026-10-01", "a", 1000, false, "Educación"),
+                fila("2026-10-01", "b", 1000, false, "transporte"),
+                fila("2026-10-01", "c", 1000, false, "Groceries"),
+                fila("2026-10-01", "d", 1000, true, "comida")
+            )
+        )
+
+        assertEquals(
+            listOf(Categoria.EDUCACION, Categoria.TRANSPORTE, Categoria.OTROS, Categoria.OTROS),
+            r.movimientos.map { it.categoria }
+        )
     }
 
     @Test
@@ -80,11 +98,11 @@ class ImportacionTest {
     }
 
     private fun importado(fecha: Long, monto: Long, esIngreso: Boolean = false) =
-        MovimientoImportado(fecha, "Arizona", monto, esIngreso, "Comida")
+        MovimientoImportado(fecha, "Arizona", monto, esIngreso, Categoria.COMIDA)
 
     @Test
     fun marcaRepetidoContraExistente() {
-        val existentes = listOf(GamoraMovement("Arizona", "Comida", 3000, false, dia(2026, 9, 7)))
+        val existentes = listOf(GamoraMovement("Arizona", Categoria.COMIDA, 3000, false, dia(2026, 9, 7)))
 
         val r = marcarRepetidos(
             listOf(importado(dia(2026, 9, 8), 3000), importado(dia(2026, 9, 11), 3000)),
@@ -125,9 +143,9 @@ class ImportacionTest {
     @Test
     fun resumenSoloCuentaSeleccionados() {
         val lista = listOf(
-            MovimientoImportado(0, "Sueldo", 100000, true, "Salario"),
-            MovimientoImportado(0, "Oxxo", 8400, false, "Comida"),
-            MovimientoImportado(0, "Arizona", 3000, false, "Comida", seleccionado = false)
+            MovimientoImportado(0, "Sueldo", 100000, true, Categoria.SALARIO),
+            MovimientoImportado(0, "Oxxo", 8400, false, Categoria.COMIDA),
+            MovimientoImportado(0, "Arizona", 3000, false, Categoria.COMIDA, seleccionado = false)
         )
 
         assertEquals(Resumen(2, 100000, 8400), resumen(lista))

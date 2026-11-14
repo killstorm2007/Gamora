@@ -19,14 +19,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cuenta"
+            android:text="@string/profile_cuenta"
             android:textAppearance="@style/TextAppearance.Gamora.Overline" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Mi perfil"
+            android:text="@string/profile_mi_perfil"
             android:textAppearance="@style/TextAppearance.Gamora.Headline" />
 
         <!-- Usuario y resumen -->
@@ -53,7 +53,7 @@
                     android:textStyle="bold"
                     android:gravity="center"
                     android:importantForAccessibility="no"
-                    android:text="G"
+                    android:text="@string/login_screen_g"
                     android:textColor="@color/gamora_on_hero"
                     android:textSize="24sp" />
 
@@ -69,7 +69,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
-                        android:text="Mi cuenta"
+                        android:text="@string/profile_mi_cuenta"
                         android:textColor="@color/gamora_on_hero"
                         android:textSize="18sp"
                         android:textStyle="bold" />
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                android:text="Balance de movimientos"
+                android:text="@string/profile_balance_de_movimientos"
                 android:textColor="@color/gamora_on_hero_secondary"
                 android:textSize="13sp" />
 
@@ -98,7 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="$0.00"
+                android:text="@string/analytics_0_00"
                 android:textAppearance="@style/TextAppearance.Gamora.Amount"
                 android:textSize="32sp" />
 
@@ -120,7 +120,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ahorro acumulado"
+                        android:text="@string/profile_ahorro_acumulado"
                         android:textColor="@color/gamora_on_hero_secondary"
                         android:textSize="12sp" />
 
@@ -130,7 +130,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:maxLines="1"
-                        android:text="$0.00"
+                        android:text="@string/analytics_0_00"
                         android:textAppearance="@style/TextAppearance.Gamora.AmountSmall"
                         android:textColor="@color/gamora_on_hero"
                         android:textSize="17sp" />
@@ -148,7 +148,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Metas activas"
+                        android:text="@string/profile_metas_activas"
                         android:textColor="@color/gamora_on_hero_secondary"
                         android:textSize="12sp" />
 
@@ -157,7 +157,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="0"
+                        android:text="@string/profile_0"
                         android:textAppearance="@style/TextAppearance.Gamora.AmountSmall"
                         android:textColor="@color/gamora_on_hero"
                         android:textSize="17sp" />
@@ -168,7 +168,7 @@
         <!-- Mi cuenta -->
         <TextView
             style="@style/Gamora.SectionLabel"
-            android:text="Mi cuenta" />
+            android:text="@string/profile_mi_cuenta" />
 
         <LinearLayout
             style="@style/Gamora.Card"
@@ -180,27 +180,27 @@
             <TextView
                 android:id="@+id/btnInformacionPersonal"
                 style="@style/Gamora.SettingRow"
-                android:text="👤     Información personal" />
+                android:text="@string/profile_informacion_personal" />
 
             <View style="@style/Gamora.Divider" />
 
             <TextView
                 android:id="@+id/btnPreferenciasFinancieras"
                 style="@style/Gamora.SettingRow"
-                android:text="💰     Preferencias financieras" />
+                android:text="@string/profile_preferencias_financieras" />
 
             <View style="@style/Gamora.Divider" />
 
             <TextView
                 android:id="@+id/btnRecurrentes"
                 style="@style/Gamora.SettingRow"
-                android:text="🔁     Movimientos recurrentes" />
+                android:text="@string/profile_movimientos_recurrentes" />
         </LinearLayout>
 
         <!-- Personalización -->
         <TextView
             style="@style/Gamora.SectionLabel"
-            android:text="Personalización" />
+            android:text="@string/profile_personalizacion" />
 
         <LinearLayout
             style="@style/Gamora.Card"
@@ -221,7 +221,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🎨     Apariencia"
+                    android:text="@string/profile_apariencia"
                     android:textColor="@color/gamora_text_primary"
                     android:textSize="15sp" />
 
@@ -243,7 +243,7 @@
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
                         android:maxLines="1"
-                        android:text="Claro"
+                        android:text="@string/profile_claro"
                         android:textSize="13sp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -256,7 +256,7 @@
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
                         android:maxLines="1"
-                        android:text="Oscuro"
+                        android:text="@string/profile_oscuro"
                         android:textSize="13sp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -269,7 +269,7 @@
                         android:paddingStart="4dp"
                         android:paddingEnd="4dp"
                         android:maxLines="1"
-                        android:text="Sistema"
+                        android:text="@string/profile_sistema"
                         android:textSize="13sp" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
@@ -279,13 +279,20 @@
             <TextView
                 android:id="@+id/btnNotificaciones"
                 style="@style/Gamora.SettingRow"
-                android:text="🔔     Notificaciones" />
+                android:text="@string/profile_notificaciones" />
+
+            <View style="@style/Gamora.Divider" />
+
+            <TextView
+                android:id="@+id/btnIdioma"
+                style="@style/Gamora.SettingRow"
+                android:text="@string/profile_idioma" />
         </LinearLayout>
 
         <!-- Privacidad y ayuda -->
         <TextView
             style="@style/Gamora.SectionLabel"
-            android:text="Privacidad y ayuda" />
+            android:text="@string/profile_privacidad_y_ayuda" />
 
         <LinearLayout
             style="@style/Gamora.Card"
@@ -297,35 +304,35 @@
             <TextView
                 android:id="@+id/btnPrivacidad"
                 style="@style/Gamora.SettingRow"
-                android:text="🔒     Privacidad y seguridad" />
+                android:text="@string/profile_privacidad_y_seguridad" />
 
             <View style="@style/Gamora.Divider" />
 
             <TextView
                 android:id="@+id/btnBloqueo"
                 style="@style/Gamora.SettingRow"
-                android:text="🔐     Bloqueo con huella o PIN" />
+                android:text="@string/profile_bloqueo_con_huella_o" />
 
             <View style="@style/Gamora.Divider" />
 
             <TextView
                 android:id="@+id/btnPreferenciasIA"
                 style="@style/Gamora.SettingRow"
-                android:text="✨     Inteligencia artificial" />
+                android:text="@string/profile_inteligencia_artificial" />
 
             <View style="@style/Gamora.Divider" />
 
             <TextView
                 android:id="@+id/btnDocumentosLegales"
                 style="@style/Gamora.SettingRow"
-                android:text="📄     Documentos legales" />
+                android:text="@string/profile_documentos_legales" />
 
             <View style="@style/Gamora.Divider" />
 
             <TextView
                 android:id="@+id/btnAyuda"
                 style="@style/Gamora.SettingRow"
-                android:text="💬     Ayuda y soporte" />
+                android:text="@string/profile_ayuda_y_soporte" />
         </LinearLayout>
 
         <!-- Zona de riesgo -->
@@ -347,7 +354,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
-                android:text="Eliminar mis datos"
+                android:text="@string/profile_eliminar_mis_datos"
                 android:textColor="@color/gamora_expense"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -356,7 +363,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Borra tu cuenta y toda tu información de forma permanente."
+                android:text="@string/profile_borra_tu_cuenta_y"
                 android:textAppearance="@style/TextAppearance.Gamora.Caption" />
         </LinearLayout>
 
@@ -366,14 +373,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Cerrar sesión" />
+            android:text="@string/profile_cerrar_sesion" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:gravity="center"
-            android:text="Gamora · Tu dinero, tus decisiones"
+            android:text="@string/profile_gamora_tu_dinero_tus"
             android:textAppearance="@style/TextAppearance.Gamora.Caption" />
 
     </LinearLayout>

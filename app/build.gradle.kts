@@ -1,6 +1,14 @@
+import java.util.Properties
+
+// Llave de firma de producción: se lee de keystore.properties (no se sube a GitHub).
+val firma = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use(::load)
+}
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -17,6 +25,17 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        if (firma.isNotEmpty()) {
+            create("produccion") {
+                storeFile = rootProject.file(firma.getProperty("storeFile"))
+                storePassword = firma.getProperty("storePassword")
+                keyAlias = firma.getProperty("keyAlias")
+                keyPassword = firma.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             // Para instalar por cable: solo el procesador de los teléfonos actuales (APK más ligero).
@@ -28,6 +47,8 @@ android {
                 enable = true
             }
             proguardFiles("proguard-rules.pro")
+            // Sin keystore.properties el release sale sin firmar (como hasta ahora).
+            signingConfigs.findByName("produccion")?.let { signingConfig = it }
         }
     }
 
@@ -49,6 +70,8 @@ dependencies {
     // Firebase (el BoM fija versiones compatibles entre sí)
     implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
     implementation("com.google.firebase:firebase-analytics")
+    // Reportes de cierres inesperados (sin datos financieros); se declara en la política de privacidad.
+    implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore:27.1.0")
     implementation("com.google.firebase:firebase-ai")

@@ -1,5 +1,8 @@
 package com.gamora.feature.transactions
 
+import com.gamora.R
+import com.gamora.core.texto
+import com.gamora.core.Categoria
 import com.gamora.core.esperar
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,7 +12,7 @@ import java.util.Calendar
 data class MovimientoRecurrente(
     val id: String,
     val descripcion: String,
-    val categoria: String,
+    val categoria: Categoria,
     val montoCentavos: Long,
     val esIngreso: Boolean,
     // Día del mes (1-28) en que se registra.
@@ -51,14 +54,14 @@ object Recurrentes {
         coleccion(uid).add(
             mapOf(
                 "descripcion" to movimiento.description,
-                "categoria" to movimiento.category,
+                "categoria" to movimiento.category.clave,
                 "montoCentavos" to movimiento.amountCents,
                 "esIngreso" to movimiento.isIncome,
                 "dia" to dia,
                 "proximaFecha" to siguienteFecha(movimiento.timestamp, dia)
             )
         ).addOnFailureListener { error ->
-            onError(error.localizedMessage ?: "No se pudo programar la repetición.")
+            onError(error.localizedMessage ?: texto(R.string.recurrentes_no_se_pudo_programar))
         }
     }
 
@@ -67,7 +70,7 @@ object Recurrentes {
             MovimientoRecurrente(
                 id = doc.id,
                 descripcion = doc.getString("descripcion").orEmpty(),
-                categoria = doc.getString("categoria") ?: "Otros",
+                categoria = Categoria.porClave(doc.getString("categoria")) ?: Categoria.OTROS,
                 montoCentavos = doc.getLong("montoCentavos") ?: 0L,
                 esIngreso = doc.getBoolean("esIngreso") ?: false,
                 dia = (doc.getLong("dia") ?: 1L).toInt(),
@@ -107,7 +110,7 @@ object Recurrentes {
                     movimientos.document(idMovimiento),
                     mapOf(
                         "descripcion" to (doc.getString("descripcion") ?: "Recurrente"),
-                        "categoria" to (doc.getString("categoria") ?: "Otros"),
+                        "categoria" to (Categoria.porClave(doc.getString("categoria")) ?: Categoria.OTROS).clave,
                         "montoCentavos" to monto,
                         "esIngreso" to (doc.getBoolean("esIngreso") ?: false),
                         "fecha" to fecha

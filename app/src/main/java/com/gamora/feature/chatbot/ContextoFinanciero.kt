@@ -1,5 +1,6 @@
 package com.gamora.feature.chatbot
 
+import com.gamora.core.Categoria
 import com.gamora.core.ui.LOCALE_MX
 import com.gamora.core.ui.dinero
 import com.gamora.feature.analytics.generarConsejos
@@ -21,7 +22,8 @@ fun construirContextoFinanciero(
     movimientos: List<GamoraMovement>,
     metas: List<SavingsGoal>,
     presupuestoCentavos: Long,
-    ahora: Calendar = Calendar.getInstance()
+    ahora: Calendar = Calendar.getInstance(),
+    nombre: (Categoria) -> String
 ): String = buildString {
 
     val fechaHoy = SimpleDateFormat("d 'de' MMMM 'de' yyyy", LOCALE_MX).format(ahora.time)
@@ -70,7 +72,7 @@ fun construirContextoFinanciero(
             .takeIf { it.isNotEmpty() }
             ?.let { categorias ->
                 appendLine("- Gastos de este mes por categoría: " +
-                        categorias.joinToString { "${it.key} ${dinero(it.value)}" })
+                        categorias.joinToString { "${nombre(it.key)} ${dinero(it.value)}" })
             }
 
         // Movimientos recientes, para que pueda citar casos concretos.
@@ -79,7 +81,7 @@ fun construirContextoFinanciero(
         movimientos.sortedByDescending { it.timestamp }.take(25).forEach {
             appendLine(
                 "  • ${formatoDia.format(Date(it.timestamp))} · " +
-                        "${if (it.isIncome) "ingreso" else "gasto"} · ${it.category} · " +
+                        "${if (it.isIncome) "ingreso" else "gasto"} · ${nombre(it.category)} · " +
                         "\"${it.description}\" · ${dinero(it.amountCents)}"
             )
         }
@@ -101,7 +103,7 @@ fun construirContextoFinanciero(
         }
     }
 
-    val consejos = generarConsejos(movimientos, metas, presupuestoCentavos, ahora)
+    val consejos = generarConsejos(movimientos, metas, presupuestoCentavos, ahora, nombre)
     if (movimientos.isNotEmpty() && consejos.isNotEmpty()) {
         appendLine("- Observaciones automáticas de la app:")
         consejos.forEach { appendLine("  • $it") }

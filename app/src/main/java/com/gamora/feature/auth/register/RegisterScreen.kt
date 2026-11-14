@@ -1,6 +1,7 @@
 
 package com.gamora.feature.auth.register
 
+import com.gamora.core.texto
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Intent
 import android.os.Bundle
@@ -50,14 +51,14 @@ class RegisterScreen : AppCompatActivity() {
 
         txtVerTerminos.setOnClickListener {
             mostrarDocumento(
-                "Términos y condiciones",
+                texto(R.string.register_terminos_y_condiciones),
                 R.string.terminos_condiciones
             )
         }
 
         txtVerPrivacidad.setOnClickListener {
             mostrarDocumento(
-                "Política de privacidad",
+                texto(R.string.mainactivity_politica_de_privacidad),
                 R.string.politica_privacidad
             )
         }
@@ -86,33 +87,33 @@ class RegisterScreen : AppCompatActivity() {
                         correo.isBlank() ||
                         password.isBlank() ||
                         confirmarPassword.isBlank() -> {
-                    mostrarMensaje("Completa todos los campos obligatorios.")
+                    mostrarMensaje(texto(R.string.register_completa_todos_los_campos))
                 }
 
                 !Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> {
-                    mostrarMensaje("Introduce un correo electrónico válido.")
+                    mostrarMensaje(texto(R.string.register_introduce_un_correo_electronico))
                 }
 
-                password.length < 6 -> {
-                    mostrarMensaje("La contraseña debe tener al menos 6 caracteres.")
+                password.length < 8 -> {
+                    mostrarMensaje(texto(R.string.register_la_contrasena_debe_tener))
                 }
 
                 password != confirmarPassword -> {
-                    mostrarMensaje("Las contraseñas no coinciden.")
+                    mostrarMensaje(texto(R.string.register_las_contrasenas_no_coinciden))
                 }
 
                 !cbTerminos.isChecked -> {
-                    mostrarMensaje("Debes aceptar los términos y condiciones.")
+                    mostrarMensaje(texto(R.string.register_debes_aceptar_los_terminos))
                 }
 
                 !cbPrivacidad.isChecked -> {
-                    mostrarMensaje("Debes confirmar que revisaste la política de privacidad.")
+                    mostrarMensaje(texto(R.string.register_debes_confirmar_que_revisaste))
                 }
 
                 else -> {
 
                     btnRegistrarse.isEnabled = false
-                    btnRegistrarse.text = "Creando cuenta..."
+                    btnRegistrarse.text = texto(R.string.register_creando_cuenta)
 
                     val datos = RegisterData(
                         nombre = nombre,
@@ -136,7 +137,7 @@ class RegisterScreen : AppCompatActivity() {
 
                         onSuccess = {
                             runOnUiThread {
-                                mostrarMensaje("¡Cuenta creada correctamente!")
+                                mostrarMensaje(texto(R.string.register_cuenta_creada_correctamente))
 
                                 startActivity(
                                     Intent(this, HomeActivity::class.java)
@@ -149,7 +150,7 @@ class RegisterScreen : AppCompatActivity() {
                         onError = { error ->
                             runOnUiThread {
                                 btnRegistrarse.isEnabled = true
-                                btnRegistrarse.text = "Crear cuenta"
+                                btnRegistrarse.text = texto(R.string.mainactivity_crear_cuenta)
                                 mostrarMensaje(error)
                             }
                         }
@@ -181,7 +182,7 @@ class RegisterScreen : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(titulo)
             .setView(vista)
-            .setPositiveButton("Cerrar", null)
+            .setPositiveButton(texto(R.string.main_cerrar), null)
             .show()
     }
 }

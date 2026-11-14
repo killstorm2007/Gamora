@@ -14,10 +14,12 @@ import com.gamora.feature.transactions.Recurrentes
 import com.gamora.feature.transactions.mostrarDialogoMovimiento
 import com.gamora.feature.onboarding.mostrarBienvenidaSiHaceFalta
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import com.gamora.core.auth.AuthRepository
+import com.gamora.feature.legal.pedirAceptarPoliticasSiHaceFalta
 import com.gamora.core.preferences.AppearancePreferences
 import com.gamora.core.preferences.GamoraTheme
 import com.gamora.feature.budget.PresupuestoStore
@@ -52,6 +54,15 @@ class HomeActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_home)
 
+        // Con el bloqueo activo, la pantalla no aparece en "apps recientes" ni en capturas:
+        // si no, los saldos se verían sin pasar por la huella.
+        lifecycleScope.launch {
+            SeguridadPreferences.bloqueoFlow(this@HomeActivity).collect { activo ->
+                if (activo) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+                else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+            }
+        }
+
         AuthRepository.obtenerUid()?.let { uid ->
             GamoraTransactionStore.escuchar(uid)
             GamoraGoalStore.escuchar(uid)
@@ -69,7 +80,11 @@ class HomeActivity : AppCompatActivity() {
                 cargarMoneda()
                 programarAvisos(this)
                 AuthRepository.obtenerConsentimiento(
-                    onSuccess = { AuthRepository.aplicarAnalitica(it.analiticaAutorizada) },
+                    onSuccess = {
+                        AuthRepository.aplicarAnalitica(it.analiticaAutorizada)
+                        // Quien aceptó una versión anterior del aviso y los términos debe aceptar la vigente.
+                        pedirAceptarPoliticasSiHaceFalta(it)
+                    },
                     onError = { Log.w("HomeActivity", it) }
                 )
             }

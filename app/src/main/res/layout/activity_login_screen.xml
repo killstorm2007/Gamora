@@ -34,7 +34,7 @@
                 android:textStyle="bold"
                 android:gravity="center"
                 android:importantForAccessibility="no"
-                android:text="G"
+                android:text="@string/login_screen_g"
                 android:textColor="@color/gamora_on_hero"
                 android:textSize="26sp" />
 
@@ -44,7 +44,7 @@
                 android:layout_marginTop="24dp"
                 android:fontFamily="sans-serif"
                 android:textStyle="bold"
-                android:text="¡Hola de nuevo!"
+                android:text="@string/login_screen_hola_de_nuevo"
                 android:textColor="@color/gamora_on_hero"
                 android:textSize="30sp" />
 
@@ -52,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Inicia sesión para ver tus finanzas."
+                android:text="@string/login_screen_inicia_sesion_para_ver"
                 android:textColor="@color/gamora_on_hero_secondary"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -68,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="Correo electrónico">
+                android:hint="@string/login_screen_correo_electronico">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtCorreo"
@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:hint="Contraseña"
+                android:hint="@string/login_screen_contrasena"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -105,7 +105,7 @@
                 android:gravity="center_vertical"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
-                android:text="¿Olvidaste tu contraseña?"
+                android:text="@string/login_screen_olvidaste_tu_contrasena"
                 android:textColor="@color/gamora_accent"
                 android:textSize="14sp" />
 
@@ -114,14 +114,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Iniciar sesión" />
+                android:text="@string/login_screen_iniciar_sesion" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="o"
+                android:text="@string/login_screen_o"
                 android:textAppearance="@style/TextAppearance.Gamora.Caption" />
 
             <com.google.android.material.button.MaterialButton
@@ -130,7 +130,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Continuar con Google" />
+                android:text="@string/login_screen_continuar_con_google" />
 
             <TextView
                 android:id="@+id/txtRegistrarse"
@@ -141,7 +141,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="¿No tienes cuenta? Regístrate"
+                android:text="@string/login_screen_no_tienes_cuenta_registrate"
                 android:textColor="@color/gamora_accent"
                 android:textSize="14sp" />
         </LinearLayout>

@@ -1,7 +1,6 @@
 package com.gamora.feature.importar
 
-import com.gamora.feature.transactions.CATEGORIAS_GASTO
-import com.gamora.feature.transactions.CATEGORIAS_INGRESO
+import com.gamora.core.Categoria
 import com.gamora.feature.transactions.GamoraMovement
 import org.json.JSONException
 import org.json.JSONObject
@@ -14,7 +13,7 @@ data class MovimientoImportado(
     val descripcion: String,
     val montoCentavos: Long,
     val esIngreso: Boolean,
-    val categoria: String,
+    val categoria: Categoria,
     val seleccionado: Boolean = true,
     val repetido: Boolean = false
 )
@@ -50,10 +49,9 @@ internal fun fechaDe(texto: String): Long? {
     }
 }
 
-internal fun categoriaValida(categoria: String, esIngreso: Boolean): String {
-    val permitidas = if (esIngreso) CATEGORIAS_INGRESO else CATEGORIAS_GASTO
-    return categoria.trim().takeIf { it in permitidas } ?: "Otros"
-}
+/** La categoría si aplica al tipo de movimiento; si no (p. ej. "comida" en un ingreso), [Categoria.OTROS]. */
+internal fun categoriaValida(categoria: Categoria, esIngreso: Boolean): Categoria =
+    if (if (esIngreso) categoria.ingreso else categoria.gasto) categoria else Categoria.OTROS
 
 /**
  * Convierte la respuesta JSON de Gemini en movimientos. Los renglones inválidos se cuentan en
@@ -104,7 +102,7 @@ private fun leerFila(fila: JSONObject): MovimientoImportado? {
         descripcion = descripcion,
         montoCentavos = monto,
         esIngreso = esIngreso,
-        categoria = categoriaValida(fila.optString("categoria"), esIngreso)
+        categoria = categoriaValida(Categoria.de(fila.optString("categoria")), esIngreso)
     )
 }
 

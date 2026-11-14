@@ -1,6 +1,10 @@
 
 package com.gamora.feature.chatbot
 
+import com.gamora.core.ui.Moneda
+import com.gamora.core.ui.localeApp
+import com.gamora.core.texto
+import com.gamora.core.nombre
 import com.gamora.core.ui.dp
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.os.Bundle
@@ -34,10 +38,10 @@ import kotlinx.coroutines.launch
 
 
 private val SUGERENCIAS = listOf(
-    "Analiza mis gastos de este mes",
-    "¿En qué puedo recortar?",
-    "¿Cómo voy con mis metas?",
-    "Hazme un plan de ahorro"
+    texto(R.string.chatbot_analiza_mis_gastos_de),
+    texto(R.string.chatbot_en_que_puedo_recortar),
+    texto(R.string.chatbot_como_voy_con_mis),
+    texto(R.string.chatbot_hazme_un_plan_de)
 )
 
 class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
@@ -112,8 +116,7 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
 
                         if (!iaAutorizada && mensajes.isEmpty()) {
                             agregarBurbuja(
-                                "Puedo darte consejos generales. Para que analice tus movimientos y metas, " +
-                                        "activa la IA en Perfil › Preferencias de inteligencia artificial.",
+                                texto(R.string.chatbot_puedo_darte_consejos_generales),
                                 false
                             )
                         }
@@ -136,7 +139,7 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
 
     private fun mostrarErrorInicial(mensaje: String) {
         if (!isAdded || view == null) return
-        agregarBurbuja("No pude cargar la conversación: $mensaje", false)
+        agregarBurbuja(texto(R.string.chatbot_no_pude_cargar_la, mensaje), false)
         habilitar(true)
     }
 
@@ -151,7 +154,7 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
         agregarBurbuja(mensaje, true)
         ChatRepository.guardar(pregunta)
 
-        val burbujaRespuesta = agregarBurbuja("Escribiendo…", false)
+        val burbujaRespuesta = agregarBurbuja(texto(R.string.chatbot_escribiendo), false)
         habilitar(false)
         bajar()
 
@@ -218,7 +221,7 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
                     when {
                         estaSaturado(error) -> {
                             Log.w("ChatbotFragment", "$modelo saturado (intento ${intento + 1})", error)
-                            burbuja.text = "Escribiendo… (hay mucha demanda, un momento)"
+                            burbuja.text = texto(R.string.chatbot_escribiendo_hay_mucha_demanda)
                             delay(1500L * (intento + 1))
                         }
 
@@ -235,17 +238,20 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
     }
 
     /** Se crea en cada mensaje para que las instrucciones lleven los datos al día. */
-    private fun crearModelo(modelo: String) = Firebase.ai(backend = GenerativeBackend.googleAI())
+    // Tokens de App Check de un solo uso: un token interceptado no sirve para hacer más llamadas.
+    private fun crearModelo(modelo: String) = Firebase.ai(backend = GenerativeBackend.googleAI(), useLimitedUseAppCheckTokens = true)
         .generativeModel(
             modelName = modelo,
             systemInstruction = content { text(instrucciones()) }
         )
 
     private fun instrucciones(): String = buildString {
-        appendLine("Eres Gamora AI, el asistente financiero de Gamora, una app de finanzas personales en México.")
-        appendLine("Responde en español, con un tono cercano y claro, en respuestas breves (máximo 2 o 3 párrafos o una lista corta).")
+        appendLine("Eres Gamora AI, el asistente financiero de Gamora, una app de finanzas personales para personas en México y Estados Unidos.")
+        // Responde en el idioma de la app (Perfil › Idioma), aunque estas instrucciones estén en español.
+        val idioma = if (localeApp().language == "en") "inglés" else "español"
+        appendLine("Responde siempre en $idioma, con un tono cercano y claro, en respuestas breves (máximo 2 o 3 párrafos o una lista corta).")
         appendLine("No uses formato Markdown (sin asteriscos ni #); para listas usa guiones simples.")
-        appendLine("Usa pesos mexicanos (MXN).")
+        appendLine("Usa la moneda de la persona (${Moneda.actual}).")
         appendLine("Recuerda lo que la persona te ha contado en la conversación (planes, situación, gustos) y úsalo en tus respuestas.")
         appendLine("No des asesoría de inversión personalizada ni recomiendes productos financieros específicos; sugiere consultar a un profesional cuando aplique.")
         appendLine("Si te preguntan algo ajeno a las finanzas personales, redirige la conversación amablemente.")
@@ -258,7 +264,8 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
                 construirContextoFinanciero(
                     GamoraTransactionStore.movements,
                     GamoraGoalStore.goals,
-                    presupuestoCentavos
+                    presupuestoCentavos,
+                    nombre = { it.nombre(requireContext()) }
                 )
             )
         } else {
@@ -276,40 +283,40 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
                     tecnico.contains("API has not been used", true) ||
                     tecnico.contains("is disabled", true) ||
                     tecnico.contains("SERVICE_DISABLED", true) ->
-                "El asistente todavía no está activado en Firebase (AI Logic)."
+                texto(R.string.chatbot_el_asistente_todavia_no)
 
             tecnico.contains("not found", true) ||
                     tecnico.contains("NOT_FOUND", true) ||
                     tecnico.contains("is not supported", true) ->
-                "El modelo de IA configurado no está disponible."
+                texto(R.string.chatbot_el_modelo_de_ia)
 
             estaSaturado(error) ->
-                "El asistente tiene mucha demanda en este momento. Inténtalo de nuevo en unos segundos."
+                texto(R.string.chatbot_el_asistente_tiene_mucha)
 
             tecnico.contains("quota", true) || tecnico.contains("RESOURCE_EXHAUSTED", true) ->
-                "Se alcanzó el límite de uso del asistente. Inténtalo más tarde."
+                texto(R.string.chatbot_se_alcanzo_el_limite)
 
             tecnico.contains("App Check", true) ->
-                "La app no pasó la verificación de seguridad (App Check)."
+                texto(R.string.chatbot_la_app_no_paso)
 
             tecnico.contains("Unable to resolve host", true) || tecnico.contains("timeout", true) ->
-                "No hay conexión a internet. Revísala e inténtalo de nuevo."
+                texto(R.string.chatbot_no_hay_conexion_a)
 
-            else -> "No pude responder en este momento. Inténtalo de nuevo."
+            else -> texto(R.string.chatbot_no_pude_responder_en)
         }
 
         val depurable = (requireContext().applicationInfo.flags and
                 android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
 
-        return if (depurable) "$amigable\n\n[Detalle técnico] $tecnico" else amigable
+        return if (depurable) texto(R.string.chatbot_n_n_detalle_tecnico, amigable, tecnico) else amigable
     }
 
     private fun confirmarBorrado() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Borrar conversación")
-            .setMessage("Gamora AI olvidará todo lo que le has contado. ¿Quieres continuar?")
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Borrar") { _, _ ->
+            .setTitle(texto(R.string.chatbot_borrar_conversacion))
+            .setMessage(texto(R.string.chatbot_gamora_ai_olvidara_todo))
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.chatbot_borrar)) { _, _ ->
                 ChatRepository.borrarTodo(
                     onSuccess = {
                         if (!isAdded || view == null) return@borrarTodo

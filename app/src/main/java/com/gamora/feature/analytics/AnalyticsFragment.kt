@@ -1,5 +1,10 @@
 package com.gamora.feature.analytics
 
+import com.gamora.core.ui.localeApp
+import com.gamora.core.ui.formatoFecha
+import com.gamora.core.texto
+import com.gamora.core.nombre
+import com.gamora.core.Categoria
 import com.gamora.core.ui.LOCALE_MX
 import com.gamora.core.ui.dp
 import com.gamora.core.ui.dinero
@@ -8,8 +13,6 @@ import com.gamora.core.ui.enCampo
 import com.gamora.core.notifications.inicioPeriodo
 import com.gamora.feature.budget.PresupuestoStore
 import com.gamora.feature.budget.avancePresupuestos
-import com.gamora.feature.transactions.CATEGORIAS_GASTO
-import com.gamora.feature.transactions.iconoCategoria
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
@@ -112,13 +115,13 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
         renderMeses(view)
 
         view.findViewById<TextView>(R.id.txtConsejos).text =
-            generarConsejos(movimientos, GamoraGoalStore.goals, presupuestoCentavos)
+            generarConsejos(movimientos, GamoraGoalStore.goals, presupuestoCentavos, nombre = { it.nombre(requireContext()) })
                 .joinToString("\n\n") { "• $it" }
     }
 
     private fun renderCategories(
         view: View,
-        totals: List<Pair<String, Long>>,
+        totals: List<Pair<Categoria, Long>>,
         totalExpenses: Long
     ) {
         val container = view.findViewById<LinearLayout>(R.id.layoutExpenseCategories)
@@ -146,13 +149,13 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
         dona.mostrar(
             totals.map { it.second }.zip(colores),
-            titulo = "Gastos totales",
+            titulo = texto(R.string.analytics_gastos_totales),
             valor = dinero(totalExpenses)
         )
 
-        dona.contentDescription = "Gastos por categoría: " +
+        dona.contentDescription = texto(R.string.analytics_gastos_por_categoria) +
                 totals.joinToString { (categoria, monto) ->
-                    "$categoria ${porcentaje(monto, totalExpenses)}%"
+                    "${categoria.nombre(requireContext())} ${porcentaje(monto, totalExpenses)}%"
                 }
 
         totals.forEachIndexed { indice, (category, amount) ->
@@ -170,7 +173,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             }
 
             val categoryName = TextView(requireContext()).apply {
-                text = android.text.SpannableString("●  $category").apply {
+                text = android.text.SpannableString("●  ${category.nombre(requireContext())}").apply {
                     setSpan(
                         android.text.style.ForegroundColorSpan(color),
                         0, 1, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -196,7 +199,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             item.addView(header)
 
             val details = TextView(requireContext()).apply {
-                text = "$percentage% de tus gastos"
+                text = texto(R.string.analytics_de_tus_gastos, percentage)
                 textSize = 12f
                 setTextColor(muted)
                 setPadding(0, dp(3), 0, dp(6))
@@ -230,13 +233,13 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
         val inicio = inicioPeriodo(System.currentTimeMillis(), diaInicioPeriodo)
         view.findViewById<TextView>(R.id.txtPeriodoPresupuesto).text =
-            "Desde el ${SimpleDateFormat("d 'de' MMMM", LOCALE_MX).format(Date(inicio))}"
+            texto(R.string.analytics_desde_el, formatoFecha("dMMMM").format(Date(inicio)))
 
         val avances = avancePresupuestos(GamoraTransactionStore.movements, PresupuestoStore.limites, inicio)
 
         if (avances.isEmpty()) {
             contenedor.addView(TextView(requireContext()).apply {
-                text = "🎯\n\nDefine cuánto quieres gastar al mes en cada categoría y Gamora te avisará antes de que te pases."
+                text = texto(R.string.analytics_n_ndefine_cuanto_quieres)
                 gravity = Gravity.CENTER
                 setTextAppearance(R.style.TextAppearance_Gamora_Body)
                 setPadding(0, dp(8), 0, dp(8))
@@ -262,13 +265,13 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             fila.addView(LinearLayout(requireContext()).apply {
                 orientation = LinearLayout.HORIZONTAL
                 addView(TextView(requireContext()).apply {
-                    text = "${iconoCategoria(avance.categoria)}  ${avance.categoria}"
+                    text = texto(R.string.comun_icono_y_texto, avance.categoria.emoji, avance.categoria.nombre(requireContext()))
                     textSize = 14f
                     setTextColor(graphite)
                     layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 })
                 addView(TextView(requireContext()).apply {
-                    text = "${dinero(avance.gastadoCentavos)} / ${dinero(avance.limiteCentavos)}"
+                    text = texto(R.string.comun_monto_de_monto, dinero(avance.gastadoCentavos), dinero(avance.limiteCentavos))
                     textSize = 13f
                     setTextColor(graphite)
                 })
@@ -289,9 +292,9 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
             fila.addView(TextView(requireContext()).apply {
                 text = if (avance.restanteCentavos >= 0) {
-                    "${avance.porcentaje}% usado · te quedan ${dinero(avance.restanteCentavos)}"
+                    texto(R.string.analytics_usado_te_quedan, avance.porcentaje, dinero(avance.restanteCentavos))
                 } else {
-                    "Te pasaste por ${dinero(-avance.restanteCentavos)}"
+                    texto(R.string.analytics_te_pasaste_por, dinero(-avance.restanteCentavos))
                 }
                 textSize = 12f
                 setTextColor(if (avance.restanteCentavos >= 0) muted else colorBarra)
@@ -305,7 +308,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
     /** Un campo por categoría de gasto; vacío o 0 quita el límite. */
     private fun mostrarDialogoPresupuestos() {
         val contexto = requireContext()
-        val categorias = CATEGORIAS_GASTO.filter { it != "Ahorro" }
+        val categorias = Categoria.DE_GASTO - Categoria.AHORRO
 
         val contenedor = LinearLayout(contexto).apply {
             orientation = LinearLayout.VERTICAL
@@ -314,7 +317,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
         val campos = categorias.associateWith { categoria ->
             TextInputEditText(contexto).apply {
-                hint = "${iconoCategoria(categoria)}  $categoria"
+                hint = "${categoria.emoji}  ${categoria.nombre(contexto)}"
                 inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                 maxLines = 1
                 PresupuestoStore.limites[categoria]?.let {
@@ -325,18 +328,18 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
         }
 
         val dialogo = MaterialAlertDialogBuilder(contexto)
-            .setTitle("Presupuesto por categoría")
-            .setMessage("Límite mensual para cada categoría. Déjalo vacío si no quieres límite.")
+            .setTitle(texto(R.string.analytics_presupuesto_por_categoria))
+            .setMessage(texto(R.string.analytics_limite_mensual_para_cada))
             .setView(ScrollView(contexto).apply { addView(contenedor) })
-            .setNegativeButton("Cancelar", null)
-            .setPositiveButton("Guardar", null)
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.import_review_guardar), null)
             .create()
 
         dialogo.setOnShowListener {
             val guardar = dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
 
             guardar.setOnClickListener {
-                val limites = mutableMapOf<String, Long>()
+                val limites = mutableMapOf<Categoria, Long>()
 
                 for ((categoria, campo) in campos) {
                     val texto = campo.text?.toString().orEmpty()
@@ -344,7 +347,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
                     val centavos = centavosDe(texto)
                     if (centavos == null || centavos > 100_000_000_000L) {
-                        campo.error = "Importe no válido"
+                        campo.error = texto(R.string.analytics_importe_no_valido)
                         return@setOnClickListener
                     }
                     if (centavos > 0) limites[categoria] = centavos
@@ -356,7 +359,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
                     limites,
                     onSuccess = {
                         dialogo.dismiss()
-                        if (isAdded) Toast.makeText(contexto, "Presupuestos guardados", Toast.LENGTH_SHORT).show()
+                        if (isAdded) Toast.makeText(contexto, texto(R.string.analytics_presupuestos_guardados), Toast.LENGTH_SHORT).show()
                     },
                     onError = { mensaje ->
                         guardar.isEnabled = true
@@ -372,7 +375,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
     /** Ingresos y gastos de los últimos 6 meses, incluido el actual (meses sin movimientos en cero). */
     private fun renderMeses(view: View) {
         val porMes = GamoraTransactionStore.movements.totalesPorMes()
-        val formatoMes = SimpleDateFormat("MMM", LOCALE_MX)
+        val formatoMes = SimpleDateFormat("MMM", localeApp())
 
         val meses = (5 downTo 0).map { atras ->
             val calendario = Calendar.getInstance().apply {
@@ -392,9 +395,9 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
 
         view.findViewById<BarrasMensualesView>(R.id.graficaMeses).apply {
             mostrar(meses)
-            contentDescription = "Ingresos y gastos de los últimos 6 meses: " +
+            contentDescription = texto(R.string.analytics_ingresos_y_gastos_de) +
                     meses.joinToString { mes ->
-                        "${mes.etiqueta}, ingresos ${dinero(mes.ingresos)}, gastos ${dinero(mes.gastos)}"
+                        texto(R.string.analytics_ingresos_gastos, mes.etiqueta, dinero(mes.ingresos), dinero(mes.gastos))
                     }
         }
     }
