@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gamora_background"
@@ -162,6 +163,46 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Presupuesto por categoría -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Presupuesto por categoría"
+                android:textAppearance="@style/TextAppearance.Gamora.Title" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditarPresupuestos"
+                style="@style/Widget.Gamora.Button.Text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="40dp"
+                android:text="Editar" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtPeriodoPresupuesto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textAppearance="@style/TextAppearance.Gamora.Caption" />
+
+        <LinearLayout
+            android:id="@+id/layoutPresupuestos"
+            style="@style/Gamora.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:padding="20dp" />
+
         <!-- Ingresos vs. gastos -->
         <TextView
             android:layout_width="match_parent"
@@ -228,7 +269,7 @@
                 android:layout_marginEnd="8dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_sparkle"
-                android:tint="@color/gamora_accent" />
+                app:tint="@color/gamora_accent" />
 
             <TextView
                 android:layout_width="match_parent"

@@ -3,127 +3,122 @@
     <string name="politica_privacidad"><![CDATA[
 POLÍTICA DE PRIVACIDAD DE GAMORA
 
-Última actualización: 26 de octubre de 2026
+Última actualización: 11 de noviembre de 2026 · Versión 1.0
 
-1. IDENTIDAD DEL RESPONSABLE
+1. RESPONSABLE
 
-Gamora es una aplicación de finanzas personales diseñada para ayudar a las personas usuarias a registrar ingresos y gastos, organizar presupuestos y planificar sus ahorros.
+[Nombre completo o razón social], con domicilio en [Domicilio], es responsable del tratamiento de tus datos personales en Gamora, una aplicación de finanzas personales. Para cualquier asunto de privacidad escribe a [Correo de privacidad].
 
-Responsable: [Nombre completo o razón social].
-Domicilio: [Domicilio del responsable].
-Correo de privacidad: [Correo electrónico].
+2. DATOS QUE TRATAMOS
 
-2. DATOS PERSONALES
+• Identificación y contacto: nombre, apellidos, correo electrónico y, si lo das, teléfono. Si entras con Google, recibimos tu nombre y correo de tu cuenta de Google.
+• Datos financieros que tú registras: ingresos, gastos, categorías, movimientos recurrentes, metas de ahorro, presupuestos y preferencias (moneda, día de inicio del periodo).
+• Conversaciones con el asistente Gamora AI.
+• Documentos que decides importar (estados de cuenta y recibos de nómina) y los movimientos que confirmas de ellos.
+• Preferencias de la app: tema, notificaciones y consentimientos otorgados.
+• Datos técnicos: identificadores de la instalación y verificaciones de integridad del dispositivo para proteger el servicio. Datos de uso de la app solo si autorizas la analítica.
 
-Dependiendo de las funciones utilizadas, Gamora podrá tratar datos de perfil, ingresos, gastos, presupuestos, metas de ahorro y preferencias de configuración.
+Gamora no te pide ni guarda números de tarjeta, cuentas bancarias ni contraseñas de tu banco, y no se conecta a tus cuentas bancarias.
 
-La aplicación también podrá procesar archivos CSV, Excel y estados de cuenta compatibles que la persona usuaria decida importar.
+3. PARA QUÉ LOS USAMOS
 
-3. FINALIDADES
+Finalidades necesarias:
+• Crear y proteger tu cuenta e iniciar sesión.
+• Guardar y sincronizar tus movimientos, metas y presupuestos.
+• Calcular balances, estadísticas y consejos de ahorro dentro de la app.
+• Registrar tus movimientos recurrentes y enviarte los avisos que actives (presupuesto, metas, resumen semanal).
 
-Los datos se utilizarán para registrar movimientos, calcular balances, generar estadísticas, elaborar presupuestos, detectar posibles duplicados y proporcionar las funciones solicitadas.
+Finalidades opcionales (solo con tu autorización, que puedes retirar en Perfil):
+• Analítica de uso, para entender qué partes de la app se usan y mejorarla.
+• Que Gamora AI use tus datos financieros para darte recomendaciones personalizadas.
 
-4. ALMACENAMIENTO
+4. INTELIGENCIA ARTIFICIAL
 
-La información podrá guardarse localmente en el dispositivo y sincronizarse con la nube cuando dicha función esté disponible y haya sido autorizada.
+Lo que escribes en Gamora AI se envía al modelo Gemini de Google para generar la respuesta. Si autorizas el uso de tus datos financieros, también se envía un resumen de tus movimientos, metas y presupuestos. Si no lo autorizas, el asistente responde sin conocer tus datos. Las respuestas pueden contener errores y no son asesoría financiera profesional.
 
-5. INTELIGENCIA ARTIFICIAL
+Importar estados de cuenta y nómina: cuando eliges un PDF o una foto, Gamora primero lo lee en tu teléfono, con el texto del PDF o con el reconocimiento de texto de Google ML Kit, que funciona sin internet; en ese caso el documento no sale de tu teléfono. Solo si no reconoce el formato, el documento se envía a Gemini para extraer los movimientos. Si el PDF tiene contraseña, se abre en tu teléfono y, cuando hace falta enviarlo, se envía una copia sin contraseña. Gamora no guarda el archivo, la copia ni la contraseña, en ningún servidor ni en tu teléfono; solo guarda los movimientos que revisas y confirmas. Estos documentos pueden contener datos sensibles como tu número de cuenta, domicilio o RFC. Los XML de nómina (CFDI) se leen en tu teléfono y no se envían a Gemini.
 
-El asistente utilizará únicamente los datos necesarios y autorizados. Si una función requiere enviar información a un proveedor externo, se deberá informar qué datos se compartirán y con qué finalidad.
+5. CON QUIÉN SE COMPARTEN
 
-Las acciones que modifiquen o guarden información requerirán confirmación previa.
+Usamos los servicios de Google como encargados del tratamiento: Firebase Authentication (inicio de sesión), Cloud Firestore (almacenamiento en la nube), Firebase App Check y Play Integrity (seguridad), Google Analytics para Firebase (solo si lo autorizas) y Gemini mediante Firebase AI Logic (asistente). Estos servicios pueden procesar datos fuera de México. No vendemos ni rentamos tus datos personales.
 
-6. SEGURIDAD
+6. DÓNDE SE GUARDAN Y CÓMO SE PROTEGEN
 
-Gamora implementará medidas razonables de seguridad para proteger la información y limitar el acceso no autorizado.
+Tus datos se guardan en la nube de Firebase asociados a tu cuenta y viajan cifrados. Las reglas de seguridad impiden que otras personas lean o modifiquen tu información. Puedes además bloquear la app con huella, rostro o PIN.
 
-7. DERECHOS DE LAS PERSONAS USUARIAS
+7. CONSERVACIÓN Y ELIMINACIÓN
 
-Las personas usuarias podrán solicitar acceso, rectificación, cancelación y oposición al tratamiento de sus datos, conforme a la legislación aplicable. También podrán solicitar la exportación o eliminación de información cuando corresponda.
+Conservamos tus datos mientras tengas una cuenta. Puedes borrar tu cuenta y toda tu información en cualquier momento desde Perfil › Eliminar mis datos. El borrado es inmediato y definitivo. También puedes solicitarlo escribiendo a [Correo de privacidad].
 
-8. CONSERVACIÓN Y ELIMINACIÓN
+8. TUS DERECHOS (ARCO)
 
-Los datos se conservarán durante el tiempo necesario para prestar el servicio y cumplir las obligaciones legales aplicables.
+Puedes acceder, rectificar, cancelar u oponerte al tratamiento de tus datos, así como revocar tu consentimiento. Muchos de estos cambios los haces directamente en Perfil. Para lo demás, envía tu solicitud a [Correo de privacidad] indicando tu nombre y el correo de tu cuenta; te responderemos en un máximo de 20 días hábiles.
 
-9. CONSENTIMIENTO
+9. MENORES DE EDAD
 
-Los consentimientos opcionales para analítica e inteligencia artificial serán independientes y podrán revocarse cuando corresponda.
+Gamora está dirigida a personas mayores de 18 años.
 
-10. CONTACTO
+10. CAMBIOS A ESTA POLÍTICA
 
-Responsable: [Nombre completo o razón social].
-Correo: [Correo de privacidad].
-Domicilio: [Domicilio del responsable].
-
-Esta política deberá completarse con los datos reales del responsable y los proveedores utilizados por Gamora.
+Si esta política cambia, te lo informaremos en la app y, cuando se requiera, te pediremos de nuevo tu consentimiento.
     ]]></string>
 
     <string name="terminos_condiciones"><![CDATA[
 TÉRMINOS Y CONDICIONES DE GAMORA
 
-Última actualización: 26 de octubre de 2026
+Última actualización: 11 de noviembre de 2026 · Versión 1.0
 
 1. ACEPTACIÓN
 
-Estos términos regulan el uso de Gamora, una aplicación de finanzas personales. La persona usuaria deberá poder consultar las condiciones antes de aceptarlas.
+Al crear una cuenta en Gamora aceptas estos términos. Si no estás de acuerdo, no uses la aplicación. Gamora es ofrecida por [Nombre completo o razón social].
 
-2. OBJETO
+2. QUÉ ES GAMORA
 
-Gamora permite organizar ingresos y gastos, crear presupuestos, establecer metas de ahorro, visualizar estadísticas e importar movimientos desde archivos compatibles, según las funciones disponibles.
+Gamora es una herramienta para organizar tus finanzas personales: registrar ingresos y gastos, importar movimientos desde estados de cuenta y recibos de nómina, programar movimientos recurrentes, definir presupuestos y metas de ahorro, ver estadísticas, recibir avisos y conversar con el asistente Gamora AI.
 
-3. RESPONSABILIDAD SOBRE LOS DATOS
+Gamora no es un banco ni una institución financiera: no guarda dinero, no realiza pagos ni transferencias y no se conecta a tus cuentas bancarias.
 
-La persona usuaria deberá revisar los montos, fechas, categorías y movimientos registrados o importados.
+3. TU CUENTA
 
-La detección de duplicados y errores es preventiva y no garantiza que todas las inconsistencias sean identificadas.
+Debes ser mayor de 18 años y dar información verdadera. Eres responsable de cuidar el acceso a tu cuenta y a tu teléfono. Si sospechas un uso no autorizado, cambia tu contraseña y escríbenos.
 
-4. ASISTENTE DE INTELIGENCIA ARTIFICIAL
+4. TUS DATOS
 
-El asistente puede generar análisis y recomendaciones, pero sus respuestas pueden contener errores.
+La información que registras es tuya. Tú eres responsable de que los montos, fechas y categorías sean correctos; los cálculos, avisos y consejos de Gamora dependen de esos datos. El tratamiento de tus datos personales se rige por la Política de privacidad.
 
-Las recomendaciones deberán revisarse antes de aplicarse. Las acciones que modifiquen o guarden datos requerirán confirmación.
+5. ASISTENTE GAMORA AI
 
-Gamora no garantiza resultados financieros, rendimientos ni ahorros específicos.
+Gamora AI genera respuestas con inteligencia artificial que pueden ser inexactas o incompletas. Sus respuestas y los consejos de ahorro son orientativos: no constituyen asesoría financiera, fiscal ni legal, y Gamora no garantiza ahorros ni resultados. Revisa cualquier recomendación antes de tomar decisiones.
 
-5. NATURALEZA DEL SERVICIO
+La lectura de estados de cuenta y recibos de nómina es automática (en tu teléfono o, si hace falta, con IA): puede omitir movimientos, leer mal un monto o una fecha, o asignar una categoría equivocada. Revisa los movimientos antes de guardarlos; los que confirmes quedan registrados como si los hubieras capturado tú.
 
-Gamora es una herramienta de organización financiera personal. No actúa como institución bancaria ni ejecuta pagos o transferencias por el simple hecho de contar con un asistente de IA.
+6. AVISOS Y MOVIMIENTOS RECURRENTES
 
-6. ALMACENAMIENTO Y SINCRONIZACIÓN
+Los avisos y el registro automático de movimientos recurrentes dependen de que tu teléfono permita notificaciones y tareas en segundo plano y tenga conexión. Pueden llegar con retraso o no llegar; no sustituyen tu propio seguimiento de pagos.
 
-El almacenamiento local y la sincronización en la nube dependerán de las funciones disponibles y de las opciones elegidas por la persona usuaria.
+7. USO ADECUADO
 
-7. SEGURIDAD Y USO ADECUADO
+No uses Gamora para actividades ilícitas, ni intentes acceder a datos de otras personas, alterar la app o interferir con su seguridad. Podemos suspender cuentas que incumplan estos términos.
 
-La persona usuaria no deberá utilizar la aplicación para actividades ilícitas, acceder sin autorización a datos ajenos ni interferir con los sistemas de seguridad.
+8. DISPONIBILIDAD
 
-8. PROPIEDAD INTELECTUAL
+Procuramos que Gamora funcione siempre, pero puede haber interrupciones por mantenimiento, actualizaciones o fallas de proveedores. La app se ofrece en fase beta y algunas funciones pueden cambiar.
 
-Los elementos originales de Gamora estarán protegidos conforme a las leyes aplicables. La información personal introducida por el usuario conservará el tratamiento y los derechos que legalmente correspondan.
+9. PROPIEDAD INTELECTUAL
 
-9. DISPONIBILIDAD
+El nombre, el diseño y el código de Gamora pertenecen a su titular. Tus datos siguen siendo tuyos.
 
-Gamora procurará mantener el servicio operativo, pero pueden producirse interrupciones por mantenimiento, actualizaciones o problemas técnicos.
+10. CANCELACIÓN
 
-10. PRIVACIDAD
+Puedes dejar de usar Gamora y borrar tu cuenta y todos tus datos en cualquier momento desde Perfil › Eliminar mis datos.
 
-El tratamiento de datos personales se regirá por la Política de Privacidad de Gamora. Estos términos no sustituyen los consentimientos específicos que sean necesarios.
+11. CAMBIOS
 
-11. CANCELACIÓN Y ELIMINACIÓN
+Si estos términos cambian, te lo avisaremos en la app. Seguir usando Gamora después del aviso implica que aceptas la nueva versión.
 
-La persona usuaria podrá dejar de utilizar Gamora y, cuando corresponda, solicitar el cierre de su cuenta y la eliminación de sus datos conforme a la legislación aplicable.
+12. LEY APLICABLE Y CONTACTO
 
-12. LEGISLACIÓN
-
-Estos términos se interpretarán conforme a la legislación aplicable en México, respetando los derechos irrenunciables de las personas consumidoras.
-
-13. CONTACTO
-
-Responsable: [Nombre completo o razón social].
-Correo: [Correo de soporte].
-Domicilio: [Domicilio del responsable].
-
-Estos términos deberán revisarse y completarse antes de publicar la aplicación.
+Estos términos se rigen por las leyes de México, sin perjuicio de tus derechos como persona consumidora ante la PROFECO. Contacto: [Correo de soporte] · [Domicilio].
     ]]></string>
     <!-- TODO: Remove or change this placeholder text -->
     <!-- Cambiar por el correo real de soporte. -->

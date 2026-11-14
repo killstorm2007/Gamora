@@ -123,6 +123,14 @@ service cloud.firestore {
           && request.resource.data.resumenSemanal is bool
           && fechaServidor('fechaActualizacion');
 
+        // Límite mensual por categoría: { categorias: { "Comida": 300000, … } }.
+        allow create, update: if esPropietario(userId)
+          && preferenciaId == 'presupuestos'
+          && request.resource.data.keys().hasOnly(['categorias', 'fechaActualizacion'])
+          && request.resource.data.categorias is map
+          && request.resource.data.categorias.size() <= 20
+          && fechaServidor('fechaActualizacion');
+
         allow delete: if esPropietario(userId);
       }
 

@@ -12,6 +12,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.Manifest
 import android.content.ActivityNotFoundException
+import android.os.Build
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import com.gamora.core.auth.GoogleNoDisponible
@@ -499,9 +500,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             if (concedido || !isAdded) return@registerForActivityResult
 
             mostrarToast("Activa las notificaciones de Gamora para recibir los avisos.")
+            val paquete = requireContext().packageName
             startActivity(
-                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                    .putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, paquete)
+                } else {
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", paquete, null))
+                }
             )
         }
 

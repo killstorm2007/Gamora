@@ -25,6 +25,7 @@ import com.gamora.R
 import com.gamora.core.esperar
 import com.gamora.core.ui.Moneda
 import com.gamora.core.ui.dinero
+import com.gamora.feature.budget.PresupuestoStore
 import com.gamora.feature.transactions.Recurrentes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -133,10 +134,38 @@ class AvisosWorker(
             val presupuesto = financieras.getLong("presupuestoMensualCentavos") ?: 0L
             val inicio = inicioPeriodo(ahora, (financieras.getLong("diaInicioPeriodo") ?: 1L).toInt())
 
-            if (presupuesto > 0) {
-                val gastos = usuario.collection("movimientos")
+            val limites = PresupuestoStore.leer(preferencias.document("presupuestos").get().esperar().data)
+
+            val gastosPeriodo = if (presupuesto > 0 || limites.isNotEmpty()) {
+                usuario.collection("movimientos")
                     .whereGreaterThanOrEqualTo("fecha", inicio).get().esperar().documents
-                    .filter { it.getBoolean("esIngreso") == false && it.getString("categoria") != "Ahorro" }
+                    .filter { it.getBoolean("esIngreso") == false }
+            } else emptyList()
+
+            // Límites por categoría.
+            gastosPeriodo
+                .groupBy { it.getString("categoria").orEmpty() }
+                .mapValues { (_, docs) -> docs.sumOf { it.getLong("montoCentavos") ?: 0L } }
+                .forEach { (categoria, gastado) ->
+                    val limite = limites[categoria] ?: return@forEach
+                    when (umbralPresupuesto(gastado, limite)) {
+                        100 -> avisarUnaVez(
+                            "categoria_${categoria}_${inicio}_100",
+                            "Te pasaste en $categoria",
+                            "Llevas ${dinero(gastado, moneda)} de ${dinero(limite, moneda)} este periodo."
+                        ).also { enviados.edit().putBoolean("categoria_${categoria}_${inicio}_80", true).apply() }
+
+                        80 -> avisarUnaVez(
+                            "categoria_${categoria}_${inicio}_80",
+                            "$categoria: vas en el ${gastado * 100 / limite}%",
+                            "Te quedan ${dinero(limite - gastado, moneda)} en $categoria para este periodo."
+                        )
+                    }
+                }
+
+            if (presupuesto > 0) {
+                val gastos = gastosPeriodo
+                    .filter { it.getString("categoria") != "Ahorro" }
                     .sumOf { it.getLong("montoCentavos") ?: 0L }
 
                 when (umbralPresupuesto(gastos, presupuesto)) {

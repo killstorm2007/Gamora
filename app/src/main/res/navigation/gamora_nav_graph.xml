@@ -34,4 +34,9 @@
         android:name="com.gamora.feature.chatbot.ChatbotFragment"
         android:label="Asistente Gamora" />
 
+    <fragment
+        android:id="@+id/importReviewFragment"
+        android:name="com.gamora.feature.importar.ImportReviewFragment"
+        android:label="Revisar importación" />
+
 </navigation>

@@ -84,6 +84,11 @@ fun centavosDe(texto: String): Long? {
     }
 }
 
+/** Para buscar sin importar mayúsculas ni acentos: "Café" → "cafe". */
+fun String.paraBuscar(): String =
+    java.text.Normalizer.normalize(trim().lowercase(LOCALE_MX), java.text.Normalizer.Form.NFD)
+        .replace(Regex("\\p{Mn}+"), "")
+
 fun Context.dp(valor: Int): Int = (valor * resources.displayMetrics.density).toInt()
 
 fun Fragment.dp(valor: Int): Int = requireContext().dp(valor)

@@ -240,6 +240,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:minHeight="44dp"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:maxLines="1"
                         android:text="Claro"
                         android:textSize="13sp" />
 
@@ -250,6 +253,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:minHeight="44dp"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:maxLines="1"
                         android:text="Oscuro"
                         android:textSize="13sp" />
 
@@ -260,6 +266,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:minHeight="44dp"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:maxLines="1"
                         android:text="Sistema"
                         android:textSize="13sp" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -302,7 +311,7 @@
             <TextView
                 android:id="@+id/btnPreferenciasIA"
                 style="@style/Gamora.SettingRow"
-                android:text="✨     Preferencias de inteligencia artificial" />
+                android:text="✨     Inteligencia artificial" />
 
             <View style="@style/Gamora.Divider" />
 

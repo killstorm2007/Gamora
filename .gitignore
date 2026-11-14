@@ -25,3 +25,5 @@ local.properties
 
 # Configuración de Firebase (cada quien descarga la suya)
 app/google-services.json
+.superpowers/
+docs

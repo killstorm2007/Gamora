@@ -270,7 +270,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             dinero(totalSaved)
 
         view.findViewById<TextView>(R.id.txtGoalsCount).text =
-            "$activeGoals metas activas"
+            if (activeGoals == 1) "1 meta activa" else "$activeGoals metas activas"
 
         val container =
             view.findViewById<LinearLayout>(R.id.layoutGoals)
@@ -395,7 +395,8 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
         val actions = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.END
+            // A la izquierda: a la derecha queda el botón flotante de Gamora AI.
+            gravity = Gravity.START
             setPadding(0, dp(12), 0, 0)
         }
 
@@ -419,8 +420,6 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             }
         }
 
-        actions.addView(deleteButton)
-
         if (goal.activa) {
             val contributeButton = boton("+ Aportar", R.color.gamora_accent_light, R.color.gamora_accent).apply {
                 setOnClickListener {
@@ -433,9 +432,11 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { marginStart = dp(8) }
+                ).apply { marginEnd = dp(8) }
             )
         }
+
+        actions.addView(deleteButton)
         card.addView(actions)
 
         card.layoutParams = cardParams

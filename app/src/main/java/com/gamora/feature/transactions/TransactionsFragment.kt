@@ -3,6 +3,8 @@ package com.gamora.feature.transactions
 
 import com.gamora.core.ui.LOCALE_MX
 import com.gamora.core.ui.dp
+import com.gamora.core.ui.paraBuscar
+import java.math.BigDecimal
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -21,12 +23,16 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.gamora.R
+import com.gamora.feature.importar.ImportadorDocumentos
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
+
+    // Se registra al crear el fragment, como exige registerForActivityResult.
+    private val importador = ImportadorDocumentos(this)
 
     private var selectedType = "Todos"
     private var selectedCategory = "Todas las categorías"
@@ -124,6 +130,8 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         actualizarBotones(btnTodos, btnGastos, btnIngresos)
         aplicarFiltros(view)
 
+        view.findViewById<View>(R.id.btnImportar).setOnClickListener { importador.iniciar() }
+
         view.findViewById<View>(R.id.btnAddIncome)
             .setOnClickListener {
                 MaterialAlertDialogBuilder(requireContext())
@@ -169,13 +177,15 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
     }
 
     private fun aplicarFiltros(view: View) {
+        val busqueda = searchQuery.paraBuscar()
+
         val filteredMovements = GamoraTransactionStore.movements
             .filter { movement ->
-                val matchesSearch =
-                    movement.description.contains(
-                        searchQuery.trim(),
-                        ignoreCase = true
-                    )
+                // Busca en descripción y categoría (sin acentos) o en el importe ("450", "450.50").
+                val matchesSearch = busqueda.isEmpty() ||
+                        movement.description.paraBuscar().contains(busqueda) ||
+                        movement.category.paraBuscar().contains(busqueda) ||
+                        BigDecimal.valueOf(movement.amountCents, 2).toPlainString().startsWith(busqueda)
 
                 val matchesType = when (selectedType) {
                     "Gastos" -> !movement.isIncome

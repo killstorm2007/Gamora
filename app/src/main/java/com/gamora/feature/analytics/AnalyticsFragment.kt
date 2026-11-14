@@ -3,6 +3,22 @@ package com.gamora.feature.analytics
 import com.gamora.core.ui.LOCALE_MX
 import com.gamora.core.ui.dp
 import com.gamora.core.ui.dinero
+import com.gamora.core.ui.centavosDe
+import com.gamora.core.ui.enCampo
+import com.gamora.core.notifications.inicioPeriodo
+import com.gamora.feature.budget.PresupuestoStore
+import com.gamora.feature.budget.avancePresupuestos
+import com.gamora.feature.transactions.CATEGORIAS_GASTO
+import com.gamora.feature.transactions.iconoCategoria
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.textfield.TextInputEditText
+import android.text.InputType
+import android.widget.ScrollView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import java.math.BigDecimal
+import java.util.Date
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -33,6 +49,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
     private val track get() = color(R.color.gamora_surface_variant)
 
     private var presupuestoCentavos = 0L
+    private var diaInicioPeriodo = 1
 
     // Un color por categoría, en orden de mayor a menor gasto.
     private val paleta = listOf(
@@ -44,10 +61,16 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
         super.onViewCreated(view, savedInstanceState)
         observarMovimientos(::actualizarAnaliticas)
         observar(GamoraGoalStore.goalsFlow, ::actualizarAnaliticas)
+        observar(PresupuestoStore.flow, ::actualizarAnaliticas)
+
+        view.findViewById<View>(R.id.btnEditarPresupuestos).setOnClickListener {
+            mostrarDialogoPresupuestos()
+        }
 
         AuthRepository.obtenerPreferenciasFinancieras(
             onSuccess = { preferencias ->
                 presupuestoCentavos = preferencias.presupuestoMensualCentavos
+                diaInicioPeriodo = preferencias.diaInicioPeriodo
                 if (isAdded) this.view?.let(::actualizarAnaliticas)
             },
             onError = {}
@@ -85,6 +108,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             .sortedByDescending { it.second }
 
         renderCategories(view, totalesCategoria, expenses)
+        renderPresupuestos(view)
         renderMeses(view)
 
         view.findViewById<TextView>(R.id.txtConsejos).text =
@@ -198,6 +222,151 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             item.addView(progress)
             container.addView(item)
         }
+    }
+
+    private fun renderPresupuestos(view: View) {
+        val contenedor = view.findViewById<LinearLayout>(R.id.layoutPresupuestos)
+        contenedor.removeAllViews()
+
+        val inicio = inicioPeriodo(System.currentTimeMillis(), diaInicioPeriodo)
+        view.findViewById<TextView>(R.id.txtPeriodoPresupuesto).text =
+            "Desde el ${SimpleDateFormat("d 'de' MMMM", LOCALE_MX).format(Date(inicio))}"
+
+        val avances = avancePresupuestos(GamoraTransactionStore.movements, PresupuestoStore.limites, inicio)
+
+        if (avances.isEmpty()) {
+            contenedor.addView(TextView(requireContext()).apply {
+                text = "🎯\n\nDefine cuánto quieres gastar al mes en cada categoría y Gamora te avisará antes de que te pases."
+                gravity = Gravity.CENTER
+                setTextAppearance(R.style.TextAppearance_Gamora_Body)
+                setPadding(0, dp(8), 0, dp(8))
+                setOnClickListener { mostrarDialogoPresupuestos() }
+            })
+            return
+        }
+
+        avances.forEachIndexed { indice, avance ->
+            val colorBarra = color(
+                when {
+                    avance.porcentaje >= 100 -> R.color.gamora_expense
+                    avance.porcentaje >= 80 -> R.color.gamora_warning
+                    else -> R.color.gamora_accent
+                }
+            )
+
+            val fila = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(0, if (indice == 0) 0 else dp(16), 0, 0)
+            }
+
+            fila.addView(LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                addView(TextView(requireContext()).apply {
+                    text = "${iconoCategoria(avance.categoria)}  ${avance.categoria}"
+                    textSize = 14f
+                    setTextColor(graphite)
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                })
+                addView(TextView(requireContext()).apply {
+                    text = "${dinero(avance.gastadoCentavos)} / ${dinero(avance.limiteCentavos)}"
+                    textSize = 13f
+                    setTextColor(graphite)
+                })
+            })
+
+            fila.addView(LinearProgressIndicator(requireContext()).apply {
+                max = 100
+                progress = avance.porcentaje.coerceAtMost(100)
+                trackCornerRadius = dp(4)
+                trackThickness = dp(8)
+                setIndicatorColor(colorBarra)
+                trackColor = track
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { topMargin = dp(8) }
+            })
+
+            fila.addView(TextView(requireContext()).apply {
+                text = if (avance.restanteCentavos >= 0) {
+                    "${avance.porcentaje}% usado · te quedan ${dinero(avance.restanteCentavos)}"
+                } else {
+                    "Te pasaste por ${dinero(-avance.restanteCentavos)}"
+                }
+                textSize = 12f
+                setTextColor(if (avance.restanteCentavos >= 0) muted else colorBarra)
+                setPadding(0, dp(6), 0, 0)
+            })
+
+            contenedor.addView(fila)
+        }
+    }
+
+    /** Un campo por categoría de gasto; vacío o 0 quita el límite. */
+    private fun mostrarDialogoPresupuestos() {
+        val contexto = requireContext()
+        val categorias = CATEGORIAS_GASTO.filter { it != "Ahorro" }
+
+        val contenedor = LinearLayout(contexto).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(24), dp(4), dp(24), dp(8))
+        }
+
+        val campos = categorias.associateWith { categoria ->
+            TextInputEditText(contexto).apply {
+                hint = "${iconoCategoria(categoria)}  $categoria"
+                inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                maxLines = 1
+                PresupuestoStore.limites[categoria]?.let {
+                    setText(BigDecimal.valueOf(it, 2).toPlainString())
+                }
+                contenedor.addView(enCampo())
+            }
+        }
+
+        val dialogo = MaterialAlertDialogBuilder(contexto)
+            .setTitle("Presupuesto por categoría")
+            .setMessage("Límite mensual para cada categoría. Déjalo vacío si no quieres límite.")
+            .setView(ScrollView(contexto).apply { addView(contenedor) })
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Guardar", null)
+            .create()
+
+        dialogo.setOnShowListener {
+            val guardar = dialogo.getButton(AlertDialog.BUTTON_POSITIVE)
+
+            guardar.setOnClickListener {
+                val limites = mutableMapOf<String, Long>()
+
+                for ((categoria, campo) in campos) {
+                    val texto = campo.text?.toString().orEmpty()
+                    if (texto.isBlank()) continue
+
+                    val centavos = centavosDe(texto)
+                    if (centavos == null || centavos > 100_000_000_000L) {
+                        campo.error = "Importe no válido"
+                        return@setOnClickListener
+                    }
+                    if (centavos > 0) limites[categoria] = centavos
+                }
+
+                guardar.isEnabled = false
+
+                PresupuestoStore.guardar(
+                    limites,
+                    onSuccess = {
+                        dialogo.dismiss()
+                        if (isAdded) Toast.makeText(contexto, "Presupuestos guardados", Toast.LENGTH_SHORT).show()
+                    },
+                    onError = { mensaje ->
+                        guardar.isEnabled = true
+                        if (isAdded) Toast.makeText(contexto, mensaje, Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
+        }
+
+        dialogo.show()
     }
 
     /** Ingresos y gastos de los últimos 6 meses, incluido el actual (meses sin movimientos en cero). */

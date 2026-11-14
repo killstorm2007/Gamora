@@ -11,6 +11,8 @@ import com.gamora.core.notifications.puedeNotificar
 import com.gamora.core.notifications.revisarAvisosAhora
 import com.gamora.core.ui.Moneda
 import com.gamora.feature.transactions.Recurrentes
+import com.gamora.feature.transactions.mostrarDialogoMovimiento
+import com.gamora.feature.onboarding.mostrarBienvenidaSiHaceFalta
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -18,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import com.gamora.core.auth.AuthRepository
 import com.gamora.core.preferences.AppearancePreferences
 import com.gamora.core.preferences.GamoraTheme
+import com.gamora.feature.budget.PresupuestoStore
 import com.gamora.feature.goals.GamoraGoalStore
 import com.gamora.feature.transactions.GamoraTransactionStore
 import kotlinx.coroutines.flow.first
@@ -52,6 +55,7 @@ class HomeActivity : AppCompatActivity() {
         AuthRepository.obtenerUid()?.let { uid ->
             GamoraTransactionStore.escuchar(uid)
             GamoraGoalStore.escuchar(uid)
+            PresupuestoStore.escuchar(uid)
 
             if (savedInstanceState == null) {
                 // Registra rentas, salarios, etc. que tocaban mientras la app estaba cerrada.
@@ -64,6 +68,10 @@ class HomeActivity : AppCompatActivity() {
                 }
                 cargarMoneda()
                 programarAvisos(this)
+                AuthRepository.obtenerConsentimiento(
+                    onSuccess = { AuthRepository.aplicarAnalitica(it.analiticaAutorizada) },
+                    onError = { Log.w("HomeActivity", it) }
+                )
             }
         }
         // Solo en el arranque: al cambiar de tema la actividad se recrea con estado guardado.
@@ -116,9 +124,11 @@ class HomeActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
 
-            val isChatbot = destination.id == R.id.chatbotFragment
+            // Pantallas completas: sin barra inferior ni botón de Gamora AI.
+            val pantallaCompleta = destination.id == R.id.chatbotFragment ||
+                    destination.id == R.id.importReviewFragment
 
-            if (isChatbot) {
+            if (pantallaCompleta) {
                 bottomNavigation.visibility = View.GONE
                 fabChatbot.visibility = View.GONE
             } else {
@@ -139,6 +149,23 @@ class HomeActivity : AppCompatActivity() {
 
         // Al salir, revisa si los gastos recién registrados merecen un aviso.
         if (!isChangingConfigurations && AuthRepository.obtenerUid() != null) revisarAvisosAhora(this)
+    }
+
+    private var bienvenidaRevisada = false
+
+    /** Tras desbloquear: bienvenida (solo cuentas nuevas) y luego el permiso de avisos. */
+    private fun alDesbloquear() {
+        if (bienvenidaRevisada) return
+        bienvenidaRevisada = true
+
+        mostrarBienvenidaSiHaceFalta(
+            registrarMovimiento = { esIngreso ->
+                val navHost = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                navHost.childFragmentManager.primaryNavigationFragment
+                    ?.mostrarDialogoMovimiento(esIngreso)
+            },
+            alTerminar = ::pedirPermisoNotificaciones
+        )
     }
 
     private val permisoNotificaciones =
@@ -182,7 +209,7 @@ class HomeActivity : AppCompatActivity() {
             if (!activo || !puedeBloquear(this@HomeActivity)) {
                 desbloqueado = true
                 contenido.visibility = View.VISIBLE
-                pedirPermisoNotificaciones()
+                alDesbloquear()
                 return@launch
             }
 
@@ -194,7 +221,7 @@ class HomeActivity : AppCompatActivity() {
                 if (exito) {
                     desbloqueado = true
                     contenido.visibility = View.VISIBLE
-                    pedirPermisoNotificaciones()
+                    alDesbloquear()
                 } else {
                     finish()
                 }
@@ -208,6 +235,7 @@ class HomeActivity : AppCompatActivity() {
         // Al rotar, onCreate vuelve a escuchar; al cerrar sesión no quedan datos del usuario anterior.
         GamoraTransactionStore.detener()
         GamoraGoalStore.detener()
+        PresupuestoStore.detener()
     }
 
     /** Aplica el tema guardado en la cuenta (útil al iniciar sesión en otro dispositivo). */

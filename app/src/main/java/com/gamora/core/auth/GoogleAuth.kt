@@ -6,6 +6,8 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
+import com.gamora.R
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthCredential
@@ -26,19 +28,16 @@ class GoogleNoDisponible(mensaje: String) : Exception(mensaje)
  * con eso google-services.json trae el "default_web_client_id".
  */
 suspend fun elegirCuentaGoogle(activity: Activity): CuentaGoogle? {
-    val idRecurso = activity.resources.getIdentifier("default_web_client_id", "string", activity.packageName)
-    if (idRecurso == 0) {
-        throw GoogleNoDisponible("El inicio con Google aún no está configurado en Firebase.")
-    }
-
     val solicitud = GetCredentialRequest.Builder()
-        .addCredentialOption(GetSignInWithGoogleOption.Builder(activity.getString(idRecurso)).build())
+        .addCredentialOption(GetSignInWithGoogleOption.Builder(activity.getString(R.string.default_web_client_id)).build())
         .build()
 
     val resultado = try {
         CredentialManager.create(activity).getCredential(activity, solicitud)
     } catch (_: GetCredentialCancellationException) {
         return null
+    } catch (_: NoCredentialException) {
+        throw GoogleNoDisponible("No hay una cuenta de Google en este teléfono. Agrégala en Ajustes y vuelve a intentarlo.")
     } catch (error: GetCredentialException) {
         throw GoogleNoDisponible("No se pudo conectar con Google. ${error.message.orEmpty()}".trim())
     }

@@ -32,9 +32,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// Modelos de Firebase AI Logic en orden de preferencia; los siguientes son respaldo
-// cuando el primero está saturado. Cámbialos aquí si Google retira alguno.
-private val MODELOS_GEMINI = listOf("gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite")
 
 private val SUGERENCIAS = listOf(
     "Analiza mis gastos de este mes",
@@ -236,21 +233,6 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
 
         throw ultimoError ?: IllegalStateException("No hay modelos disponibles.")
     }
-
-    private fun estaSaturado(error: Throwable): Boolean =
-        generateSequence(error) { it.cause }.any { causa ->
-            val texto = causa.message.orEmpty()
-            texto.contains("high demand", true) ||
-                    texto.contains("overloaded", true) ||
-                    texto.contains("UNAVAILABLE", true) ||
-                    texto.contains("503")
-        }
-
-    private fun noDisponible(error: Throwable): Boolean =
-        generateSequence(error) { it.cause }.any { causa ->
-            val texto = causa.message.orEmpty()
-            texto.contains("not found", true) || texto.contains("is not supported", true)
-        }
 
     /** Se crea en cada mensaje para que las instrucciones lleven los datos al día. */
     private fun crearModelo(modelo: String) = Firebase.ai(backend = GenerativeBackend.googleAI())

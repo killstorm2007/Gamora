@@ -59,10 +59,12 @@ fun Fragment.editarMovimiento(movimiento: GamoraMovement) =
 /**
  * Diálogo para registrar un ingreso o gasto; lo usan Inicio y Transacciones.
  * Con [existente] edita ese movimiento y permite eliminarlo.
+ * Con [alGuardarLocal] no escribe en Firestore: entrega el movimiento editado (revisión de importación).
  */
 fun Fragment.mostrarDialogoMovimiento(
     esIngreso: Boolean,
-    existente: GamoraMovement? = null
+    existente: GamoraMovement? = null,
+    alGuardarLocal: ((GamoraMovement) -> Unit)? = null
 ) {
     val context = requireContext()
     val categorias = if (esIngreso) CATEGORIAS_INGRESO else CATEGORIAS_GASTO
@@ -144,7 +146,7 @@ fun Fragment.mostrarDialogoMovimiento(
     form.addView(categorySpinner)
 
     // Solo al registrar: editar un movimiento no cambia su repetición.
-    val repetirCheck = if (existente == null) MaterialCheckBox(context).apply {
+    val repetirCheck = if (existente == null && alGuardarLocal == null) MaterialCheckBox(context).apply {
         text = "Repetir cada mes (renta, salario, suscripciones…)"
         form.addView(this, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -163,7 +165,7 @@ fun Fragment.mostrarDialogoMovimiento(
         .setNegativeButton("Cancelar", null)
         .setPositiveButton("Guardar", null)
         .apply {
-            if (existente != null) {
+            if (existente != null && alGuardarLocal == null) {
                 setNeutralButton("Eliminar") { _, _ ->
                     MaterialAlertDialogBuilder(context)
                         .setTitle("Eliminar $tipo")
@@ -206,6 +208,12 @@ fun Fragment.mostrarDialogoMovimiento(
                 timestamp = fecha.timeInMillis,
                 id = existente?.id.orEmpty()
             )
+
+            if (alGuardarLocal != null) {
+                alGuardarLocal(movimiento)
+                dialog.dismiss()
+                return@setOnClickListener
+            }
 
             GamoraTransactionStore.guardar(movimiento, onError = ::mostrarError)
 

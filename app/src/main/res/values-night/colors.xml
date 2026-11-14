@@ -30,4 +30,6 @@
     <color name="gamora_expense">#F2877D</color>
     <color name="gamora_expense_container">#3E2421</color>
 
+    <!-- Aviso: presupuesto cerca del límite -->
+    <color name="gamora_warning">#E3B04B</color>
 </resources>

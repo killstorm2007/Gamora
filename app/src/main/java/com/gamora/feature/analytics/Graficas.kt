@@ -116,16 +116,19 @@ class BarrasMensualesView @JvmOverloads constructor(
         meses.forEachIndexed { indice, mes ->
             val centro = anchoGrupo * indice + anchoGrupo / 2
 
-            listOf(
-                Triple(mes.ingresos, centro - anchoBarra - 2f, pincelIngreso),
-                Triple(mes.gastos, centro + 2f, pincelGasto)
-            ).forEach { (monto, x, pincel) ->
-                val alto = monto.toFloat() / maximo * altoBarras
-                barra.set(x, altoBarras - alto, x + anchoBarra, altoBarras)
-                canvas.drawRoundRect(barra, radio, radio, pincel)
-            }
+            // Sin listas ni pares aquí: onDraw corre en cada cuadro.
+            dibujarBarra(canvas, mes.ingresos, maximo, centro - anchoBarra - 2f, anchoBarra, altoBarras, radio, pincelIngreso)
+            dibujarBarra(canvas, mes.gastos, maximo, centro + 2f, anchoBarra, altoBarras, radio, pincelGasto)
 
             canvas.drawText(mes.etiqueta, centro, height - pincelEtiqueta.textSize / 2, pincelEtiqueta)
         }
+    }
+
+    private fun dibujarBarra(
+        canvas: Canvas, monto: Long, maximo: Long, x: Float, ancho: Float, base: Float, radio: Float, pincel: Paint
+    ) {
+        val alto = monto.toFloat() / maximo * base
+        barra.set(x, base - alto, x + ancho, base)
+        canvas.drawRoundRect(barra, radio, radio, pincel)
     }
 }

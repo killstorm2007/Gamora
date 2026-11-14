@@ -2,6 +2,8 @@
 package com.gamora.core.auth
 
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -269,7 +271,17 @@ object AuthRepository {
         obtenerCorreo()?.let { EmailAuthProvider.getCredential(it, password) }
 
     fun cerrarSesion() {
+        aplicarAnalitica(false)
         auth.signOut()
+    }
+
+    /**
+     * La analítica arranca apagada (ver AndroidManifest) y solo se enciende con el consentimiento
+     * de la persona; se apaga al cerrar sesión o al retirarlo.
+     */
+    fun aplicarAnalitica(autorizada: Boolean) {
+        FirebaseAnalytics.getInstance(FirebaseApp.getInstance().applicationContext)
+            .setAnalyticsCollectionEnabled(autorizada)
     }
 
     fun obtenerUid(): String? {
@@ -599,7 +611,10 @@ object AuthRepository {
                     "fechaRevocacion" to null
                 )
             )
-            .addOnSuccessListener { onSuccess() }
+            .addOnSuccessListener {
+                aplicarAnalitica(consentimiento.analiticaAutorizada)
+                onSuccess()
+            }
             .addOnFailureListener { error ->
                 onError(error.localizedMessage ?: "No se pudo guardar tu consentimiento.")
             }
@@ -651,6 +666,7 @@ object AuthRepository {
                 usuario.delete()
             }
             .addOnSuccessListener {
+                aplicarAnalitica(false)
                 auth.signOut()
                 onSuccess()
             }

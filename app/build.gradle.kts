@@ -18,10 +18,23 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Para instalar por cable: solo el procesador de los teléfonos actuales (APK más ligero).
+            ndk { abiFilters += "arm64-v8a" }
+        }
         release {
+            // R8: reduce y ofusca el código y quita recursos sin usar.
             optimization {
-                enable = false
+                enable = true
             }
+            proguardFiles("proguard-rules.pro")
+        }
+    }
+
+    packaging {
+        resources {
+            // Tablas de criptografía post-cuántica de BouncyCastle (vienen con pdfbox-android): no se usan.
+            excludes += "org/bouncycastle/pqc/**"
         }
     }
 
@@ -39,6 +52,12 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore:27.1.0")
     implementation("com.google.firebase:firebase-ai")
+
+    // Abrir PDF con contraseña en el teléfono (lector de estados de cuenta)
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+    // Reconocimiento de texto en el teléfono (estados de cuenta escaneados y fotos). El modelo viene
+    // dentro de la app: funciona desde la primera lectura y sin internet.
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 
     // App Check: Play Integrity en publicación, proveedor de depuración solo en desarrollo
     implementation("com.google.firebase:firebase-appcheck-playintegrity")
@@ -70,4 +89,6 @@ dependencies {
 
     // Pruebas
     testImplementation(libs.junit)
+    // org.json real para probar la lectura de respuestas de Gemini
+    testImplementation("org.json:json:20240303")
 }
