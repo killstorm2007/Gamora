@@ -1,0 +1,22 @@
+# El repositorio guarda los textos con finales de línea LF, se trabaje en Windows o en Mac.
+* text=auto eol=lf
+
+# Scripts de Windows necesitan CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binarios: nunca convertir.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.jar binary
+*.jks binary
+*.keystore binary
+*.aab binary
+*.apk binary
+*.ttf binary
+*.otf binary
