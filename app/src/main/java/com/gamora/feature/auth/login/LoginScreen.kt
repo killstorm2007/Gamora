@@ -1,6 +1,8 @@
 
 package com.gamora.feature.auth.login
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.texto
 import com.gamora.core.ui.enDialogo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -75,6 +77,7 @@ class LoginScreen : AppCompatActivity() {
         btnIniciar.text = texto(R.string.login_iniciando_sesion)
 
         AuthRepository.iniciarSesion(
+            context = this,
             correo = correo,
             password = password,
 
@@ -109,7 +112,7 @@ class LoginScreen : AppCompatActivity() {
             setPadding(40, 30, 40, 30)
         }
 
-        MaterialAlertDialogBuilder(this)
+        dialogo(this, IconoDialogo.CANDADO)
             .setTitle(texto(R.string.login_recuperar_contrasena))
             .setMessage(texto(R.string.login_introduce_el_correo_asociado))
             .setView(campoCorreo.enDialogo())

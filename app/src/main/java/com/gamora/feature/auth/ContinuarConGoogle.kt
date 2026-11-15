@@ -1,5 +1,7 @@
 package com.gamora.feature.auth
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.R
 import com.gamora.core.texto
 import android.content.Intent
@@ -39,6 +41,7 @@ fun AppCompatActivity.configurarBotonGoogle(boton: MaterialButton) {
             }
 
             AuthRepository.iniciarSesionConGoogle(
+                this@configurarBotonGoogle,
                 cuenta.credencial,
                 onSuccess = { perfilExiste ->
                     if (perfilExiste) irAInicio() else pedirConsentimientos(cuenta, boton)
@@ -69,7 +72,7 @@ private fun AppCompatActivity.pedirConsentimientos(cuenta: CuentaGoogle, boton: 
     val analitica = casilla(texto(R.string.continuar_con_google_autorizo_la_analitica_de))
     val ia = casilla(texto(R.string.continuar_con_google_autorizo_que_el_asistente))
 
-    val dialogo = MaterialAlertDialogBuilder(this)
+    val dialogo = dialogo(this, IconoDialogo.BIENVENIDA)
         .setTitle(texto(R.string.continuar_con_google_bienvenido_a_gamora))
         .setMessage(texto(R.string.continuar_con_google_antes_de_crear_tu))
         .setView(contenedor)

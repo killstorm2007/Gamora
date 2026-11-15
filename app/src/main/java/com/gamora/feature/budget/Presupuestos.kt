@@ -3,7 +3,8 @@ package com.gamora.feature.budget
 import com.gamora.R
 import com.gamora.core.texto
 import com.gamora.core.Categoria
-import android.util.Log
+import com.gamora.core.EstadoDatos
+import com.gamora.core.alGuardar
 import com.gamora.feature.transactions.GamoraMovement
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
@@ -64,17 +65,18 @@ object PresupuestoStore {
             }
             .toMap()
 
-    fun escuchar(uid: String) {
-        if (uid == uidActual && registro != null) return
+    fun escuchar(uid: String, forzar: Boolean = false) {
+        if (!forzar && uid == uidActual && registro != null) return
 
         detener()
         uidActual = uid
 
         registro = documento(uid).addSnapshotListener { snapshot, error ->
             if (error != null) {
-                Log.w("PresupuestoStore", "No se pudieron cargar los presupuestos", error)
+                EstadoDatos.reportar(ORIGEN, error)
                 return@addSnapshotListener
             }
+            EstadoDatos.resuelto(ORIGEN)
             estado.value = leer(snapshot?.data)
         }
     }
@@ -84,9 +86,12 @@ object PresupuestoStore {
         registro = null
         uidActual = null
         estado.value = emptyMap()
+        EstadoDatos.resuelto(ORIGEN)
     }
 
-    /** Reemplaza todos los límites (sin merge, para que borrar una categoría sí la quite). */
+    private const val ORIGEN = "presupuestos"
+
+    /** Reemplaza todos los límites (sin merge, para que borrar una categoría sí la quite). Sin internet no se queda esperando. */
     fun guardar(limites: Map<Categoria, Long>, onSuccess: () -> Unit, onError: (String) -> Unit) {
         val uid = uidActual ?: return onError(texto(R.string.auth_repository_no_hay_una_sesion))
 
@@ -97,9 +102,6 @@ object PresupuestoStore {
                     "fechaActualizacion" to FieldValue.serverTimestamp()
                 )
             )
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.presupuestos_no_se_pudieron_guardar))
-            }
+            .alGuardar(R.string.presupuestos_no_se_pudieron_guardar, onSuccess, onError)
     }
 }

@@ -36,7 +36,7 @@ fun generarConsejos(
                 fecha.get(Calendar.MONTH) == ahora.get(Calendar.MONTH)
     }
 
-    val ingresos = delMes.filter { it.isIncome }.sumOf { it.amountCents }
+    val ingresos = delMes.filter { it.isIncome && !it.esAhorro }.sumOf { it.amountCents }
     // Lo apartado en "Ahorro" no es consumo: no cuenta para la tasa de ahorro ni para recortes.
     val gastos = delMes.filterNot { it.isIncome || it.esAhorro }.sumOf { it.amountCents }
 

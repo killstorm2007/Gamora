@@ -12,7 +12,7 @@
 
     <!-- Marca -->
     <color name="gamora_accent">#2F7A59</color>
-    <color name="gamora_accent_light">#DDEFE5</color>
+    <color name="gamora_accent_light">#E9F4EE</color>
     <color name="gamora_on_accent">#FFFFFF</color>
     <color name="gamora_border">#E1E8E3</color>
 
@@ -25,7 +25,7 @@
     <color name="gamora_hero_chip">#33FFFFFF</color>
 
     <!-- Estados financieros -->
-    <color name="gamora_income">#23875B</color>
+    <color name="gamora_income">#228459</color>
     <color name="gamora_income_container">#DDF1E6</color>
     <color name="gamora_expense">#C9493F</color>
     <color name="gamora_expense_container">#FBE6E3</color>
@@ -33,5 +33,5 @@
     <color name="white">#FFFFFF</color>
 
     <!-- Aviso: presupuesto cerca del límite -->
-    <color name="gamora_warning">#C98A1E</color>
+    <color name="gamora_warning">#9B6A17</color>
 </resources>

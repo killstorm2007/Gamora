@@ -1,6 +1,8 @@
 
 package com.gamora.feature.chatbot
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.ui.Moneda
 import com.gamora.core.ui.localeApp
 import com.gamora.core.texto
@@ -312,7 +314,7 @@ class ChatbotFragment : Fragment(R.layout.fragment_chatbot) {
     }
 
     private fun confirmarBorrado() {
-        MaterialAlertDialogBuilder(requireContext())
+        dialogo(requireContext(), IconoDialogo.ELIMINAR)
             .setTitle(texto(R.string.chatbot_borrar_conversacion))
             .setMessage(texto(R.string.chatbot_gamora_ai_olvidara_todo))
             .setNegativeButton(texto(R.string.import_review_cancelar), null)

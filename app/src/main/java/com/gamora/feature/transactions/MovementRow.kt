@@ -47,8 +47,11 @@ fun crearFilaMovimiento(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply { bottomMargin = context.dp(10) }
-        contentDescription = "${if (movimiento.isIncome) "Ingreso" else "Gasto"}: " +
-                "${movimiento.description}, ${movimiento.category.nombre(context)}, ${dinero(movimiento.amountCents)}"
+        contentDescription = texto(
+            R.string.movimiento_para_lector,
+            texto(if (movimiento.isIncome) R.string.transactions_ingreso else R.string.transactions_gasto),
+            movimiento.description, movimiento.category.nombre(context), dinero(movimiento.amountCents)
+        )
     }
 
     val icono = TextView(context).apply {

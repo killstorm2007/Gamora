@@ -1,6 +1,8 @@
 
 package com.gamora.feature.transactions
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.ui.localeApp
 import com.gamora.core.ui.formatoFecha
 import com.gamora.core.texto
@@ -37,7 +39,10 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
     // Se registra al crear el fragment, como exige registerForActivityResult.
     private val importador = ImportadorDocumentos(this)
 
-    private var selectedType = texto(R.string.transactions_todos)
+    // Qué movimientos se ven: todos, solo gastos o solo ingresos.
+    private enum class Tipo { TODOS, GASTOS, INGRESOS }
+
+    private var selectedType = Tipo.TODOS
     private var selectedCategory: Categoria? = null
     private var searchQuery = ""
 
@@ -96,19 +101,19 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         )
 
         btnTodos.setOnClickListener {
-            selectedType = texto(R.string.transactions_todos)
+            selectedType = Tipo.TODOS
             actualizarBotones(btnTodos, btnGastos, btnIngresos)
             aplicarFiltros(view)
         }
 
         btnGastos.setOnClickListener {
-            selectedType = texto(R.string.transactions_gastos)
+            selectedType = Tipo.GASTOS
             actualizarBotones(btnTodos, btnGastos, btnIngresos)
             aplicarFiltros(view)
         }
 
         btnIngresos.setOnClickListener {
-            selectedType = texto(R.string.transactions_ingresos)
+            selectedType = Tipo.INGRESOS
             actualizarBotones(btnTodos, btnGastos, btnIngresos)
             aplicarFiltros(view)
         }
@@ -138,7 +143,7 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
 
         view.findViewById<View>(R.id.btnAddIncome)
             .setOnClickListener {
-                MaterialAlertDialogBuilder(requireContext())
+                dialogo(requireContext(), IconoDialogo.AGREGAR)
                     .setTitle(texto(R.string.transactions_agregar_movimiento_2))
                     .setItems(arrayOf(texto(R.string.transactions_ingreso), texto(R.string.transactions_gasto))) { _, opcion ->
                         mostrarDialogoMovimiento(esIngreso = opcion == 0)
@@ -156,9 +161,9 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         ingresos: Button
     ) {
         val buttons = listOf(
-            "Todos" to todos,
-            "Gastos" to gastos,
-            "Ingresos" to ingresos
+            Tipo.TODOS to todos,
+            Tipo.GASTOS to gastos,
+            Tipo.INGRESOS to ingresos
         )
 
         buttons.forEach { (type, button) ->
@@ -189,9 +194,9 @@ class TransactionsFragment : Fragment(R.layout.fragment_transactions) {
         ) { it.nombre(contexto) }
             .filter { movement ->
                 when (selectedType) {
-                    texto(R.string.transactions_gastos) -> !movement.isIncome
-                    texto(R.string.transactions_ingresos) -> movement.isIncome
-                    else -> true
+                    Tipo.GASTOS -> !movement.isIncome
+                    Tipo.INGRESOS -> movement.isIncome
+                    Tipo.TODOS -> true
                 }
             }
             .sortedByDescending { it.timestamp }

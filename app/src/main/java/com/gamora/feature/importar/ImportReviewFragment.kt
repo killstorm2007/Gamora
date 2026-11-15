@@ -1,5 +1,11 @@
 package com.gamora.feature.importar
 
+import com.gamora.core.mensajeDeError
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.gamora.core.textoPlural
 import com.gamora.core.texto
 import com.gamora.core.nombre
@@ -18,6 +24,7 @@ import androidx.navigation.fragment.findNavController
 import com.gamora.R
 import com.gamora.core.ui.dinero
 import com.gamora.core.ui.dp
+import com.gamora.feature.transactions.GamoraMovement
 import com.gamora.feature.transactions.GamoraTransactionStore
 import com.gamora.feature.transactions.fechaCorta
 import com.gamora.feature.transactions.mostrarDialogoMovimiento
@@ -29,7 +36,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 /** Tabla con lo leído de un documento; solo se guarda lo que la persona deja marcado. */
 class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
 
-    private lateinit var tabla: LinearLayout
+    private lateinit var tabla: RecyclerView
     private lateinit var resumenTexto: TextView
     private lateinit var botonGuardar: MaterialButton
     private lateinit var casillaTodos: MaterialCheckBox
@@ -39,9 +46,27 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
     private val filas: List<MovimientoImportado>
         get() = ImportacionEnCurso.resultado?.movimientos.orEmpty()
 
-    private fun actualizarFilas(nuevas: List<MovimientoImportado>) {
+    /** Guarda las filas; si solo cambió una ([cambiada]), solo esa se vuelve a dibujar. */
+    private fun actualizarFilas(nuevas: List<MovimientoImportado>, cambiada: Int? = null) {
         ImportacionEnCurso.resultado = ImportacionEnCurso.resultado?.copy(movimientos = nuevas)
-        dibujar()
+        if (cambiada != null) adaptador.notifyItemChanged(cambiada) else adaptador.notifyDataSetChanged()
+        actualizarResumen()
+    }
+
+    /** Solo se dibujan las filas visibles: con cientos de movimientos la pantalla no se traba. */
+    private inner class FilaVista(val contenedor: LinearLayout) : RecyclerView.ViewHolder(contenedor)
+
+    private val adaptador = object : RecyclerView.Adapter<FilaVista>() {
+        override fun getItemCount() = filas.size
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = FilaVista(
+            LinearLayout(parent.context).apply {
+                layoutParams = RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT)
+            }
+        )
+
+        override fun onBindViewHolder(holder: FilaVista, position: Int) =
+            llenarFila(holder.contenedor, position, filas[position])
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,7 +86,8 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
         casillaTodos = view.findViewById(R.id.cbTodos)
 
         view.findViewById<TextView>(R.id.txtOrigenRevision).text =
-            listOf(resultado.banco, resultado.periodo, "${resultado.movimientos.size} encontrados")
+            listOf(resultado.banco, resultado.periodo,
+                textoPlural(R.plurals.import_review_encontrados, resultado.movimientos.size, resultado.movimientos.size))
                 .filter { it.isNotBlank() }
                 .joinToString(" · ")
 
@@ -78,18 +104,14 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
             override fun handleOnBackPressed() = salir()
         })
 
-        dibujar()
+        tabla.layoutManager = LinearLayoutManager(requireContext())
+        tabla.adapter = adaptador
+        actualizarResumen()
     }
 
     private fun color(id: Int) = ContextCompat.getColor(requireContext(), id)
 
-    private fun dibujar() {
-        tabla.removeAllViews()
-
-        filas.forEachIndexed { indice, fila ->
-            tabla.addView(crearFila(indice, fila))
-        }
-
+    private fun actualizarResumen() {
         val resumen = resumen(filas)
         resumenTexto.text = texto(R.string.import_review_seleccionados_ingresos_gastos, resumen.seleccionados, dinero(resumen.ingresosCentavos), dinero(resumen.gastosCentavos))
 
@@ -111,11 +133,12 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, peso)
         }
 
-    private fun crearFila(indice: Int, fila: MovimientoImportado): View {
+    private fun llenarFila(contenedor: LinearLayout, indice: Int, fila: MovimientoImportado) {
         val principal = color(R.color.gamora_text_primary)
         val secundario = color(R.color.gamora_text_secondary)
 
-        return LinearLayout(requireContext()).apply {
+        contenedor.removeAllViews()
+        contenedor.apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             minimumHeight = dp(48)
@@ -131,7 +154,8 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
                 contentDescription = texto(R.string.import_review_incluir, fila.descripcion)
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 0.6f)
                 setOnClickListener {
-                    actualizarFilas(filas.toMutableList().also { it[indice] = fila.copy(seleccionado = isChecked) })
+                    if (guardando) return@setOnClickListener
+                    actualizarFilas(filas.toMutableList().also { it[indice] = fila.copy(seleccionado = isChecked) }, indice)
                 }
             })
 
@@ -159,7 +183,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
     private fun opciones(indice: Int, fila: MovimientoImportado) {
         val cambio = if (fila.esIngreso) texto(R.string.import_review_cambiar_a_gasto) else texto(R.string.import_review_cambiar_a_ingreso)
 
-        MaterialAlertDialogBuilder(requireContext())
+        dialogo(requireContext(), IconoDialogo.EDITAR)
             .setTitle(fila.descripcion)
             .setItems(arrayOf(texto(R.string.analytics_editar), cambio)) { _, opcion ->
                 if (opcion == 0) {
@@ -205,7 +229,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
             return
         }
 
-        MaterialAlertDialogBuilder(requireContext())
+        dialogo(requireContext(), IconoDialogo.ELIMINAR)
             .setTitle(texto(R.string.import_review_descartar_estos_movimientos))
             .setMessage(texto(R.string.import_review_no_se_guardara_ninguno))
             .setNegativeButton(texto(R.string.import_review_seguir_revisando), null)
@@ -223,6 +247,7 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
         if (elegidos.isEmpty() || guardando) return
 
         guardando = true
+        adaptador.notifyDataSetChanged()  // filas deshabilitadas mientras se guarda
         botonGuardar.isEnabled = false
         botonGuardar.text = texto(R.string.import_review_guardando)
 
@@ -232,18 +257,24 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
 
             // Como el resto de la app: Firestore aplica los cambios al instante (también sin internet)
             // y los sube cuando hay conexión. Esperar al servidor dejaría la pantalla colgada sin red.
+            val escritos = mutableListOf<GamoraMovement>()
             elegidos.enLotes().forEach { lote ->
                 val batch = db.batch()
                 lote.forEach { fila ->
                     val referencia = GamoraTransactionStore.nuevaReferencia()
                         ?: error(texto(R.string.auth_repository_no_hay_una_sesion))
-                    batch.set(referencia, GamoraTransactionStore.datos(fila.aMovimiento()))
+                    val movimiento = fila.aMovimiento().copy(id = referencia.id)
+                    batch.set(referencia, GamoraTransactionStore.datos(movimiento))
+                    escritos += movimiento
                 }
                 batch.commit().addOnFailureListener { error ->
                     Log.w("ImportReviewFragment", "Lote rechazado: ${error.javaClass.simpleName}")
                     Toast.makeText(app, texto(R.string.import_review_algunos_movimientos_no_se), Toast.LENGTH_LONG).show()
                 }
             }
+
+            // Los de hace más de un año no llegan por el listener en vivo.
+            GamoraTransactionStore.registrarLocal(escritos)
 
             Toast.makeText(
                 app,
@@ -253,10 +284,11 @@ class ImportReviewFragment : Fragment(R.layout.fragment_import_review) {
             terminar()
         } catch (error: Exception) {
             guardando = false
-            dibujar()
+            adaptador.notifyDataSetChanged()
+            actualizarResumen()
             Toast.makeText(
                 requireContext(),
-                error.localizedMessage ?: texto(R.string.import_review_no_se_pudieron_guardar),
+                mensajeDeError(error, R.string.import_review_no_se_pudieron_guardar),
                 Toast.LENGTH_LONG
             ).show()
         }

@@ -1,6 +1,8 @@
 
 package com.gamora.feature.auth.register
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.texto
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Intent
@@ -179,7 +181,7 @@ class RegisterScreen : AppCompatActivity() {
 
         tvDocumento.text = getString(recursoTexto)
 
-        MaterialAlertDialogBuilder(this)
+        dialogo(this, IconoDialogo.DOCUMENTO)
             .setTitle(titulo)
             .setView(vista)
             .setPositiveButton(texto(R.string.main_cerrar), null)

@@ -51,7 +51,6 @@ class ImportacionTest {
         val r = leerRespuestaGemini(
             respuesta(
                 fila("2026-10-03", "Cero", 0, false),
-                fila("2026-10-03", "Negativo", -5, false),
                 fila("2026-10-03", "Enorme", 100_000_000_001, false),
                 fila("2026-10-03", "  ", 100, false),
                 fila("03/10", "Fecha rara", 100, false),
@@ -60,7 +59,7 @@ class ImportacionTest {
         )
 
         assertEquals(0, r.movimientos.size)
-        assertEquals(6, r.descartados)
+        assertEquals(5, r.descartados)
     }
 
     @Test
@@ -73,6 +72,14 @@ class ImportacionTest {
         )
 
         assertEquals(listOf(Categoria.OTROS, Categoria.COMIDA), r.movimientos.map { it.categoria })
+    }
+
+    @Test
+    fun montoNegativoDeGeminiSeTomaPositivo() {
+        // El signo lo da esIngreso; un "-9000" no debe descartar el movimiento.
+        val r = leerRespuestaGemini(respuesta(fila("2026-10-03", "Tacos", -9000, false)))
+        assertEquals(listOf(9000L), r.movimientos.map { it.montoCentavos })
+        assertEquals(0, r.descartados)
     }
 
     @Test

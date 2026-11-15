@@ -1,5 +1,7 @@
 package com.gamora.feature.legal
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import android.content.Intent
 import android.widget.TextView
 import android.widget.Toast
@@ -20,7 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 fun AppCompatActivity.pedirAceptarPoliticasSiHaceFalta(datos: ConsentData) {
     if (!requiereAceptar(datos.versionPoliticas) || isFinishing || isDestroyed) return
 
-    MaterialAlertDialogBuilder(this)
+    dialogo(this, IconoDialogo.DOCUMENTO)
         .setTitle(R.string.politicas_actualizadas_titulo)
         .setMessage(R.string.politicas_actualizadas_mensaje)
         .setCancelable(false)
@@ -52,7 +54,7 @@ private fun AppCompatActivity.mostrarDocumentos(datos: ConsentData) {
         .setItems(titulos) { _, opcion ->
             val vista = layoutInflater.inflate(R.layout.dialog_documento_legal, null)
             vista.findViewById<TextView>(R.id.tvDocumento).setText(textos[opcion])
-            MaterialAlertDialogBuilder(this)
+            dialogo(this, IconoDialogo.DOCUMENTO)
                 .setTitle(titulos[opcion])
                 .setView(vista)
                 .setCancelable(false)

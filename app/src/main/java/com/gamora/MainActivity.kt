@@ -1,6 +1,8 @@
 
 package com.gamora
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.R
 import com.gamora.core.texto
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,6 +29,9 @@ import com.gamora.feature.auth.register.RegisterScreen
 import com.gamora.feature.home.HomeActivity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import android.widget.Toast
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MainActivity : AppCompatActivity() {
 
@@ -65,7 +70,13 @@ class MainActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(modo)
             }
 
-            // 4. Comprobar la sesión de Firebase.
+            // 4. Si se estaba eliminando la cuenta y algo lo interrumpió, se termina ahora.
+            val avisoEliminacion = suspendCoroutine { continuar ->
+                AuthRepository.terminarEliminacionPendiente(this@MainActivity) { continuar.resume(it) }
+            }
+            avisoEliminacion?.let { Toast.makeText(this@MainActivity, it, Toast.LENGTH_LONG).show() }
+
+            // 5. Comprobar la sesión de Firebase.
             if (AuthRepository.obtenerUid() != null) {
 
                 splashPreparada = true
@@ -146,7 +157,7 @@ class MainActivity : AppCompatActivity() {
 
         tvDocumento.text = getString(recursoTexto)
 
-        val dialogo = MaterialAlertDialogBuilder(this)
+        val dialogo = dialogo(this, IconoDialogo.DOCUMENTO)
             .setTitle(titulo)
             .setView(vista)
             .setPositiveButton(texto(R.string.main_cerrar)) { dialog, _ ->

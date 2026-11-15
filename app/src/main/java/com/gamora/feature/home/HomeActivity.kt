@@ -4,6 +4,20 @@ package com.gamora.feature.home
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import com.gamora.core.Conexion
+import com.gamora.core.EstadoDatos
+import com.gamora.core.mensajeDeError
+import com.gamora.core.security.ResultadoDesbloqueo
+import com.gamora.core.security.SalidaBreve
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.combine
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import com.gamora.core.notifications.programarAvisos
@@ -64,7 +78,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         AuthRepository.obtenerUid()?.let { uid ->
-            GamoraTransactionStore.escuchar(uid)
+            GamoraTransactionStore.escuchar(this, uid)
             GamoraGoalStore.escuchar(uid)
             PresupuestoStore.escuchar(uid)
 
@@ -151,16 +165,78 @@ class HomeActivity : AppCompatActivity() {
                 fabChatbot.visibility = View.VISIBLE
             }
         }
+
+        // Errores al cargar los datos y falta de internet: se avisa en lugar de mostrar todo vacío.
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                combine(Conexion.enLinea, EstadoDatos.problemas) { enLinea, problemas -> enLinea to problemas }
+                    .collect { (enLinea, problemas) -> mostrarAviso(enLinea, problemas) }
+            }
+        }
     }
+
+    private var aviso: Snackbar? = null
+    private var avisoSinInternetCerrado = false
+
+    private fun mostrarAviso(enLinea: Boolean, problemas: Map<String, Throwable>) {
+        aviso?.dismiss()
+        aviso = null
+        if (enLinea) avisoSinInternetCerrado = false
+
+        val raiz = findViewById<View>(R.id.root_container)
+        val error = problemas.values.firstOrNull()
+
+        val barra = when {
+            error != null ->
+                Snackbar.make(raiz, mensajeDeError(error, R.string.datos_no_se_pudieron_cargar), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.datos_reintentar) { reintentarCarga() }
+
+            !enLinea && !avisoSinInternetCerrado ->
+                Snackbar.make(raiz, R.string.conexion_sin_internet, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.conexion_entendido) { avisoSinInternetCerrado = true }
+
+            else -> return
+        }
+
+        val navegacion = findViewById<View>(R.id.bottom_navigation)
+        if (navegacion.isVisible) barra.anchorView = navegacion
+        barra.setTextMaxLines(4)
+        barra.show()
+        aviso = barra
+    }
+
+    private fun reintentarCarga() {
+        val uid = AuthRepository.obtenerUid() ?: return
+        EstadoDatos.limpiar()
+        GamoraTransactionStore.escuchar(this, uid, forzar = true)
+        GamoraGoalStore.escuchar(uid, forzar = true)
+        PresupuestoStore.escuchar(uid, forzar = true)
+    }
+
+    // Momento en que se salió a otra app abierta por Gamora (elegir archivo, compartir…); 0 si no.
+    private var salidaBreveDesde = 0L
 
     override fun onStart() {
         super.onStart()
+        if (salidaBreveDesde != 0L) {
+            if (SystemClock.elapsedRealtime() - salidaBreveDesde > SalidaBreve.MAXIMO_MS) desbloqueado = false
+            salidaBreveDesde = 0L
+        }
         verificarBloqueo()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Si la otra pantalla no tapó a Gamora (no hubo onStop), el permiso ya no sirve.
+        SalidaBreve.consumir()
     }
 
     override fun onStop() {
         super.onStop()
-        if (!isChangingConfigurations && !autenticando) desbloqueado = false
+        if (!isChangingConfigurations && !autenticando) {
+            if (SalidaBreve.consumir()) salidaBreveDesde = SystemClock.elapsedRealtime()
+            else desbloqueado = false
+        }
 
         // Al salir, revisa si los gastos recién registrados merecen un aviso.
         if (!isChangingConfigurations && AuthRepository.obtenerUid() != null) revisarAvisosAhora(this)
@@ -230,18 +306,37 @@ class HomeActivity : AppCompatActivity() {
 
             autenticando = true
 
-            pedirDesbloqueo(this@HomeActivity) { exito ->
+            pedirDesbloqueo(this@HomeActivity) { resultado ->
                 autenticando = false
 
-                if (exito) {
-                    desbloqueado = true
-                    contenido.visibility = View.VISIBLE
-                    alDesbloquear()
-                } else {
-                    finish()
+                when (resultado) {
+                    ResultadoDesbloqueo.EXITO -> {
+                        reintento?.dismiss()
+                        desbloqueado = true
+                        contenido.visibility = View.VISIBLE
+                        alDesbloquear()
+                    }
+                    ResultadoDesbloqueo.CANCELADO -> finish()
+                    // Pantalla apagada u otra app encima: se pide de nuevo al volver (onStart).
+                    // Si Gamora sigue al frente (p. ej. demasiados intentos), se ofrece reintentar.
+                    ResultadoDesbloqueo.INTERRUMPIDO ->
+                        if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) ofrecerReintento()
                 }
             }
         }
+    }
+
+    private var reintento: AlertDialog? = null
+
+    private fun ofrecerReintento() {
+        if (reintento?.isShowing == true) return
+        reintento = dialogo(this, IconoDialogo.CANDADO)
+            .setTitle(R.string.bloqueo_app_desbloquea_gamora)
+            .setMessage(R.string.bloqueo_no_se_pudo_verificar)
+            .setCancelable(false)
+            .setNegativeButton(R.string.main_cerrar) { _, _ -> finish() }
+            .setPositiveButton(R.string.bloqueo_intentar_de_nuevo) { _, _ -> verificarBloqueo() }
+            .show()
     }
 
     override fun onDestroy() {

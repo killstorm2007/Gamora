@@ -226,6 +226,18 @@ service cloud.firestore {
           && request.resource.data.proximaFecha is int
           && request.resource.data.proximaFecha > resource.data.proximaFecha;
 
+        // Editar: descripción, categoría, monto y día (la fecha se ajusta al nuevo día).
+        // El tipo (ingreso o gasto) no cambia.
+        allow update: if esPropietario(userId)
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['descripcion', 'categoria', 'montoCentavos', 'dia', 'proximaFecha'])
+          && camposMovimiento(request.resource.data)
+          && request.resource.data.esIngreso == resource.data.esIngreso
+          && request.resource.data.dia is int
+          && request.resource.data.dia >= 1
+          && request.resource.data.dia <= 28
+          && request.resource.data.proximaFecha is int;
+
         allow delete: if esPropietario(userId);
       }
 
@@ -252,13 +264,18 @@ service cloud.firestore {
               || request.resource.data.fechaLimite is int)
           && request.resource.data.fechaCreacion is int;
 
-        // Solo se permite aportar: el monto ahorrado únicamente aumenta.
+        // Aportar o retirar (lo ahorrado nunca queda en negativo) y, al cambiar de moneda,
+        // convertir el objetivo y lo ahorrado. El nombre y las fechas no cambian.
         allow update: if esPropietario(userId)
           && request.resource.data.diff(resource.data)
             .affectedKeys()
-            .hasOnly(['ahorradoCentavos'])
+            .hasOnly(['ahorradoCentavos', 'objetivoCentavos'])
           && request.resource.data.ahorradoCentavos is int
-          && request.resource.data.ahorradoCentavos > resource.data.ahorradoCentavos;
+          && request.resource.data.ahorradoCentavos >= 0
+          && request.resource.data.ahorradoCentavos <= 100000000000
+          && request.resource.data.objetivoCentavos is int
+          && request.resource.data.objetivoCentavos > 0
+          && request.resource.data.objetivoCentavos <= 100000000000;
 
         allow delete: if esPropietario(userId);
       }

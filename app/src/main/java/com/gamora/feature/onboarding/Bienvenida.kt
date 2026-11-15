@@ -1,5 +1,7 @@
 package com.gamora.feature.onboarding
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.R
 import com.gamora.core.texto
 import android.content.Context
@@ -57,7 +59,7 @@ private fun AppCompatActivity.pasoMoneda(
 ) {
     var elegida = Moneda.DISPONIBLES.indexOf(Moneda.actual).coerceAtLeast(0)
 
-    MaterialAlertDialogBuilder(this)
+    dialogo(this, IconoDialogo.BIENVENIDA)
         .setTitle(texto(R.string.bienvenida_1_de_3_en))
         .setSingleChoiceItems(
             Moneda.DISPONIBLES.map { Moneda.NOMBRES.getValue(it) }.toTypedArray(),
@@ -92,7 +94,7 @@ private fun AppCompatActivity.pasoPresupuesto(
         pasoPrimerMovimiento(registrarMovimiento, alTerminar)
     }
 
-    MaterialAlertDialogBuilder(this)
+    dialogo(this, IconoDialogo.GRAFICA)
         .setTitle(texto(R.string.bienvenida_2_de_3_cuanto))
         .setMessage(texto(R.string.bienvenida_gamora_te_avisara_cuando))
         .setView(campo.enDialogo())
@@ -109,7 +111,7 @@ private fun AppCompatActivity.pasoPrimerMovimiento(
     registrarMovimiento: (Boolean) -> Unit,
     alTerminar: () -> Unit
 ) {
-    MaterialAlertDialogBuilder(this)
+    dialogo(this, IconoDialogo.MOVIMIENTO)
         .setTitle(texto(R.string.bienvenida_3_de_3_registra))
         .setMessage(
             texto(R.string.bienvenida_empieza_por_tu_ingreso)

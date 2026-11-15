@@ -1,5 +1,8 @@
 package com.gamora.feature.analytics
 
+import com.gamora.core.ui.contenidoDesplazable
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.ui.localeApp
 import com.gamora.core.ui.formatoFecha
 import com.gamora.core.texto
@@ -310,10 +313,7 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
         val contexto = requireContext()
         val categorias = Categoria.DE_GASTO - Categoria.AHORRO
 
-        val contenedor = LinearLayout(contexto).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(24), dp(4), dp(24), dp(8))
-        }
+        val contenedor = LinearLayout(contexto).apply { orientation = LinearLayout.VERTICAL }
 
         val campos = categorias.associateWith { categoria ->
             TextInputEditText(contexto).apply {
@@ -327,10 +327,9 @@ class AnalyticsFragment : Fragment(R.layout.fragment_analytics) {
             }
         }
 
-        val dialogo = MaterialAlertDialogBuilder(contexto)
+        val dialogo = dialogo(contexto, IconoDialogo.GRAFICA)
             .setTitle(texto(R.string.analytics_presupuesto_por_categoria))
-            .setMessage(texto(R.string.analytics_limite_mensual_para_cada))
-            .setView(ScrollView(contexto).apply { addView(contenedor) })
+            .setView(contenidoDesplazable(contexto, texto(R.string.analytics_limite_mensual_para_cada), contenedor))
             .setNegativeButton(texto(R.string.import_review_cancelar), null)
             .setPositiveButton(texto(R.string.import_review_guardar), null)
             .create()

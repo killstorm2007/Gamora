@@ -1,6 +1,8 @@
 
 package com.gamora.feature.goals
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.ui.formatoFecha
 import com.gamora.core.textoPlural
 import com.gamora.core.texto
@@ -9,6 +11,7 @@ import com.gamora.core.ui.centavosDe
 import com.gamora.core.ui.LOCALE_MX
 import com.gamora.core.ui.dp
 import com.gamora.core.ui.dinero
+import com.gamora.core.ui.Moneda
 import com.google.android.material.textfield.TextInputEditText
 import com.gamora.core.ui.enDialogo
 import com.gamora.core.ui.enCampo
@@ -100,7 +103,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
         }
 
         val targetInput = TextInputEditText(context).apply {
-            hint = texto(R.string.goals_cuanto_quieres_ahorrar_mxn)
+            hint = texto(R.string.goals_cuanto_quieres_ahorrar_mxn, Moneda.actual)
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or
                     android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
             isSingleLine = true
@@ -142,7 +145,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
         form.addView(targetInput.enCampo())
         form.addView(deadlineInput.enCampo())
 
-        val dialog = MaterialAlertDialogBuilder(context)
+        val dialog = dialogo(context, IconoDialogo.AHORRO)
             .setTitle(texto(R.string.goals_crear_meta_de_ahorro))
             .setView(form)
             .setNegativeButton(texto(R.string.import_review_cancelar), null)
@@ -193,7 +196,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
     private fun showContributionDialog(goal: SavingsGoal) {
         val input = TextInputEditText(requireContext()).apply {
-            hint = texto(R.string.goals_cantidad_a_aportar_mxn)
+            hint = texto(R.string.goals_cantidad_a_aportar_mxn, Moneda.actual)
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or
                     android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
         }
@@ -208,7 +211,7 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
             addView(descontar)
         }
 
-        val dialog = MaterialAlertDialogBuilder(requireContext())
+        val dialog = dialogo(requireContext(), IconoDialogo.AGREGAR)
             .setTitle(texto(R.string.goals_aportar_a, goal.name))
             .setMessage(
                 texto(R.string.goals_objetivo_nahorrado, dinero(goal.targetCents), dinero(goal.savedCents))
@@ -250,15 +253,71 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
         dialog.show()
     }
 
+    /** Sacar dinero de la meta; por defecto vuelve al saldo como ingreso. */
+    private fun showWithdrawDialog(goal: SavingsGoal) {
+        val input = TextInputEditText(requireContext()).apply {
+            hint = texto(R.string.goals_cantidad_a_retirar, Moneda.actual)
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or
+                    android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+
+        val regresar = MaterialCheckBox(requireContext()).apply {
+            text = texto(R.string.goals_regresar_a_mi_saldo)
+            isChecked = true
+        }
+
+        val contenido = input.enDialogo().apply {
+            orientation = LinearLayout.VERTICAL
+            addView(regresar)
+        }
+
+        val dialog = dialogo(requireContext(), IconoDialogo.AHORRO)
+            .setTitle(texto(R.string.goals_retirar_de, goal.name))
+            .setMessage(texto(R.string.goals_disponible_en_la_meta, dinero(goal.savedCents)))
+            .setView(contenido)
+            .setNegativeButton(texto(R.string.import_review_cancelar), null)
+            .setPositiveButton(texto(R.string.goals_retirar), null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val amount = parseMoney(input.text.toString())
+
+                when {
+                    amount == null -> input.error = texto(R.string.goals_introduce_una_cantidad_valida)
+                    amount > goal.savedCents -> input.error = texto(R.string.goals_no_puedes_retirar_mas, dinero(goal.savedCents))
+                    else -> {
+                        GamoraGoalStore.retirar(goal, amount, regresar.isChecked, mostrarError)
+                        dialog.dismiss()
+                        Toast.makeText(requireContext(), texto(R.string.goals_retiro_registrado), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
     private fun confirmDeleteGoal(goal: SavingsGoal) {
-        MaterialAlertDialogBuilder(requireContext())
+        // Con dinero ahorrado se pregunta qué hacer con él (por defecto, regresarlo al saldo).
+        val regresar = MaterialCheckBox(requireContext()).apply {
+            text = texto(R.string.goals_regresar_al_saldo_al_eliminar, dinero(goal.savedCents))
+            isChecked = true
+        }
+        val contenido = if (goal.savedCents > 0) LinearLayout(requireContext()).apply {
+            setPadding(dp(20), 0, dp(24), 0)
+            addView(regresar)
+        } else null
+
+        dialogo(requireContext(), IconoDialogo.ELIMINAR)
             .setTitle(texto(R.string.goals_eliminar_meta))
             .setMessage(
                 texto(R.string.goals_quieres_eliminar_se_eliminara, goal.name)
             )
+            .apply { contenido?.let(::setView) }
             .setNegativeButton(texto(R.string.import_review_cancelar), null)
             .setPositiveButton(texto(R.string.goals_eliminar)) { _, _ ->
-                GamoraGoalStore.eliminar(goal.id, mostrarError)
+                GamoraGoalStore.eliminar(goal, regresarAlSaldo = contenido != null && regresar.isChecked, mostrarError)
             }
             .show()
     }
@@ -429,6 +488,20 @@ class GoalsFragment : Fragment(R.layout.fragment_goals) {
 
             actions.addView(
                 contributeButton,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { marginEnd = dp(8) }
+            )
+        }
+
+        // También en metas ya cumplidas: es cuando más se usa el dinero.
+        if (goal.savedCents > 0) {
+            val withdrawButton = boton(texto(R.string.goals_retirar), android.R.color.transparent, R.color.gamora_accent).apply {
+                setOnClickListener { showWithdrawDialog(goal) }
+            }
+            actions.addView(
+                withdrawButton,
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT

@@ -1,6 +1,14 @@
 
 package com.gamora.core.auth
 
+import com.gamora.core.mensajeDeError
+import com.gamora.core.alGuardar
+import com.gamora.core.ErrorParaUsuario
+import com.gamora.core.Conexion
+import android.content.Context
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.Source
 import com.gamora.core.legal.VERSION_POLITICAS
 import com.gamora.R
 import com.gamora.core.texto
@@ -55,9 +63,9 @@ object AuthRepository {
         FirebaseAuth.getInstance()
     }
 
-    private val db: FirebaseFirestore by lazy {
-        FirebaseFirestore.getInstance()
-    }
+    // Sin guardar la instancia: al eliminar la cuenta se cierra Firestore y se crea una nueva.
+    private val db: FirebaseFirestore
+        get() = FirebaseFirestore.getInstance()
 
     fun registrarUsuario(
         datos: RegisterData,
@@ -141,8 +149,7 @@ object AuthRepository {
                             }
 
                             onError(
-                                mensaje + " Detalle: " +
-                                        (error.localizedMessage ?: texto(R.string.auth_repository_error_desconocido))
+                                mensaje
                             )
                         }
                 }
@@ -163,7 +170,7 @@ object AuthRepository {
                     texto(R.string.auth_repository_el_correo_electronico_no)
 
                 else ->
-                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_crear)
+                    mensajeDeError(error, R.string.auth_repository_no_se_pudo_crear)
             }
 
             onError(mensaje)
@@ -171,6 +178,7 @@ object AuthRepository {
     }
 
     fun iniciarSesion(
+        context: Context,
         correo: String,
         password: String,
         onSuccess: () -> Unit,
@@ -179,17 +187,23 @@ object AuthRepository {
         auth.signInWithEmailAndPassword(
             correo.trim(),
             password
-        ).addOnSuccessListener {
-            onSuccess()
+        ).continueWithTask { inicio ->
+            inicio.exception?.let { throw it }
+            // ¿Tiene perfil? Si no, la cuenta quedó a medio eliminar. Si no se puede saber, se sigue.
+            db.collection("users").document(inicio.result.user!!.uid).get(Source.SERVER)
+                .continueWith { perfil -> if (perfil.isSuccessful) perfil.result.exists() else null }
+        }.addOnSuccessListener { perfilExiste ->
+            terminarSiEstabaEliminandose(context, auth.currentUser!!.uid, perfilExiste, onSuccess, onError)
         }.addOnFailureListener { error ->
             onError(
-                error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_iniciar)
+                mensajeDeError(error, R.string.auth_repository_no_se_pudo_iniciar)
             )
         }
     }
 
     /** Entra con Google. [onSuccess] indica si la persona ya tiene perfil en Gamora. */
     fun iniciarSesionConGoogle(
+        context: Context,
         credencial: AuthCredential,
         onSuccess: (perfilExiste: Boolean) -> Unit,
         onError: (String) -> Unit
@@ -199,9 +213,12 @@ object AuthRepository {
                 inicio.exception?.let { throw it }
                 db.collection("users").document(inicio.result.user!!.uid).get()
             }
-            .addOnSuccessListener { perfil -> onSuccess(perfil.exists()) }
+            .addOnSuccessListener { perfil ->
+                // Sin perfil es una cuenta nueva (se registra); solo se borra si este teléfono la estaba eliminando.
+                terminarSiEstabaEliminandose(context, perfil.id, null, { onSuccess(perfil.exists()) }, onError)
+            }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_iniciar_2))
+                onError(mensajeDeError(error, R.string.auth_repository_no_se_pudo_iniciar_2))
             }
     }
 
@@ -254,7 +271,7 @@ object AuthRepository {
         }.commit()
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_crear_2))
+                onError(mensajeDeError(error, R.string.auth_repository_no_se_pudo_crear_2))
             }
     }
 
@@ -305,7 +322,7 @@ object AuthRepository {
             }
             .addOnFailureListener { error ->
                 onError(
-                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_enviar)
+                    mensajeDeError(error, R.string.auth_repository_no_se_pudo_enviar)
                 )
             }
     }
@@ -346,8 +363,7 @@ object AuthRepository {
             }
             .addOnFailureListener { error ->
                 onError(
-                    error.localizedMessage
-                        ?: texto(R.string.auth_repository_no_se_pudo_cargar)
+                    mensajeDeError(error, R.string.auth_repository_no_se_pudo_cargar)
                 )
             }
     }
@@ -401,15 +417,7 @@ object AuthRepository {
         db.collection("users")
             .document(uid)
             .update(cambios)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { error ->
-                onError(
-                    error.localizedMessage
-                        ?: texto(R.string.auth_repository_no_se_pudo_actualizar)
-                )
-            }
+            .alGuardar(R.string.auth_repository_no_se_pudo_actualizar, onSuccess, onError)
     }
 
     fun obtenerPreferenciasFinancieras(
@@ -446,7 +454,7 @@ object AuthRepository {
             }
             .addOnFailureListener { error ->
                 onError(
-                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_cargar)
+                    mensajeDeError(error, R.string.auth_repository_no_se_pudieron_cargar)
                 )
             }
 
@@ -508,14 +516,7 @@ object AuthRepository {
             .collection("preferencias")
             .document("financieras")
             .set(datos)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { error ->
-                onError(
-                    error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_guardar)
-                )
-            }
+            .alGuardar(R.string.auth_repository_no_se_pudieron_guardar, onSuccess, onError)
     }
 
     /** Lee users/{uid}/preferencias/{documento}; entrega null si aún no existe. */
@@ -534,7 +535,7 @@ object AuthRepository {
             .get()
             .addOnSuccessListener { onSuccess(it.data) }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_cargar_2))
+                onError(mensajeDeError(error, R.string.auth_repository_no_se_pudieron_cargar_2))
             }
     }
 
@@ -552,10 +553,7 @@ object AuthRepository {
         db.collection("users").document(uid)
             .collection("preferencias").document(documento)
             .set(datos + ("fechaActualizacion" to FieldValue.serverTimestamp()), SetOptions.merge())
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_guardar_2))
-            }
+            .alGuardar(R.string.auth_repository_no_se_pudieron_guardar_2, onSuccess, onError)
     }
 
     /** Consentimiento vigente: el registro más reciente de users/{uid}/consentimientos. */
@@ -586,7 +584,7 @@ object AuthRepository {
                 )
             }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudieron_cargar_3))
+                onError(mensajeDeError(error, R.string.auth_repository_no_se_pudieron_cargar_3))
             }
     }
 
@@ -614,67 +612,150 @@ object AuthRepository {
                     "fechaRevocacion" to null
                 )
             )
-            .addOnSuccessListener {
-                aplicarAnalitica(consentimiento.analiticaAutorizada)
-                onSuccess()
-            }
-            .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_guardar_2))
-            }
+            .alGuardar(
+                R.string.auth_repository_no_se_pudo_guardar_2,
+                onSuccess = {
+                    aplicarAnalitica(consentimiento.analiticaAutorizada)
+                    onSuccess()
+                },
+                onError = onError
+                )
+    }
+
+    // ---- Eliminar la cuenta ----
+    //
+    // Firebase no deja borrar todo de una sola vez desde el teléfono: primero los datos (hace falta la
+    // sesión para que las reglas lo permitan) y al final la cuenta de acceso. Si algo se interrumpe a la
+    // mitad (sin red, app cerrada), queda anotado en el teléfono y se termina después:
+    // - al abrir la app ([terminarEliminacionPendiente]);
+    // - al volver a iniciar sesión ([iniciarSesion] / [iniciarSesionConGoogle]).
+    // El perfil (users/{uid}) se borra al final de los datos: si falta, los datos ya se borraron.
+
+    private const val PREFERENCIAS_CUENTA = "gamora_cuenta"
+    private const val CLAVE_ELIMINANDO = "eliminando_uid"
+    private val SUBCOLECCIONES = listOf("movimientos", "recurrentes", "metas", "chat", "preferencias", "consentimientos")
+
+    private fun preferenciasCuenta(context: Context) =
+        context.applicationContext.getSharedPreferences(PREFERENCIAS_CUENTA, Context.MODE_PRIVATE)
+
+    /** Uid de una cuenta cuya eliminación quedó a medias en este teléfono, o null. */
+    fun eliminacionPendiente(context: Context): String? =
+        preferenciasCuenta(context).getString(CLAVE_ELIMINANDO, null)
+
+    /** Borra las subcolecciones y después el perfil. Repetirlo es seguro: lo ya borrado no falla. */
+    private fun borrarDatos(uid: String): Task<Void> {
+        val perfilRef = db.collection("users").document(uid)
+
+        // Del servidor, no del caché: así no se queda nada sin borrar.
+        return Tasks.whenAllSuccess<QuerySnapshot>(
+            SUBCOLECCIONES.map { perfilRef.collection(it).get(Source.SERVER) }
+        ).continueWithTask { consultas ->
+            consultas.exception?.let { throw it }
+            val referencias = consultas.result.flatMap { it.documents }.map { it.reference }
+
+            // Un batch admite como máximo 500 escrituras.
+            Tasks.whenAll(referencias.chunked(500).map { grupo ->
+                db.batch().apply { grupo.forEach { delete(it) } }.commit()
+            })
+        }.continueWithTask { borrado ->
+            borrado.exception?.let { throw it }
+            perfilRef.delete()
+        }
+    }
+
+    /** Borra los datos y la cuenta de acceso de quien ya inició sesión (sin pedir contraseña otra vez). */
+    private fun borrarTodoDeLaSesion(context: Context, limpiarCache: Boolean): Task<Void> {
+        val usuario = auth.currentUser ?: return Tasks.forException(ErrorParaUsuario(texto(R.string.auth_repository_no_hay_una_sesion)))
+        preferenciasCuenta(context).edit().putString(CLAVE_ELIMINANDO, usuario.uid).commit()
+
+        return borrarDatos(usuario.uid).continueWithTask { borrado ->
+            borrado.exception?.let { throw it }
+            usuario.delete()
+        }.addOnSuccessListener {
+            preferenciasCuenta(context).edit().remove(CLAVE_ELIMINANDO).apply()
+            aplicarAnalitica(false)
+            auth.signOut()
+            if (limpiarCache) borrarCacheLocal(context) {}
+        }
+    }
+
+    /**
+     * Borra la copia de los datos que Firestore guarda en el teléfono (y el historial de movimientos).
+     * Antes hay que dejar de escuchar los datos: Firestore se cierra y la app crea una instancia nueva.
+     */
+    fun borrarCacheLocal(context: Context, alTerminar: () -> Unit) {
+        context.applicationContext.getSharedPreferences("gamora_historial", Context.MODE_PRIVATE).edit().clear().apply()
+        val firestore = FirebaseFirestore.getInstance()
+        firestore.terminate()
+            .continueWithTask { firestore.clearPersistence() }
+            .addOnCompleteListener { alTerminar() }
     }
 
     /**
      * Borra users/{uid} con sus subcolecciones y después la cuenta de acceso.
      * Pide confirmar la identidad (contraseña o Google) porque Firebase exige un inicio de sesión reciente.
+     * Necesita internet: así nunca se queda a medias por estar sin conexión.
      */
     fun eliminarCuenta(
+        context: Context,
         credencial: AuthCredential,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        val usuario = auth.currentUser
-
-        if (usuario == null) {
-            onError(texto(R.string.auth_repository_no_hay_una_sesion))
-            return
-        }
-
-        val perfilRef = db.collection("users").document(usuario.uid)
-        val subcolecciones = listOf("movimientos", "recurrentes", "metas", "chat", "preferencias", "consentimientos")
+        val usuario = auth.currentUser ?: return onError(texto(R.string.auth_repository_no_hay_una_sesion))
+        if (!Conexion.enLinea.value) return onError(texto(R.string.error_sin_conexion))
 
         usuario.reauthenticate(credencial)
             .continueWithTask { reautenticacion ->
                 reautenticacion.exception?.let { error ->
                     throw if (error is FirebaseAuthInvalidCredentialsException) {
-                        IllegalStateException(texto(R.string.auth_contrasena_incorrecta))
+                        ErrorParaUsuario(texto(R.string.auth_contrasena_incorrecta))
                     } else error
                 }
-                Tasks.whenAllSuccess<com.google.firebase.firestore.QuerySnapshot>(
-                    subcolecciones.map { perfilRef.collection(it).get() }
-                )
+                borrarTodoDeLaSesion(context, limpiarCache = false)
             }
-            .continueWithTask { consultas ->
-                consultas.exception?.let { throw it }
-                val referencias = consultas.result.flatMap { it.documents }.map { it.reference } + perfilRef
-
-                // Un batch admite como máximo 500 escrituras.
-                Tasks.whenAll(
-                    referencias.chunked(500).map { grupo ->
-                        db.batch().apply { grupo.forEach { delete(it) } }.commit()
-                    }
-                )
-            }
-            .continueWithTask { borrado ->
-                borrado.exception?.let { throw it }
-                usuario.delete()
-            }
-            .addOnSuccessListener {
-                aplicarAnalitica(false)
-                auth.signOut()
-                onSuccess()
-            }
+            .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { error ->
-                onError(error.localizedMessage ?: texto(R.string.auth_repository_no_se_pudo_eliminar))
+                // Si ya se había empezado a borrar, se avisa que falta terminar (se reintenta solo).
+                val empezado = eliminacionPendiente(context) == usuario.uid
+                onError(
+                    if (empezado && error !is ErrorParaUsuario) texto(R.string.cuenta_eliminacion_incompleta)
+                    else mensajeDeError(error, R.string.auth_repository_no_se_pudo_eliminar)
+                )
+            }
+    }
+
+    /**
+     * Al abrir la app: si una eliminación quedó a medias, la termina. [alTerminar] recibe el mensaje para
+     * la persona, o null si no había nada pendiente. Sin una sesión reciente Firebase no deja borrar la
+     * cuenta de acceso: entonces se cierra la sesión y se termina al volver a entrar.
+     */
+    fun terminarEliminacionPendiente(context: Context, alTerminar: (String?) -> Unit) {
+        val pendiente = eliminacionPendiente(context)
+        val usuario = auth.currentUser
+
+        when {
+            pendiente == null -> alTerminar(null)
+            usuario == null || usuario.uid != pendiente -> alTerminar(null)
+            else -> borrarTodoDeLaSesion(context, limpiarCache = true)
+                .addOnSuccessListener { alTerminar(texto(R.string.cuenta_eliminacion_terminada)) }
+                .addOnFailureListener {
+                    auth.signOut()
+                    alTerminar(texto(R.string.cuenta_eliminacion_inicia_sesion))
+                }
+        }
+    }
+
+    /** Recién iniciada la sesión: si la cuenta estaba a medio eliminar, termina de borrarla y lo explica. */
+    private fun terminarSiEstabaEliminandose(context: Context, uid: String, perfilExiste: Boolean?, continuar: () -> Unit, onError: (String) -> Unit) {
+        val aMedias = eliminacionPendiente(context) == uid || perfilExiste == false
+        if (!aMedias) return continuar()
+
+        borrarTodoDeLaSesion(context, limpiarCache = true)
+            .addOnSuccessListener { onError(texto(R.string.cuenta_ya_eliminada)) }
+            .addOnFailureListener {
+                auth.signOut()
+                onError(texto(R.string.cuenta_eliminacion_incompleta))
             }
     }
 }

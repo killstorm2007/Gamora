@@ -1,5 +1,6 @@
 package com.gamora.feature.chatbot
 
+import com.gamora.core.mensajeDeError
 import com.gamora.R
 import com.gamora.core.texto
 import com.gamora.core.auth.AuthRepository
@@ -48,7 +49,7 @@ object ChatRepository {
                     }.reversed()
                 )
             }
-            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.chat_repository_no_se_pudo_cargar)) }
+            .addOnFailureListener { onError(mensajeDeError(it, R.string.chat_repository_no_se_pudo_cargar)) }
     }
 
     /** Si falla, el mensaje solo se pierde del historial; la conversación en pantalla sigue. */
@@ -81,6 +82,6 @@ object ChatRepository {
                 )
             }
             .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.chat_repository_no_se_pudo_borrar)) }
+            .addOnFailureListener { onError(mensajeDeError(it, R.string.chat_repository_no_se_pudo_borrar)) }
     }
 }

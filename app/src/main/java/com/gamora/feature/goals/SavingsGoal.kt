@@ -5,7 +5,8 @@ import com.gamora.core.texto
 import com.gamora.core.Categoria
 import com.gamora.feature.transactions.GamoraTransactionStore
 import com.gamora.feature.transactions.GamoraMovement
-import android.util.Log
+import com.gamora.core.EstadoDatos
+import com.gamora.core.mensajeDeError
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,8 +44,8 @@ object GamoraGoalStore {
             .document(uid)
             .collection("metas")
 
-    fun escuchar(uid: String) {
-        if (uid == uidActual && registro != null) return
+    fun escuchar(uid: String, forzar: Boolean = false) {
+        if (!forzar && uid == uidActual && registro != null) return
 
         detener()
         uidActual = uid
@@ -54,9 +55,10 @@ object GamoraGoalStore {
             .addSnapshotListener { snapshot, error ->
 
                 if (error != null) {
-                    Log.w("GamoraGoalStore", "No se pudieron cargar las metas", error)
+                    EstadoDatos.reportar(ORIGEN, error)
                     return@addSnapshotListener
                 }
+                EstadoDatos.resuelto(ORIGEN)
 
                 estado.value = snapshot?.documents.orEmpty().map { doc ->
                     SavingsGoal(
@@ -75,7 +77,10 @@ object GamoraGoalStore {
         registro = null
         uidActual = null
         estado.value = emptyList()
+        EstadoDatos.resuelto(ORIGEN)
     }
+
+    private const val ORIGEN = "metas"
 
     private fun conUid(onError: (String) -> Unit, accion: (String) -> Unit) {
         uidActual?.let(accion) ?: onError(texto(R.string.auth_repository_no_hay_una_sesion))
@@ -97,7 +102,7 @@ object GamoraGoalStore {
                     "fechaCreacion" to System.currentTimeMillis()
                 )
             )
-            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.savings_goal_no_se_pudo_crear)) }
+            .addOnFailureListener { onError(mensajeDeError(it, R.string.savings_goal_no_se_pudo_crear)) }
     }
 
     /**
@@ -137,12 +142,52 @@ object GamoraGoalStore {
         }
 
         batch.commit()
-            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.savings_goal_no_se_pudo_registrar)) }
+            .addOnFailureListener { onError(mensajeDeError(it, R.string.savings_goal_no_se_pudo_registrar)) }
     }
 
-    fun eliminar(id: String, onError: (String) -> Unit) = conUid(onError) { uid ->
-        coleccion(uid).document(id)
-            .delete()
-            .addOnFailureListener { onError(it.localizedMessage ?: texto(R.string.savings_goal_no_se_pudo_eliminar)) }
+    /** Ingreso en "Ahorro": el dinero que sale de la meta vuelve al saldo. */
+    private fun regresoAlSaldo(meta: SavingsGoal, montoCentavos: Long) = GamoraMovement(
+        description = texto(R.string.savings_goal_retiro_de, meta.name),
+        category = Categoria.AHORRO,
+        amountCents = montoCentavos,
+        isIncome = true
+    )
+
+    /**
+     * Saca dinero de la meta (como mucho lo ahorrado). Con [regresarAlSaldo] también registra un ingreso
+     * en "Ahorro"; ambas escrituras van juntas en un batch.
+     */
+    fun retirar(
+        meta: SavingsGoal,
+        montoCentavos: Long,
+        regresarAlSaldo: Boolean,
+        onError: (String) -> Unit
+    ) = conUid(onError) { uid ->
+        val batch = FirebaseFirestore.getInstance().batch()
+        batch.update(coleccion(uid).document(meta.id), "ahorradoCentavos", FieldValue.increment(-montoCentavos))
+
+        if (regresarAlSaldo) {
+            val ingreso = GamoraTransactionStore.nuevaReferencia()
+                ?: return@conUid onError(texto(R.string.auth_repository_no_hay_una_sesion))
+            batch.set(ingreso, GamoraTransactionStore.datos(regresoAlSaldo(meta, montoCentavos)))
+        }
+
+        batch.commit()
+            .addOnFailureListener { onError(mensajeDeError(it, R.string.savings_goal_no_se_pudo_registrar)) }
+    }
+
+    /** Borra la meta. Con [regresarAlSaldo] y algo ahorrado, lo ahorrado vuelve al saldo como ingreso. */
+    fun eliminar(meta: SavingsGoal, regresarAlSaldo: Boolean, onError: (String) -> Unit) = conUid(onError) { uid ->
+        val batch = FirebaseFirestore.getInstance().batch()
+        batch.delete(coleccion(uid).document(meta.id))
+
+        if (regresarAlSaldo && meta.savedCents > 0) {
+            val ingreso = GamoraTransactionStore.nuevaReferencia()
+                ?: return@conUid onError(texto(R.string.auth_repository_no_hay_una_sesion))
+            batch.set(ingreso, GamoraTransactionStore.datos(regresoAlSaldo(meta, meta.savedCents)))
+        }
+
+        batch.commit()
+            .addOnFailureListener { onError(mensajeDeError(it, R.string.savings_goal_no_se_pudo_eliminar)) }
     }
 }

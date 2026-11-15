@@ -2,8 +2,10 @@ package com.gamora
 
 import android.app.Application
 import com.gamora.core.Textos
+import com.gamora.core.Conexion
 import com.gamora.core.notifications.crearCanalNotificaciones
 import com.gamora.core.ui.Moneda
+import com.gamora.core.ui.ajustarPantallasParaLectores
 import com.google.firebase.FirebaseApp
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 
@@ -21,6 +23,8 @@ class GamoraApp : Application() {
         instalarAppCheck()
 
         Moneda.iniciar(this)
+        Conexion.iniciar(this)
+        ajustarPantallasParaLectores()
         crearCanalNotificaciones(this)
         PDFBoxResourceLoader.init(applicationContext)
     }

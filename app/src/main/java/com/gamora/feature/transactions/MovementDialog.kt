@@ -1,5 +1,7 @@
 package com.gamora.feature.transactions
 
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.ui.formatoFecha
 import com.gamora.core.texto
 import com.gamora.core.nombre
@@ -46,7 +48,11 @@ fun Fragment.mostrarDialogoMovimiento(
 ) {
     val context = requireContext()
     val formatoDia = formatoFecha("EEEEdMMMMyyyy")
-    val categorias = if (esIngreso) Categoria.DE_INGRESO else Categoria.DE_GASTO
+    // Un retiro de meta es un ingreso en "Ahorro": al editarlo se conserva esa categoría.
+    val categorias = (if (esIngreso) Categoria.DE_INGRESO else Categoria.DE_GASTO).let { lista ->
+        val actual = existente?.category
+        if (actual != null && actual !in lista) lista + actual else lista
+    }
 
     val form = LinearLayout(context).apply {
         orientation = LinearLayout.VERTICAL
@@ -138,7 +144,7 @@ fun Fragment.mostrarDialogoMovimiento(
 
     val tipo = texto(if (esIngreso) R.string.movement_tipo_ingreso else R.string.movement_tipo_gasto)
 
-    val dialog = MaterialAlertDialogBuilder(context)
+    val dialog = dialogo(context, IconoDialogo.MOVIMIENTO)
         .setTitle(if (existente == null) texto(R.string.movement_dialog_registrar, tipo) else texto(R.string.movement_dialog_editar, tipo))
         .setView(form)
         .setNegativeButton(texto(R.string.import_review_cancelar), null)
@@ -146,7 +152,7 @@ fun Fragment.mostrarDialogoMovimiento(
         .apply {
             if (existente != null && alGuardarLocal == null) {
                 setNeutralButton(texto(R.string.goals_eliminar)) { _, _ ->
-                    MaterialAlertDialogBuilder(context)
+                    dialogo(context, IconoDialogo.ELIMINAR)
                         .setTitle(texto(R.string.movement_dialog_eliminar, tipo))
                         .setMessage(texto(R.string.movement_dialog_eliminar_esta_accion_no, existente.description))
                         .setNegativeButton(texto(R.string.import_review_cancelar), null)

@@ -3,7 +3,6 @@ package com.gamora.feature.importar
 import com.gamora.R
 import com.gamora.core.texto
 import com.gamora.core.Categoria
-import com.gamora.core.ui.centavosDe
 import org.w3c.dom.Element
 import java.io.ByteArrayInputStream
 import javax.xml.parsers.DocumentBuilderFactory
@@ -40,7 +39,7 @@ fun leerNominaCfdi(xml: ByteArray): ResultadoLectura {
         ?: throw NoEsNominaException(NO_ES_NOMINA)
     val nomina = elemento("Nomina") ?: throw NoEsNominaException(NO_ES_NOMINA)
 
-    val monto = centavosDe(comprobante.atributo("Total"))?.takeIf { it > 0 }
+    val monto = totalEnCentavos(comprobante.atributo("Total"))?.takeIf { it > 0 }
         ?: throw NoEsNominaException(texto(R.string.nomina_cfdi_el_recibo_no_indica))
 
     val fecha = fechaDe(nomina.atributo("FechaPago"))
@@ -67,3 +66,11 @@ fun leerNominaCfdi(xml: ByteArray): ResultadoLectura {
         descartados = 0
     )
 }
+
+/** El total del CFDI admite hasta 6 decimales ("12500.000000"): se redondea a centavos. */
+private fun totalEnCentavos(texto: String): Long? =
+    texto.trim().toBigDecimalOrNull()
+        ?.takeIf { it.signum() >= 0 }
+        ?.setScale(2, java.math.RoundingMode.HALF_UP)
+        ?.movePointRight(2)
+        ?.toLong()

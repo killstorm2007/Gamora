@@ -86,10 +86,11 @@ private fun leerFila(fila: JSONObject): MovimientoImportado? {
     val descripcion = fila.optString("descripcion").trim()
     if (descripcion.isEmpty() || descripcion.length > DESCRIPCION_MAXIMA) return null
 
-    // Solo números enteros: un monto como texto o con decimales se descarta.
+    // Solo números enteros: un monto como texto o con decimales se descarta. El signo lo da
+    // "esIngreso", así que un "-9000" se toma como 9000.
     val monto = when (val valor = fila.opt("montoCentavos")) {
-        is Int -> valor.toLong()
-        is Long -> valor
+        is Int -> kotlin.math.abs(valor.toLong())
+        is Long -> kotlin.math.abs(valor)
         else -> return null
     }
     if (monto <= 0 || monto > MONTO_MAXIMO) return null

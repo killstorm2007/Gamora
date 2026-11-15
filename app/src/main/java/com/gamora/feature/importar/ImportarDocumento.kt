@@ -1,5 +1,8 @@
 package com.gamora.feature.importar
 
+import com.gamora.core.security.SalidaBreve
+import com.gamora.core.ui.IconoDialogo
+import com.gamora.core.ui.dialogo
 import com.gamora.core.textoPlural
 import com.gamora.core.texto
 import android.content.Context
@@ -51,11 +54,32 @@ internal fun detectarTipo(bytes: ByteArray, mimeReportado: String?): TipoDocumen
         inicio.startsWith("%PDF") -> TipoDocumento.PDF
         inicio.startsWith("<") -> TipoDocumento.XML
         mimeReportado?.startsWith("image/") == true -> TipoDocumento.IMAGEN
-        bytes.size > 3 && bytes[0] == 0xFF.toByte() && bytes[1] == 0xD8.toByte() -> TipoDocumento.IMAGEN
-        bytes.size > 4 && bytes[0] == 0x89.toByte() && bytes[1] == 'P'.code.toByte() -> TipoDocumento.IMAGEN
+        mimePorContenido(bytes) != null -> TipoDocumento.IMAGEN
         else -> TipoDocumento.OTRO
     }
 }
+
+/** Tipo de imagen por sus primeros bytes (JPEG, PNG, WebP, HEIC); null si no se reconoce. */
+private fun mimePorContenido(bytes: ByteArray): String? {
+    val inicio = bytes.take(16).toByteArray().toString(Charsets.ISO_8859_1)
+    return when {
+        bytes.size > 3 && bytes[0] == 0xFF.toByte() && bytes[1] == 0xD8.toByte() -> "image/jpeg"
+        bytes.size > 4 && bytes[0] == 0x89.toByte() && bytes[1] == 'P'.code.toByte() -> "image/png"
+        inicio.startsWith("RIFF") && inicio.substring(8).startsWith("WEBP") -> "image/webp"
+        inicio.length >= 12 && inicio.substring(4, 8) == "ftyp" &&
+                inicio.substring(8, 12) in setOf("heic", "heix", "mif1", "msf1", "hevc") -> "image/heic"
+        else -> null
+    }
+}
+
+/**
+ * Tipo de la imagen para Gemini: el de su contenido; si no se reconoce, el que dijo Android (si es
+ * de imagen) o JPEG. Algunas apps de archivos reportan las fotos como "application/octet-stream".
+ */
+internal fun mimeDeImagen(bytes: ByteArray, mimeReportado: String?): String =
+    mimePorContenido(bytes)
+        ?: mimeReportado?.takeIf { it.startsWith("image/") }
+        ?: "image/jpeg"
 
 private const val ESPERA_CUOTA_SEGUNDOS = 45
 
@@ -110,11 +134,12 @@ class ImportadorDocumentos(private val fragment: Fragment) {
         val preferencias = contexto.getSharedPreferences(PREFERENCIAS, Context.MODE_PRIVATE)
 
         if (preferencias.getBoolean(CLAVE_CONSENTIMIENTO, false)) {
+            SalidaBreve.permitir()
             selector.launch(TIPOS)
             return
         }
 
-        MaterialAlertDialogBuilder(contexto)
+        dialogo(contexto, IconoDialogo.DOCUMENTO)
             .setTitle(texto(R.string.importar_documento_importar_estado_de_cuenta))
             .setMessage(
                 texto(R.string.importar_documento_gamora_lee_tu_estado)
@@ -122,6 +147,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             .setNegativeButton(texto(R.string.import_review_cancelar), null)
             .setPositiveButton(texto(R.string.importar_documento_aceptar)) { _, _ ->
                 preferencias.edit().putBoolean(CLAVE_CONSENTIMIENTO, true).apply()
+                SalidaBreve.permitir()
                 selector.launch(TIPOS)
             }
             .show()
@@ -165,7 +191,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
                     }
                     TipoDocumento.IMAGEN -> {
                         leerEnTelefono { leerTablas(reconocerImagen(bytes)) }
-                            ?: leerConReintento(bytes, resolver.getType(uri) ?: "image/jpeg")
+                            ?: leerConReintento(bytes, mimeDeImagen(bytes, resolver.getType(uri)))
                     }
                     TipoDocumento.OTRO -> {
                         aviso(texto(R.string.importar_documento_ese_tipo_de_archivo))
@@ -239,7 +265,7 @@ class ImportadorDocumentos(private val fragment: Fragment) {
             if (continuacion.isActive) continuacion.resume(valor)
         }
 
-        val dialogo = MaterialAlertDialogBuilder(contexto)
+        val dialogo = dialogo(contexto, IconoDialogo.CANDADO)
             .setTitle(texto(R.string.importar_documento_este_pdf_tiene_contrasena))
             .setMessage(texto(R.string.importar_documento_escribela_para_abrirlo_en))
             .setView(campo.enDialogo())

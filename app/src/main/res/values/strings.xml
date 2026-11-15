@@ -26,7 +26,7 @@ Este aviso aplica a todas las personas que usan Gamora, en México, Estados Unid
 
 1. RESPONSABLE
 
-[Nombre completo o razón social], con domicilio en [Domicilio], es responsable del tratamiento de tus datos personales en Gamora, una aplicación de finanzas personales. Para cualquier asunto de privacidad escribe a [Correo de privacidad].
+Adriel Fabian Mayo Gutierrez, con domicilio en Cd.Juarez, Chihuahua, es responsable del tratamiento de tus datos personales en Gamora, una aplicación de finanzas personales. Para cualquier asunto de privacidad escribe a soportegamora@gmail.com.
 
 2. DATOS QUE TRATAMOS Y DE DÓNDE VIENEN
 
@@ -80,11 +80,11 @@ Tus datos se guardan asociados a tu cuenta y viajan cifrados. Las reglas de segu
 
 8. ELIMINAR TU CUENTA
 
-Puedes borrar tu cuenta y toda tu información en cualquier momento desde Perfil › Eliminar mis datos. El borrado es inmediato y definitivo. Si no puedes entrar a la app, escribe a [Correo de privacidad] desde el correo de tu cuenta.
+Puedes borrar tu cuenta y toda tu información en cualquier momento desde Perfil › Eliminar mis datos. El borrado es inmediato y definitivo. Si no puedes entrar a la app, escribe a soportegamora@gmail.com desde el correo de tu cuenta.
 
 9. TUS DERECHOS (ARCO)
 
-Puedes acceder a tus datos, rectificarlos, cancelarlos u oponerte a su tratamiento, así como revocar tu consentimiento o limitar su uso. Muchos de estos cambios los haces directamente en Perfil. Para lo demás, envía tu solicitud a [Correo de privacidad] indicando tu nombre, el correo de tu cuenta y lo que pides; te responderemos en un máximo de 20 días hábiles. Si consideras que no atendimos tu solicitud o que tus datos se trataron indebidamente, puedes acudir a la autoridad de protección de datos personales en México (la Secretaría Anticorrupción y Buen Gobierno).
+Puedes acceder a tus datos, rectificarlos, cancelarlos u oponerte a su tratamiento, así como revocar tu consentimiento o limitar su uso. Muchos de estos cambios los haces directamente en Perfil. Para lo demás, envía tu solicitud a soportegamora@gmail.com indicando tu nombre, el correo de tu cuenta y lo que pides; te responderemos en un máximo de 20 días hábiles. Si consideras que no atendimos tu solicitud o que tus datos se trataron indebidamente, puedes acudir a la autoridad de protección de datos personales en México (la Secretaría Anticorrupción y Buen Gobierno).
 
 10. PERSONAS EN ESTADOS UNIDOS
 
@@ -112,7 +112,7 @@ Si existe una versión en inglés y hay diferencias, rige esta versión en espa�
 
 1. ACEPTACIÓN
 
-Al crear una cuenta en Gamora aceptas estos términos y el Aviso de privacidad. Si no estás de acuerdo, no uses la aplicación. Gamora es ofrecida por [Nombre completo o razón social].
+Al crear una cuenta en Gamora aceptas estos términos y el Aviso de privacidad. Si no estás de acuerdo, no uses la aplicación. Gamora es ofrecida por Adriel Fabian Mayo Gutierrez.
 
 2. QUÉ ES GAMORA
 
@@ -168,11 +168,10 @@ Publicaremos cualquier cambio en la app con su fecha y número de versión. Si e
 
 14. LEY APLICABLE Y CONTACTO
 
-Estos términos se rigen por las leyes de México. Si vives en México, puedes acudir a la PROFECO; si vives en otro país, conservas los derechos de consumidor que te otorgue la ley de tu lugar de residencia. Contacto: [Correo de soporte] · [Domicilio].
+Estos términos se rigen por las leyes de México. Si vives en México, puedes acudir a la PROFECO; si vives en otro país, conservas los derechos de consumidor que te otorgue la ley de tu lugar de residencia. Contacto: soportegamora@gmail.com · Cd.Juarez, Chihuahua.
     ]]></string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <!-- Cambiar por el correo real de soporte. -->
-    <string name="correo_soporte" translatable="false">soporte@example.com</string>
+        <!-- Cambiar por el correo real de soporte. -->
+    <string name="correo_soporte" translatable="false">soportegamora@gmail.com</string>
 
     <!-- activity_home -->
     <string name="home_abrir_asistente_gamora">Abrir asistente Gamora</string>
@@ -466,14 +465,14 @@ Estos términos se rigen por las leyes de México. Si vives en México, puedes a
 
     <!-- goals (código) -->
     <string name="goals_nombre_de_la_meta">Nombre de la meta</string>
-    <string name="goals_cuanto_quieres_ahorrar_mxn">¿Cuánto quieres ahorrar? (MXN)</string>
+    <string name="goals_cuanto_quieres_ahorrar_mxn">¿Cuánto quieres ahorrar? (%1$s)</string>
     <string name="goals_fecha_limite_opcional">Fecha límite (opcional)</string>
     <string name="goals_crear_meta_de_ahorro">Crear meta de ahorro</string>
     <string name="goals_crear">Crear</string>
     <string name="goals_escribe_un_nombre">Escribe un nombre</string>
     <string name="goals_introduce_una_cantidad_valida">Introduce una cantidad válida</string>
     <string name="goals_meta_creada_correctamente">Meta creada correctamente</string>
-    <string name="goals_cantidad_a_aportar_mxn">Cantidad a aportar (MXN)</string>
+    <string name="goals_cantidad_a_aportar_mxn">Cantidad a aportar (%1$s)</string>
     <string name="goals_descontar_de_mi_saldo">Descontar de mi saldo (se registra como gasto en Ahorro)</string>
     <string name="goals_aportar_a">Aportar a %1$s</string>
     <string name="goals_objetivo_nahorrado">Objetivo: %1$s\nAhorrado: %2$s</string>
@@ -696,4 +695,75 @@ Estos términos se rigen por las leyes de México. Si vives en México, puedes a
     <string name="profile_idioma">"🌐     Idioma"</string>
     <string name="profile_idioma_titulo">Idioma de la app</string>
     <string name="profile_idioma_sistema">Igual que el teléfono</string>
+    <plurals name="import_review_encontrados">
+        <item quantity="one">%1$d encontrado</item>
+        <item quantity="other">%1$d encontrados</item>
+    </plurals>
+    <string name="profile_recurrente_dia">Día del mes (1-28)</string>
+    <string name="profile_recurrente_dia_invalido">Escribe un día entre 1 y 28</string>
+    <string name="profile_recurrente_editar_titulo">Editar movimiento recurrente</string>
+    <string name="profile_recurrente_solo_futuro">Los cambios aplican a los siguientes meses; lo que ya se registró no cambia.</string>
+    <!-- Exportar -->
+    <string name="exportar_este_mes">Este mes</string>
+    <string name="exportar_tres_meses">Últimos 3 meses</string>
+    <string name="exportar_este_anio">Este año</string>
+    <string name="exportar_todo">Todo</string>
+    <string name="exportar_titulo">Exportar mis datos</string>
+    <string name="exportar_formato">Formato</string>
+    <string name="exportar_csv">Hoja de cálculo (CSV)</string>
+    <string name="exportar_pdf">Reporte (PDF)</string>
+    <string name="exportar_titulo_pdf">Gamora · Mis movimientos</string>
+    <string name="exportar_pie">Página %1$d</string>
+    <string name="exportar_sin_movimientos">No hay movimientos en este periodo.</string>
+    <string name="exportar_no_hay_app">No hay una app para compartir el archivo.</string>
+    <string name="exportar_error">No se pudo crear el archivo.</string>
+    <string name="profile_exportar">"📤     Exportar mis datos"</string>
+    <string-array name="exportar_encabezados">
+        <item>Fecha</item>
+        <item>Tipo</item>
+        <item>Categoría</item>
+        <item>Descripción</item>
+        <item>Monto</item>
+        <item>Moneda</item>
+    </string-array>
+    <string name="movimiento_para_lector">%1$s: %2$s, %3$s, %4$s</string>
+
+    <!-- Errores y conexión -->
+    <string name="error_sin_conexion">No hay conexión a internet. Revísala e inténtalo de nuevo.</string>
+    <string name="error_sesion">No pudimos verificar tu sesión. Cierra sesión y vuelve a entrar.</string>
+    <string name="error_saturado">Gamora tiene mucha demanda en este momento. Inténtalo más tarde.</string>
+    <string name="error_demasiados_intentos">Demasiados intentos. Espera unos minutos e inténtalo de nuevo.</string>
+    <string name="error_credenciales">El correo o la contraseña no son correctos.</string>
+    <string name="error_cuenta_no_disponible">Esta cuenta no existe o fue desactivada.</string>
+    <string name="error_contrasena_debil">La contraseña es muy débil. Usa al menos 8 caracteres.</string>
+    <string name="error_vuelve_a_entrar">Por seguridad, cierra sesión y vuelve a entrar para hacer esto.</string>
+    <string name="datos_no_se_pudieron_cargar">No pudimos cargar tus datos. Tu información sigue guardada.</string>
+    <string name="datos_reintentar">Reintentar</string>
+    <string name="conexion_sin_internet">Sin conexión. Lo que registres se guarda en el teléfono y se sube al reconectar.</string>
+    <string name="conexion_entendido">Entendido</string>
+    <string name="bloqueo_no_se_pudo_verificar">No se pudo verificar tu identidad. Inténtalo de nuevo.</string>
+    <string name="bloqueo_intentar_de_nuevo">Intentar de nuevo</string>
+
+    <!-- Metas, moneda y eliminar cuenta -->
+    <string name="cuenta_eliminacion_incompleta">Borramos tus datos, pero no pudimos cerrar tu cuenta de acceso. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="cuenta_eliminacion_terminada">Terminamos de eliminar tu cuenta y tus datos.</string>
+    <string name="cuenta_eliminacion_inicia_sesion">Para terminar de eliminar tu cuenta, vuelve a iniciar sesión.</string>
+    <string name="cuenta_ya_eliminada">Esta cuenta fue eliminada junto con sus datos. Si quieres, puedes crear una nueva.</string>
+    <string name="goals_cantidad_a_retirar">Cantidad a retirar (%1$s)</string>
+    <string name="goals_regresar_a_mi_saldo">Regresar a mi saldo</string>
+    <string name="goals_retirar_de">Retirar de «%1$s»</string>
+    <string name="goals_disponible_en_la_meta">Disponible en la meta: %1$s</string>
+    <string name="goals_retirar">Retirar</string>
+    <string name="goals_no_puedes_retirar_mas">No puedes retirar más de %1$s</string>
+    <string name="goals_retiro_registrado">Retiro registrado</string>
+    <string name="goals_regresar_al_saldo_al_eliminar">Regresar %1$s a mi saldo</string>
+    <string name="savings_goal_retiro_de">Retiro de «%1$s»</string>
+    <string name="moneda_cambiar_a">Cambiar a %1$s</string>
+    <string name="moneda_explicacion">Tus montos están en %1$s. Escribe el tipo de cambio para convertir tus movimientos, recurrentes, metas y presupuestos. Si elegiste mal la moneda al registrarte, cambia solo el símbolo.</string>
+    <string name="moneda_tipo_de_cambio">1 %1$s = ¿cuántos %2$s?</string>
+    <string name="moneda_tipo_de_cambio_invalido">Escribe un tipo de cambio válido</string>
+    <string name="moneda_solo_simbolo">Solo el símbolo</string>
+    <string name="moneda_convertir">Convertir</string>
+    <string name="moneda_convirtiendo">Convirtiendo tus montos…</string>
+    <string name="moneda_no_se_pudo_convertir">No se pudieron convertir tus montos. No se cambió nada.</string>
 </resources>

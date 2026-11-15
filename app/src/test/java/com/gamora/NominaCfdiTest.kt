@@ -15,10 +15,10 @@ class NominaCfdiTest {
         TextosDePrueba.instalar()
     }
 
-    private fun cfdi(complemento: String, fecha: String = "2026-10-15T10:00:00") = """
+    private fun cfdi(complemento: String, fecha: String = "2026-10-15T10:00:00", total: String = "12500.00") = """
         <?xml version="1.0" encoding="UTF-8"?>
         <cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:nomina12="http://www.sat.gob.mx/nomina12"
-            Version="4.0" Fecha="$fecha" Total="12500.00" TipoDeComprobante="N">
+            Version="4.0" Fecha="$fecha" Total="$total" TipoDeComprobante="N">
           <cfdi:Emisor Rfc="EMP010101AAA" Nombre="EMPRESA SA" RegimenFiscal="601"/>
           <cfdi:Receptor Rfc="XAXX010101000" Nombre="PERSONA"/>
           <cfdi:Complemento>$complemento</cfdi:Complemento>
@@ -26,6 +26,13 @@ class NominaCfdiTest {
     """.trimIndent().toByteArray()
 
     private val nomina = """<nomina12:Nomina Version="1.2" TipoNomina="O" FechaPago="2026-10-15" FechaInicialPago="2026-10-01" FechaFinalPago="2026-10-15" NumDiasPagados="15"/>"""
+
+    @Test
+    fun totalConMasDeDosDecimalesSeRedondea() {
+        // El CFDI permite hasta 6 decimales en el total.
+        assertEquals(1250000L, leerNominaCfdi(cfdi(nomina, total = "12500.000000")).movimientos.single().montoCentavos)
+        assertEquals(1250051L, leerNominaCfdi(cfdi(nomina, total = "12500.505")).movimientos.single().montoCentavos)
+    }
 
     @Test
     fun leeNominaValida() {

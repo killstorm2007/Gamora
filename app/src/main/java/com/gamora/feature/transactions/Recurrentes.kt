@@ -1,5 +1,6 @@
 package com.gamora.feature.transactions
 
+import com.gamora.core.mensajeDeError
 import com.gamora.R
 import com.gamora.core.texto
 import com.gamora.core.Categoria
@@ -26,6 +27,16 @@ fun siguienteFecha(desde: Long, dia: Int): Long =
         timeInMillis = desde
         set(Calendar.DAY_OF_MONTH, 1)
         add(Calendar.MONTH, 1)
+        set(Calendar.DAY_OF_MONTH, dia.coerceIn(1, 28))
+    }.timeInMillis
+
+/**
+ * La próxima fecha con otro día del mes ([dia], 1-28), en el mismo mes que [proxima] y a la misma hora:
+ * así el cambio no se salta ni repite ningún mes.
+ */
+fun cambiarDia(proxima: Long, dia: Int): Long =
+    Calendar.getInstance().apply {
+        timeInMillis = proxima
         set(Calendar.DAY_OF_MONTH, dia.coerceIn(1, 28))
     }.timeInMillis
 
@@ -61,7 +72,7 @@ object Recurrentes {
                 "proximaFecha" to siguienteFecha(movimiento.timestamp, dia)
             )
         ).addOnFailureListener { error ->
-            onError(error.localizedMessage ?: texto(R.string.recurrentes_no_se_pudo_programar))
+            onError(mensajeDeError(error, R.string.recurrentes_no_se_pudo_programar))
         }
     }
 
@@ -77,6 +88,29 @@ object Recurrentes {
                 proximaFecha = doc.getLong("proximaFecha") ?: 0L
             )
         }.sortedBy { it.dia }
+
+    /**
+     * Cambia lo que se registrará a partir de ahora; los movimientos ya registrados no cambian.
+     * El tipo (ingreso o gasto) no se cambia: para eso se deja de repetir y se crea otro.
+     */
+    suspend fun editar(
+        uid: String,
+        recurrente: MovimientoRecurrente,
+        descripcion: String,
+        categoria: Categoria,
+        montoCentavos: Long,
+        dia: Int
+    ) {
+        coleccion(uid).document(recurrente.id).update(
+            mapOf(
+                "descripcion" to descripcion,
+                "categoria" to categoria.clave,
+                "montoCentavos" to montoCentavos,
+                "dia" to dia,
+                "proximaFecha" to cambiarDia(recurrente.proximaFecha, dia)
+            )
+        ).esperar()
+    }
 
     /** Deja de repetirse; los movimientos ya registrados se conservan. */
     suspend fun eliminar(uid: String, id: String) {
